@@ -14274,7 +14274,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
     [icon setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
 
     UILabel *label = [[UILabel alloc] init];
-    label.text = @"Cyanide is a limited tweak environment. Session tweaks reset on reboot, while a few packages intentionally modify local system files and may persist until restored. Backups are best-effort only. Use these tools only where you have permission, understand the legal and service-rule impact, and accept the risk. Live tweaks like StatBar and Axon Lite stop if you force-quit Cyanide. A progress log opens while changes apply; tap Hide to dismiss.";
+    label.text = @"Cyanide 是一个受限的插件运行环境。会话类插件在重启后会重置，而少数软件包会刻意修改本地系统文件，可能一直保留到被还原。备份仅为尽力而为。请仅在您拥有权限、了解法律与服务规则影响并接受风险的情况下使用这些工具。若强制关闭 Cyanide，StatBar、Axon Lite 这类实时插件会停止运行。改动应用时会打开进度日志，点「隐藏」可关闭。";
     label.textColor = UIColor.labelColor;
     label.font = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
     label.numberOfLines = 0;
@@ -14304,26 +14304,26 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
     NSArray<NSDictionary *> *rows = @[
         @{ @"kind": @"a18path", @"key": kSettingsA18ExploitPath, @"a18Only": @YES, @"title": @"A18 利用路径" },
         @{ @"key": kSettingsA18Interleave, @"peV1Only": @YES, @"a18Only": @YES, @"title": @"A18 交错搜索",
-           @"subtitle": @"Experimental. On interleaves the socket spray with search-mapping allocation and scans each mapping tail-first, aiming to find the PCB in fewer reads. Off uses the proven bulk-spray + forward-scan path. A18/M4 only; effective on the next fresh chain run." },
+           @"subtitle": @"实验性。开启后会将 socket 喷射与搜索映射分配交错进行，并从映射尾部向前扫描，争取用更少的读取找到 PCB。关闭则使用经过验证的批量喷射 + 正向扫描路径。仅 A18/M4；在下次全新链路运行后生效。" },
         @{ @"kind": @"a18shape", @"key": kSettingsA18MemoryShaping, @"peV1Only": @YES, @"a18Only": @YES, @"title": @"A18 内存塑形" },
         @{ @"key": kSettingsA18BoundedSearch, @"peV1Only": @YES, @"a18Only": @YES, @"title": @"A18 有界搜索",
-           @"subtitle": @"On stops after 4 search passes and reports a clean retry instead of grinding — which can otherwise end in an aperture panic on a device that never lands the PCB. On (default) stops; Off (legacy, matches 1.5.5) grinds until the exploit acquires. A18/M4 only; effective on the next fresh chain run." },
+           @"subtitle": @"开启后会在 4 次搜索后仍找不到 PCB 时停止并提示干净重试，而不是继续死磕——否则在始终无法定位 PCB 的设备上可能引发 aperture 崩溃。开启（默认）即停止；关闭（旧逻辑，对应 1.5.5）则会一直尝试直到漏洞利用成功。仅 A18/M4；在下次全新链路运行后生效。" },
         @{ @"key": kSettingsRunAutoRetry, @"title": @"自动重试失败的利用链运行",
-           @"subtitle": @"On re-runs the chain automatically when the exploit misses, up to the attempt cap below — the progress screen just keeps spinning until it lands or the cap is hit. Never retries a wedged injection. Every attempt is an independent panic dice roll, so the cap bounds your exposure per tap." },
+           @"subtitle": @"开启后，若漏洞利用未命中会自动重跑链路，直到达到下方的重试上限——进度界面会一直转圈，直到成功或触及上限。已卡死的注入不会被重试。每次尝试都是一次独立的崩溃掷骰，因此上限能限制每次点击的风险敞口。" },
         @{ @"kind": @"stepper", @"key": kSettingsRunAutoRetryMaxAttempts, @"title": @"自动重试次数上限",
            @"min": @1, @"max": @20, @"default": @8, @"disabled": @(!autoRetryOn),
-           @"subtitle": @"Maximum automatic re-runs after the first miss. Enable Auto-retry failed chain runs to change this." },
+           @"subtitle": @"首次未命中后自动重跑的最大次数。开启「自动重试失败的链路运行」即可修改此项。" },
         @{ @"key": kRemoteCallControlledPanicOnWedge, @"title": @"注入卡死时主动 panic",
-           @"subtitle": @"Diagnostic. When an injection wedges, the stuck system-process thread dooms the device to a hardware-watchdog reset within ~2 minutes — which can leave no panic log at all. On instead flushes the log and panics the kernel immediately via KRW: the reboot is instant and always writes a panic-full stamped with the CYANIDE signature address 0x4359414e494445xx. Off keeps the standard abort + restart flow." },
+           @"subtitle": @"诊断。当注入卡死时，卡住的系统进程线程会让设备在约 2 分钟内被迫硬件看门狗复位——可能完全不留下崩溃日志。开启则会先刷新日志、再经由 KRW 立即让内核崩溃：重启瞬时完成，且总是写入一份带有 CYANIDE 签名地址 0x4359414e494445xx 的完整崩溃日志。关闭则保持标准的异常中止 + 重启流程。" },
         @{ @"kind": @"settlemode", @"key": kSettingsRemoteSettleMode, @"title": @"插件应用速度" },
         @{ @"key": kSettingsVerboseLoggingEnabled, @"title": @"详细日志",
-           @"subtitle": @"Logs the full RemoteCall internals for every exploit run, tweak apply and Process Viewer action. Off keeps the log readable; turn it on before reproducing an issue, then share the log." },
+           @"subtitle": @"为每次漏洞利用运行、插件应用和进程查看器操作记录完整的 RemoteCall 内部日志。关闭可保持日志易读；复现问题前请先开启，随后分享日志。" },
         @{ @"key": kSettingsLocationServicesLinksEnabled, @"title": @"定位服务链接",
-           @"subtitle": @"Lets cyanide://location-services links turn Location Services on or off. Any app can open these links without asking, so this is off by default. The Control Center toggle and the Shortcuts action work without it." },
-        @{ @"key": kRepoSourcesEnabledKey,      @"title": @"Repo sources",
-           @"subtitle": @"Off hides the Sources tab and repo packages, stops refreshing sources, and skips repo tweaks when applying (running ones are stopped). Local QuickLoader .js files still work." },
-        @{ @"key": kSettingsKeepAlive,          @"title": @"Keep app alive in background",
-           @"subtitle": @"Required for app-driven live tweaks to persist while minimized, including StatBar receiving fresh live data." },
+           @"subtitle": @"允许 cyanide://location-services 链接开启或关闭定位服务。任何 App 都能在未经询问的情况下打开这些链接，因此默认关闭。控制中心开关与快捷指令动作无需此项即可工作。" },
+        @{ @"key": kRepoSourcesEnabledKey,      @"title": @"软件源",
+           @"subtitle": @"关闭后会隐藏「源」标签页与源内软件包、停止刷新源，并在应用（已运行中的会停止）时跳过源插件。本地 QuickLoader 的 .js 文件仍可使用。" },
+        @{ @"key": kSettingsKeepAlive,          @"title": @"后台保活应用",
+           @"subtitle": @"应用驱动的实时插件在后台最小化时持续生效所必需的，包括 StatBar 接收最新的实时数据。" },
     ];
     // A18/M4-only options (exploit path, interleave, shaping, bounded) are
     // meaningless on other hardware -- pe_v1 standard geometry always runs there.
@@ -14346,22 +14346,22 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
     // the run will not do.
     BOOL hidingLabels = [NSUserDefaults.standardUserDefaults boolForKey:kSettingsSBCHideLabels];
     return @[
-        @{ @"kind": @"stepper", @"key": kSettingsSBCDockIcons,  @"title": @"Dock icons", @"min": @4, @"max": @7, @"default": @(kSBCDefaultDockIcons) },
-        @{ @"kind": @"toggle",  @"key": kSettingsSBCAutoDockApp, @"title": @"Auto-add selected app to Dock",
-           @"subtitle": @"Moves the selected Home Screen app into a newly available Dock slot when SBCustomizer is applied." },
-        @{ @"kind": @"text",    @"key": kSettingsSBCDockAppBundleID, @"title": @"Dock app bundle ID",
+        @{ @"kind": @"stepper", @"key": kSettingsSBCDockIcons,  @"title": @"Dock 图标", @"min": @4, @"max": @7, @"default": @(kSBCDefaultDockIcons) },
+        @{ @"kind": @"toggle",  @"key": kSettingsSBCAutoDockApp, @"title": @"自动把所选 App 加到 Dock",
+           @"subtitle": @"在应用 SBCustomizer 时，把所选主屏幕 App 移入新出现的 Dock 空位。" },
+        @{ @"kind": @"text",    @"key": kSettingsSBCDockAppBundleID, @"title": @"Dock App 的套装 ID",
            @"placeholder": kSBCDefaultDockAppBundleID,
-           @"subtitle": @"Defaults to the Watusi WhatsApp duplicate." },
-        @{ @"kind": @"stepper", @"key": kSettingsSBCCols,       @"title": @"Home columns", @"min": @3, @"max": @7, @"default": @(kSBCDefaultCols) },
-        @{ @"kind": @"stepper", @"key": kSettingsSBCRows,       @"title": @"Home rows", @"min": @4, @"max": @8, @"default": @(kSBCDefaultRows) },
-        @{ @"kind": @"toggle",  @"key": kSettingsSBCHideLabels, @"title": @"Hide icon labels" },
-        @{ @"kind": @"toggle",  @"key": kSettingsSBCDockLabels, @"title": @"Show dock labels",
+           @"subtitle": @"默认选择 Watusi 版 WhatsApp 副本。" },
+        @{ @"kind": @"stepper", @"key": kSettingsSBCCols,       @"title": @"主屏幕列数", @"min": @3, @"max": @7, @"default": @(kSBCDefaultCols) },
+        @{ @"kind": @"stepper", @"key": kSettingsSBCRows,       @"title": @"主屏幕行数", @"min": @4, @"max": @8, @"default": @(kSBCDefaultRows) },
+        @{ @"kind": @"toggle",  @"key": kSettingsSBCHideLabels, @"title": @"隐藏图标名称" },
+        @{ @"kind": @"toggle",  @"key": kSettingsSBCDockLabels, @"title": @"显示 Dock 名称",
            @"disabled": @(hidingLabels),
-           @"subtitle": @"Draws app names under the dock icons, which stock iOS leaves off. Unavailable while Hide icon labels is on \u2014 the dock follows the home screen." },
-        @{ @"kind": @"toggle",  @"key": kSettingsSBCArrangePages, @"title": @"Arrange icons by page" },
-        @{ @"kind": @"stepper", @"key": kSettingsSBCFirstPageIcons, @"title": @"First page icons", @"min": @12, @"max": @49, @"default": @(kSBCDefaultFirstPageIcons) },
-        @{ @"kind": @"stepper", @"key": kSettingsSBCOtherPageIcons, @"title": @"Other page icons", @"min": @12, @"max": @49, @"default": @(kSBCDefaultOtherPageIcons) },
-        @{ @"kind": @"button",  @"title": @"Reset to Defaults" },
+           @"subtitle": @"在 Dock 图标下方绘制 App 名称，原生 iOS 默认不显示。开启「隐藏图标名称」时不可用——此时 Dock 跟随主屏幕。" },
+        @{ @"kind": @"toggle",  @"key": kSettingsSBCArrangePages, @"title": @"按页面排列图标" },
+        @{ @"kind": @"stepper", @"key": kSettingsSBCFirstPageIcons, @"title": @"首页图标数", @"min": @12, @"max": @49, @"default": @(kSBCDefaultFirstPageIcons) },
+        @{ @"kind": @"stepper", @"key": kSettingsSBCOtherPageIcons, @"title": @"其余页图标数", @"min": @12, @"max": @49, @"default": @(kSBCDefaultOtherPageIcons) },
+        @{ @"kind": @"button",  @"title": @"恢复默认" },
     ];
 }
 
@@ -14377,7 +14377,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
     return @[
         @{ @"kind": @"button", @"title": @"停用 OTA 更新" },
         @{ @"kind": @"button", @"title": @"启用 OTA 更新" },
-        @{ @"kind": @"button", @"title": @"Read Current Status",
+        @{ @"kind": @"button", @"title": @"读取当前状态",
            @"requiresKRW": @YES },
     ];
 }
@@ -14385,9 +14385,9 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
 - (NSArray<NSDictionary *> *)supervisionRows
 {
     return @[
-        @{ @"kind": @"button", @"title": @"Activate Supervision",   @"action": @"supervision-activate" },
-        @{ @"kind": @"button", @"title": @"Deactivate Supervision", @"action": @"supervision-deactivate" },
-        @{ @"kind": @"button", @"title": @"Read Current Status",    @"action": @"supervision-read",
+        @{ @"kind": @"button", @"title": @"启用监管",   @"action": @"supervision-activate" },
+        @{ @"kind": @"button", @"title": @"关闭监管", @"action": @"supervision-deactivate" },
+        @{ @"kind": @"button", @"title": @"读取当前状态",    @"action": @"supervision-read",
            @"requiresKRW": @YES },
     ];
 }
@@ -14397,42 +14397,42 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
     return @[
         @{ @"kind": @"stepper",
            @"key": kSettingsNanoMaxPairing,
-           @"title": @"watchOS Pairing Limit",
-           @"subtitle": @"Highest watchOS pairing generation this iPhone will accept. 99 raises the phone-side ceiling for newer watchOS releases.",
+           @"title": @"watchOS 配对上限",
+           @"subtitle": @"本机可接受的最高 watchOS 配对代际。设为 99 可抬高机型侧上限，以适配更新的 watchOS 版本。",
            @"min": @(kNanoUIRowMin),
            @"max": @(kNanoUIRowMax),
            @"default": @(kNanoDefaultMaxPairing) },
 
         @{ @"kind": @"stepper",
            @"key": kSettingsNanoMinPairing,
-           @"title": @"Setup Protocol Floor",
-           @"subtitle": @"Lowest pairing setup generation this iPhone will accept. Keep this at 23 so generation-23 setup messages are not rejected.",
+           @"title": @"配对协议下限",
+           @"subtitle": @"本机可接受的最低配对设置代际。请保持为 23，以免第 23 代设置消息被拒绝。",
            @"min": @(kNanoUIRowMin),
            @"max": @(kNanoUIRowMax),
            @"default": @(kNanoDefaultMinPairing) },
 
         @{ @"kind": @"stepper",
            @"key": kSettingsNanoMinPairingChipID,
-           @"title": @"Legacy Chip Floor",
-           @"subtitle": @"Leave this alone unless you are trying to pair an old S-chip watch, such as a Series 3.",
+           @"title": @"旧芯片下限",
+           @"subtitle": @"除非你想配对 Series 3 这类老款 S 系列芯片手表，否则请勿改动。",
            @"min": @(kNanoUIRowMin),
            @"max": @(kNanoUIRowMax),
            @"default": @(kNanoDefaultMinPairingChipID) },
 
         @{ @"kind": @"stepper",
            @"key": kSettingsNanoMinQuickSwitch,
-           @"title": @"Multi-Watch Switching",
-           @"subtitle": @"Leave this alone unless switching between multiple older paired watches is not working.",
+           @"title": @"多手表切换",
+           @"subtitle": @"除非多块已配对老手表的切换失效，否则请勿改动。",
            @"min": @(kNanoUIRowMin),
            @"max": @(kNanoUIRowMax),
            @"default": @(kNanoDefaultMinQuickSwitch) },
 
         @{ @"kind": @"button",
-           @"title": @"Load Saved Override",
+           @"title": @"载入已保存的覆盖",
            @"action": @"nano-load" },
 
         @{ @"kind": @"button",
-           @"title": @"Use watchOS Range 99/23/10/6",
+           @"title": @"使用 watchOS 区间 99/23/10/6",
            @"action": @"nano-preset-newer" },
 
         @{ @"kind": @"button",
@@ -14440,7 +14440,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"action": @"nano-apply" },
 
         @{ @"kind": @"button",
-           @"title": @"Remove Override",
+           @"title": @"移除覆盖",
            @"action": @"nano-clear",
            @"destructive": @YES },
     ];
@@ -14457,22 +14457,22 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
         @{ @"kind": @"number",
            @"key": kSettingsLockDurationValue,
            @"title": @"Duration",
-           @"subtitle": @"Seconds the lock screen stays awake before it dims and sleeps, while you read notifications. Separate from Settings > Auto-Lock. Default 60, min 5, max 3600. Face ID gaze can keep it on longer.",
+           @"subtitle": @"在查看通知时，锁屏保持亮起、直到变暗休眠的秒数。独立于「设置 > 自动锁定」。默认 60，最小 5，最大 3600。面容 ID 注视可使其保持更久。",
            @"min": @(kSettingsLockDurationMin),
            @"max": @(kSettingsLockDurationMax),
            @"step": @1, @"unit": @"s",
            @"default": @(kSettingsLockDurationDefault) },
         @{ @"kind": @"button", @"action": @"lockdur-apply",
-           @"title": @"Apply Lock Screen Duration",
-           @"subtitle": @"Writes the value and offers a respring to apply it." },
+           @"title": @"应用锁屏时长",
+           @"subtitle": @"写入数值并提供 respring 以应用。" },
         @{ @"kind": @"button", @"action": @"lockdur-remove",
-           @"title": @"Remove (restore stock)",
-           @"subtitle": @"Clears the floor; offers a respring to apply." },
+           @"title": @"移除（恢复原生）",
+           @"subtitle": @"清除下限；提供 respring 以应用。" },
         @{ @"kind": @"button", @"action": @"lockdur-read",
-           @"title": @"Read Current Value",
+           @"title": @"读取当前数值",
            @"requiresKRW": @YES,
-           @"subtitle": @"Shows the floor currently written in SpringBoard. "
-                        @"Needs kernel access — run the chain first." },
+           @"subtitle": @"显示当前写入 SpringBoard 的下限值。 "
+                        @"需要内核访问权限——请先运行漏洞利用链路。" },
     ];
 }
 
@@ -14482,7 +14482,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
         @{ @"kind": @"number",
            @"key": kSettingsDSDragCoefficientValue,
            @"title": @"Coefficient",
-           @"subtitle": @"1.00 = default, 0.50 = 2× faster, 0.25 = 4× faster. Minimum is 0.01.",
+           @"subtitle": @"1.00 = 默认，0.50 = 快 2 倍，0.25 = 快 4 倍。最小值为 0.01。",
            @"min": @0.01, @"max": @2.0, @"step": @0.01,
            @"precision": @2, @"default": @0.5 },
     ];
@@ -14492,21 +14492,21 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
 {
     return @[
         @{ @"kind": @"number", @"key": kSettingsLayoutHomeExtraLeft,
-           @"title": @"Home extra left",   @"min": @0,  @"max": @300, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"主屏左扩展",   @"min": @0,  @"max": @300, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"number", @"key": kSettingsLayoutHomeExtraRight,
-           @"title": @"Home extra right",  @"min": @0,  @"max": @300, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"主屏右扩展",  @"min": @0,  @"max": @300, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"number", @"key": kSettingsLayoutHomeExtraTop,
-           @"title": @"Home extra top",    @"min": @0,  @"max": @400, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"主屏上扩展",    @"min": @0,  @"max": @400, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"number", @"key": kSettingsLayoutHomeExtraBottom,
-           @"title": @"Home extra bottom", @"min": @0,  @"max": @400, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"主屏下扩展", @"min": @0,  @"max": @400, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"number", @"key": kSettingsLayoutDockExtraLeft,
-           @"title": @"Dock extra left",  @"min": @0,  @"max": @200, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"Dock 左扩展",  @"min": @0,  @"max": @200, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"number", @"key": kSettingsLayoutDockExtraRight,
-           @"title": @"Dock extra right", @"min": @0,  @"max": @200, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"Dock 右扩展", @"min": @0,  @"max": @200, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"number", @"key": kSettingsLayoutHomeScalePct,
-           @"title": @"Home icon scale",   @"min": @25, @"max": @250, @"step": @1, @"unit": @"%", @"default": @100 },
+           @"title": @"主屏图标缩放",   @"min": @25, @"max": @250, @"step": @1, @"unit": @"%", @"default": @100 },
         @{ @"kind": @"number", @"key": kSettingsLayoutDockScalePct,
-           @"title": @"Dock icon scale",   @"min": @25, @"max": @250, @"step": @1, @"unit": @"%", @"default": @100 },
+           @"title": @"Dock 图标缩放",   @"min": @25, @"max": @250, @"step": @1, @"unit": @"%", @"default": @100 },
     ];
 }
 
@@ -14514,12 +14514,12 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
 {
     return @[
         @{ @"kind": @"toggle", @"key": kSettingsStatBarCelsius,     @"title": @"Celsius" },
-        @{ @"kind": @"toggle", @"key": kSettingsStatBarShowCPU,     @"title": @"Show CPU %" },
-        @{ @"kind": @"toggle", @"key": kSettingsStatBarShowLabels,  @"title": @"Show CPU / RAM labels" },
-        @{ @"kind": @"toggle", @"key": kSettingsStatBarShowNet,     @"title": @"Show network speed" },
-        @{ @"kind": @"toggle", @"key": kSettingsStatBarNetworkOnly, @"title": @"Network speed only" },
+        @{ @"kind": @"toggle", @"key": kSettingsStatBarShowCPU,     @"title": @"显示 CPU 占用" },
+        @{ @"kind": @"toggle", @"key": kSettingsStatBarShowLabels,  @"title": @"显示 CPU / 内存标签" },
+        @{ @"kind": @"toggle", @"key": kSettingsStatBarShowNet,     @"title": @"显示网速" },
+        @{ @"kind": @"toggle", @"key": kSettingsStatBarNetworkOnly, @"title": @"仅网速" },
         @{ @"kind": @"slider", @"key": kSettingsStatBarRefreshRateSec,
-           @"title": @"Refresh rate", @"min": @1, @"max": @30, @"step": @1,
+           @"title": @"刷新频率", @"min": @1, @"max": @30, @"step": @1,
            @"unit": @"s", @"default": @(kStatBarDefaultRefreshRateSec) },
     ];
 }
@@ -14532,7 +14532,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"title": @"Position",
            @"subtitle": settings_nsbar_position_name([d integerForKey:kSettingsNSBarPosition]) },
         @{ @"kind": @"button",
-           @"title": @"Choose Position…",
+           @"title": @"选择位置…",
            @"action": @"nsbar-position" },
     ];
 }
@@ -14543,21 +14543,21 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
         @{ @"kind": @"nicebar-grid" },
         @{ @"kind": @"info",
            @"title": @"Layout",
-           @"subtitle": @"Top and bottom rows move separately. Changes update live while NiceBar Lite is running." },
+           @"subtitle": @"顶部与底部行分别移动。在 NiceBar Lite 运行期间改动会实时生效。" },
         @{ @"kind": @"slider", @"key": kSettingsNiceBarLiteLayoutTopSideInset,
-           @"title": @"Top side inset", @"min": @(-80), @"max": @80, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"顶部侧边距", @"min": @(-80), @"max": @80, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"slider", @"key": kSettingsNiceBarLiteLayoutBottomSideInset,
-           @"title": @"Bottom side inset", @"min": @(-80), @"max": @80, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"底部侧边距", @"min": @(-80), @"max": @80, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"slider", @"key": kSettingsNiceBarLiteLayoutTopY,
-           @"title": @"Top Y offset", @"min": @(-40), @"max": @80, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"顶部 Y 偏移", @"min": @(-40), @"max": @80, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"slider", @"key": kSettingsNiceBarLiteLayoutBottomY,
-           @"title": @"Bottom Y offset", @"min": @(-40), @"max": @80, @"step": @1, @"unit": @"pt", @"default": @0 },
+           @"title": @"底部 Y 偏移", @"min": @(-40), @"max": @80, @"step": @1, @"unit": @"pt", @"default": @0 },
         @{ @"kind": @"slider", @"key": kSettingsNiceBarLiteLayoutCenterX,
-           @"title": @"Center X offset", @"min": @(-120), @"max": @120, @"step": @1, @"unit": @"pt", @"default": @0 },
-        @{ @"kind": @"toggle", @"key": kSettingsNiceBarLiteCelsius, @"title": @"Use Celsius" },
-        @{ @"kind": @"button", @"title": @"Traffic History", @"action": @"nicebar-traffic-history" },
+           @"title": @"中心 X 偏移", @"min": @(-120), @"max": @120, @"step": @1, @"unit": @"pt", @"default": @0 },
+        @{ @"kind": @"toggle", @"key": kSettingsNiceBarLiteCelsius, @"title": @"使用摄氏度" },
+        @{ @"kind": @"button", @"title": @"流量历史", @"action": @"nicebar-traffic-history" },
         @{ @"kind": @"button",
-           @"title": @"Apply Now",
+           @"title": @"立即应用",
            @"action": @"nicebar-apply" },
     ];
 }
@@ -14575,20 +14575,20 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
         active
             ? @{ @"kind": @"button",
                  @"title": @"Deactivate",
-                 @"subtitle": @"Stops the physics and puts the icons back.",
+                 @"subtitle": @"停止物理效果并将图标复位。",
                  @"action": @"gravitylite-deactivate",
                  @"destructive": @YES }
             : @{ @"kind": @"button",
                  @"title": @"Activate",
-                 @"subtitle": @"Starts Gravity Lite right away, without the Apply queue.",
+                 @"subtitle": @"立即启动 Gravity Lite，无需经过应用队列。",
                  @"action": @"gravitylite-activate",
                  @"style": @"prominent" },
         @{ @"kind": @"toggle",
            @"key": kSettingsGravityLiteDockEnabled,
-           @"title": @"Include Dock" },
+           @"title": @"包含 Dock" },
         @{ @"kind": @"slider",
            @"key": kSettingsGravityLiteMagnitudePct,
-           @"title": @"Gravity strength",
+           @"title": @"重力强度",
            @"min": @25,
            @"max": @300,
            @"step": @5,
@@ -14620,17 +14620,17 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"default": @50 },
         @{ @"kind": @"slider",
            @"key": kSettingsGravityLiteAngularResistancePct,
-           @"title": @"Spin resistance",
+           @"title": @"旋转阻力",
            @"min": @0,
            @"max": @200,
            @"step": @5,
            @"unit": @"%",
            @"default": @0 },
         @{ @"kind": @"button",
-           @"title": @"Explosion Pulse",
+           @"title": @"爆炸脉冲",
            @"action": @"gravitylite-explosion" },
         @{ @"kind": @"button",
-           @"title": @"Restore Icon Layout",
+           @"title": @"恢复图标布局",
            @"action": @"gravitylite-restore",
            @"destructive": @YES },
     ];
@@ -14646,8 +14646,8 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"subtitle": locationOn ? @"On" : @"Off" },
 
         @{ @"kind": @"button",
-           @"title": locationOn ? @"Turn Location Services Off" : @"Turn Location Services On",
-           @"subtitle": @"The same system-wide switch as Settings → Privacy & Security → Location Services.",
+           @"title": locationOn ? @"关闭定位服务" : @"开启定位服务",
+           @"subtitle": @"与「设置 → 隐私与安全 → 定位服务」中的系统级开关相同。",
            @"action": @"locsvc-toggle",
            @"destructive": @(locationOn) },
 
@@ -14656,15 +14656,15 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"subtitle": settings_location_sim_mode_summary(d) },
 
         @{ @"kind": @"button",
-           @"title": @"Set Exact Coordinates…",
+           @"title": @"设置精确坐标…",
            @"action": @"locsim-set-exact" },
 
         @{ @"kind": @"button",
-           @"title": @"Major Cities…",
+           @"title": @"主要城市…",
            @"action": @"locsim-major-cities" },
 
         @{ @"kind": @"button",
-           @"title": @"Simulate Rockaway Test Point",
+           @"title": @"模拟 Rockaway 测试点",
            @"action": @"locsim-preset-rockaway" },
 
         @{ @"kind": @"slider",
@@ -14686,12 +14686,12 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"default": @(kLocationSimDefaultAccuracy) },
 
         @{ @"kind": @"button",
-           @"title": @"Simulate Current Target",
+           @"title": @"模拟当前目标",
            @"action": @"locsim-apply" },
 
         @{ @"kind": @"button",
-           @"title": @"Restore Real Location",
-           @"subtitle": @"Reset can take a few minutes. If location still looks simulated, reboot and wait a little longer.",
+           @"title": @"恢复真实位置",
+           @"subtitle": @"重置可能需要几分钟。若位置仍显示被模拟，请重启并再多等一会儿。",
            @"action": @"locsim-stop",
            @"destructive": @YES },
     ];
@@ -14703,8 +14703,8 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
     NSString *selected = settings_themer_selected_theme_display_name();
     NSMutableArray<NSDictionary *> *rows = [NSMutableArray arrayWithArray:@[
         @{ @"kind": @"info",
-           @"title": @"Selected Theme",
-           @"subtitle": hasSelection ? selected : @"None selected. Pick a theme before running the icon theme engine." },
+           @"title": @"已选主题",
+           @"subtitle": hasSelection ? selected : @"尚未选择。运行图标主题引擎前请先选择一个主题。" },
 
         @{ @"kind": @"button",
            @"title": [selected isEqualToString:@"iOS 6 主题"]
@@ -14712,16 +14712,16 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"action": @"themer-select-ios6" },
 
         @{ @"kind": @"button",
-           @"title": @"Import Custom Theme…",
+           @"title": @"导入自定义主题…",
            @"action": @"themer-import" },
 
         @{ @"kind": @"button",
-           @"title": @"Theme Format Guide",
+           @"title": @"主题格式指南",
            @"action": @"themer-guide" },
     ]];
     if (hasSelection) {
         [rows addObject:@{ @"kind": @"button",
-                           @"title": @"Clear Selected Theme",
+                           @"title": @"清除已选主题",
                            @"action": @"themer-clear",
                            @"destructive": @YES }];
     }
@@ -14734,21 +14734,21 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
     NSString *selected = settings_snowboardlite_selected_theme_display_name();
     NSMutableArray<NSDictionary *> *rows = [NSMutableArray arrayWithArray:@[
         @{ @"kind": @"info",
-           @"title": @"Selected Theme",
-           @"subtitle": hasSelection ? selected : @"None selected. Pick or import a theme before running SnowBoard Lite." },
+           @"title": @"已选主题",
+           @"subtitle": hasSelection ? selected : @"尚未选择。运行 SnowBoard Lite 前请先选择或导入一个主题。" },
         @{ @"kind": @"button",
            @"title": [selected isEqualToString:@"iOS 6 主题"] ? @"iOS 6 主题 ✓" : @"使用 iOS 6 主题",
            @"action": @"sbl-select-ios6" },
         @{ @"kind": @"button",
-           @"title": @"Import Theme Folder…",
+           @"title": @"导入主题文件夹…",
            @"action": @"sbl-import-folder" },
         @{ @"kind": @"button",
-           @"title": @"Import Theme Archive (ZIP/DEB)…",
+           @"title": @"导入主题压缩包（ZIP/DEB）…",
            @"action": @"sbl-import-archive" },
     ]];
     if (hasSelection) {
         [rows addObject:@{ @"kind": @"button",
-                           @"title": @"Clear Selected Theme",
+                           @"title": @"清除已选主题",
                            @"action": @"sbl-clear",
                            @"destructive": @YES }];
     }
@@ -14772,36 +14772,36 @@ static const NSInteger kPasscodePreviewRow = 1;
     // "Unknown" is its own case on purpose: right after a reboot the cache
     // cannot be read without kernel access, but the style is still in place on
     // disk. Claiming "not applied" there would be wrong.
-    NSString *stateText = @"not applied";
+    NSString *stateText = @"未应用";
     if (styleState == PTPasscodeStyleStateApplied) {
         stateText = @"正在使用";
     } else if (styleState == PTPasscodeStyleStateUnknown) {
-        stateText = @"unknown (needs kernel access)";
+        stateText = @"未知（需要内核访问权限）";
     }
 
     [rows addObject:@{
         @"kind": @"info",
-        @"title": @"Selected Style",
+        @"title": @"已选样式",
         @"subtitle": theme
-            ? [NSString stringWithFormat:@"%@ · %lu/10 digits · %@",
+            ? [NSString stringWithFormat:@"%@ · %lu/10 位数字 · %@",
                                        settings_passcode_selected_theme_display_name(),
                                        (unsigned long)presentDigits.count,
                                        stateText]
-            : @"None selected. Import a style below, or tap a key in the preview.",
+            : @"尚未选择。可在下方导入样式，或点击预览中的某个按键。",
     }];
 
     [rows addObject:@{ @"kind": @"passcode-preview" }];
 
     [rows addObject:@{ @"kind": @"button",
-                       @"title": @"Import Style (.passthm/ZIP)…",
+                       @"title": @"导入样式（.passthm/ZIP）…",
                        @"action": @"passcode-import" }];
 
     if (theme) {
         [rows addObject:@{ @"kind": @"button",
-                           @"title": @"Apply Style Now",
+                           @"title": @"立即应用样式",
                            @"action": @"passcode-apply" }];
         [rows addObject:@{ @"kind": @"button",
-                           @"title": @"Clear Selected Style",
+                           @"title": @"清除已选样式",
                            @"action": @"passcode-clear",
                            @"destructive": @YES }];
     }
@@ -14814,13 +14814,13 @@ static const NSInteger kPasscodePreviewRow = 1;
         @"kind": @"info",
         @"title": @"Originals",
         @"subtitle": backups > 0
-            ? [NSString stringWithFormat:@"%lu file(s) across %lu digit(s) saved",
+            ? [NSString stringWithFormat:@"%lu 个文件，覆盖 %lu 位数字，已保存",
                                          (unsigned long)backups, (unsigned long)backupDigits]
-            : @"None saved yet. Restore needs a saved original to write back.",
+            : @"尚未保存任何内容。还原需要一份已保存的原始数据才能写回。",
     }];
 
     [rows addObject:@{ @"kind": @"button",
-                       @"title": @"Restore Original Digits",
+                       @"title": @"还原原始数字",
                        @"action": @"passcode-restore",
                        @"destructive": @YES }];
 
@@ -14828,11 +14828,11 @@ static const NSInteger kPasscodePreviewRow = 1;
     // so it must not read as part of the style actions above.
     if (backups > 0) {
         [rows addObject:@{ @"kind": @"button",
-                           @"title": @"Export Originals…",
+                           @"title": @"导出原始数据…",
                            @"action": @"passcode-export-backups" }];
     }
     [rows addObject:@{ @"kind": @"button",
-                       @"title": @"Import Originals…",
+                       @"title": @"导入原始数据…",
                        @"action": @"passcode-import-backups" }];
 
     return rows;
@@ -14889,15 +14889,15 @@ static const NSInteger kPasscodePreviewRow = 1;
 {
     NSMutableArray<NSDictionary *> *rows = [NSMutableArray arrayWithArray:@[
         @{ @"kind": @"info",
-           @"title": @"Selected Video",
+           @"title": @"已选视频",
            @"subtitle": settings_livewp_video_detail() },
         @{ @"kind": @"button",
-           @"title": @"Choose Video…",
+           @"title": @"选择视频…",
            @"action": @"livewp-select-video" },
     ]];
     if ([[NSUserDefaults standardUserDefaults] stringForKey:kSettingsLiveWPVideoPath].length > 0) {
         [rows addObject:@{ @"kind": @"button",
-                           @"title": @"Clear Selected Video",
+                           @"title": @"清除已选视频",
                            @"action": @"livewp-clear",
                            @"destructive": @YES }];
     }
@@ -14909,14 +14909,14 @@ static const NSInteger kPasscodePreviewRow = 1;
     BOOL applied = settings_tweak_is_applied(kSettingsAppSwitcherGridEnabled);
     return @[
         @{ @"kind": @"info",
-           @"title": applied ? @"Current Style: Grid" : @"Current Style: Stock",
-           @"subtitle": @"This is a runtime SpringBoard method patch. It does not write system files; respring restores the stock app switcher." },
+           @"title": applied ? @"当前样式：网格" : @"当前样式：原生",
+           @"subtitle": @"这是一个运行期 SpringBoard 方法补丁。它不会写入系统文件；respring 即可恢复原生应用切换器。" },
         @{ @"kind": @"info",
-           @"title": @"Session note",
-           @"subtitle": @"If you respring after Hide Home Bar, run App Switcher Grid again because respring resets this live SpringBoard patch." },
+           @"title": @"会话提示",
+           @"subtitle": @"若在「隐藏 Home 条」后执行 respring，请再运行一次「应用切换器网格」，因为 respring 会重置这个运行期 SpringBoard 补丁。" },
         @{ @"kind": @"button",
-           @"title": @"Restore Stock Switcher",
-           @"subtitle": @"Restores the original switcher style in the active SpringBoard session when available.",
+           @"title": @"恢复原生切换器",
+           @"subtitle": @"在可用的前提下，于当前 SpringBoard 会话中恢复原始切换器样式。",
            @"action": @"appswitchergrid-restore",
            @"destructive": @YES },
     ];
@@ -14927,8 +14927,8 @@ static const NSInteger kPasscodePreviewRow = 1;
     BOOL applied = settings_tweak_is_applied(kSettingsFloatingDockEnabled);
     return @[
         @{ @"kind": @"info",
-           @"title": applied ? @"Dock: iPad" : @"Dock: Stock",
-           @"subtitle": @"Turn it off in the Installer to bring the stock Dock back; a respring always does." },
+           @"title": applied ? @"Dock：iPad 式" : @"Dock：原生",
+           @"subtitle": @"在「安装器」中关闭即可恢复原生 Dock；respring 也始终会恢复。" },
     ];
 }
 
@@ -14937,31 +14937,31 @@ static const NSInteger kPasscodePreviewRow = 1;
     return @[
         @{ @"kind": @"info",
            @"title": @"FastLockX Lite",
-           @"subtitle": @"Always On keeps the Face ID retry pulse and unlock request armed in SpringBoard until Disable, Clean Up, or respring." },
+           @"subtitle": @"「始终开启」会让 Face ID 重试脉冲与解锁请求在 SpringBoard 中保持就绪，直到点「停用」「清理」或 respring。" },
         @{ @"kind": @"button",
-           @"title": @"Enable Always On",
-           @"subtitle": @"Keeps pickup-to-unlock armed after Cyanide closes.",
+           @"title": @"启用始终开启",
+           @"subtitle": @"在 Cyanide 关闭后仍保持「拿起即解锁」就绪。",
            @"action": @"fastlockx-enable" },
         @{ @"kind": @"button",
            @"title": @"Disable",
-           @"subtitle": @"Stops the SpringBoard timers.",
+           @"subtitle": @"停止 SpringBoard 计时器。",
            @"action": @"fastlockx-disable" },
         @{ @"kind": @"number",
            @"key": kSettingsFastLockXLiteRetryInterval,
-           @"title": @"Retry interval",
-           @"subtitle": @"Always On uses this as the off→on pulse gap. Default is 0.3s.",
+           @"title": @"重试间隔",
+           @"subtitle": @"「始终开启」以此作为「关闭→开启」脉冲间隔。默认 0.3 秒。",
            @"min": @0.1, @"max": @2.0, @"step": @0.1, @"unit": @"s", @"precision": @1, @"default": @0.3 },
         @{ @"key": kSettingsFastLockXLiteBlockMusic,
-           @"title": @"Block if media is active — In progress",
-           @"subtitle": @"In progress — not wired yet. This blocker is disabled for now.",
+           @"title": @"媒体活跃时拦截 —— 开发中",
+           @"subtitle": @"开发中——尚未接通。该拦截器暂时禁用。",
            @"disabled": @YES },
         @{ @"key": kSettingsFastLockXLiteBlockFlashlight,
-           @"title": @"Block if flashlight is on — In progress",
-           @"subtitle": @"In progress — not wired yet. This blocker is disabled for now.",
+           @"title": @"手电筒开启时拦截 —— 开发中",
+           @"subtitle": @"开发中——尚未接通。该拦截器暂时禁用。",
            @"disabled": @YES },
         @{ @"key": kSettingsFastLockXLiteBlockLowPower,
-           @"title": @"Block in Low Power Mode — In progress",
-           @"subtitle": @"In progress — not wired yet. This blocker is disabled for now.",
+           @"title": @"低电量模式下拦截 —— 开发中",
+           @"subtitle": @"开发中——尚未接通。该拦截器暂时禁用。",
            @"disabled": @YES },
     ];
 }
@@ -14971,41 +14971,41 @@ static const NSInteger kPasscodePreviewRow = 1;
     NSUserDefaults *d = NSUserDefaults.standardUserDefaults;
     NSMutableArray *out = [NSMutableArray array];
     if (section == SectionSBC) {
-        [out addObject:@{@"title": @"Dock icons",       @"value": [@([d integerForKey:kSettingsSBCDockIcons])  stringValue]}];
-        [out addObject:@{@"title": @"Auto-add Dock app", @"value": [d boolForKey:kSettingsSBCAutoDockApp] ? @"On" : @"Off"}];
+        [out addObject:@{@"title": @"Dock 图标",       @"value": [@([d integerForKey:kSettingsSBCDockIcons])  stringValue]}];
+        [out addObject:@{@"title": @"自动添加 Dock App", @"value": [d boolForKey:kSettingsSBCAutoDockApp] ? @"On" : @"Off"}];
         if ([d boolForKey:kSettingsSBCAutoDockApp]) {
-            [out addObject:@{@"title": @"Selected Dock app",
+            [out addObject:@{@"title": @"已选 Dock App",
                              @"value": [d stringForKey:kSettingsSBCDockAppBundleID] ?: kSBCDefaultDockAppBundleID}];
         }
-        [out addObject:@{@"title": @"Home columns",     @"value": [@([d integerForKey:kSettingsSBCCols])        stringValue]}];
-        [out addObject:@{@"title": @"Home rows",        @"value": [@([d integerForKey:kSettingsSBCRows])        stringValue]}];
-        [out addObject:@{@"title": @"Hide icon labels", @"value": [d boolForKey:kSettingsSBCHideLabels] ? @"On" : @"Off"}];
-        [out addObject:@{@"title": @"Arrange pages", @"value": [d boolForKey:kSettingsSBCArrangePages] ? @"On" : @"Off"}];
+        [out addObject:@{@"title": @"主屏幕列数",     @"value": [@([d integerForKey:kSettingsSBCCols])        stringValue]}];
+        [out addObject:@{@"title": @"主屏幕行数",        @"value": [@([d integerForKey:kSettingsSBCRows])        stringValue]}];
+        [out addObject:@{@"title": @"隐藏图标名称", @"value": [d boolForKey:kSettingsSBCHideLabels] ? @"On" : @"Off"}];
+        [out addObject:@{@"title": @"排列页面", @"value": [d boolForKey:kSettingsSBCArrangePages] ? @"On" : @"Off"}];
         if ([d boolForKey:kSettingsSBCArrangePages]) {
-            [out addObject:@{@"title": @"Page icon counts",
+            [out addObject:@{@"title": @"每页图标数",
                              @"value": [NSString stringWithFormat:@"%ld / %ld",
                                         (long)[d integerForKey:kSettingsSBCFirstPageIcons],
                                         (long)[d integerForKey:kSettingsSBCOtherPageIcons]]}];
         }
     } else if (section == SectionLayoutExtras) {
-        [out addObject:@{@"title": @"Home extra L/R",   @"value": [NSString stringWithFormat:@"%ld/%ld",
+        [out addObject:@{@"title": @"主屏左右扩展",   @"value": [NSString stringWithFormat:@"%ld/%ld",
                                                                     (long)[d integerForKey:kSettingsLayoutHomeExtraLeft],
                                                                     (long)[d integerForKey:kSettingsLayoutHomeExtraRight]]}];
-        [out addObject:@{@"title": @"Home extra T/B",   @"value": [NSString stringWithFormat:@"%ld/%ld",
+        [out addObject:@{@"title": @"主屏上下扩展",   @"value": [NSString stringWithFormat:@"%ld/%ld",
                                                                     (long)[d integerForKey:kSettingsLayoutHomeExtraTop],
                                                                     (long)[d integerForKey:kSettingsLayoutHomeExtraBottom]]}];
-        [out addObject:@{@"title": @"Dock extra L/R",   @"value": [NSString stringWithFormat:@"%ld/%ld",
+        [out addObject:@{@"title": @"Dock 左右扩展",   @"value": [NSString stringWithFormat:@"%ld/%ld",
                                                                     (long)[d integerForKey:kSettingsLayoutDockExtraLeft],
                                                                     (long)[d integerForKey:kSettingsLayoutDockExtraRight]]}];
-        [out addObject:@{@"title": @"Home scale %",     @"value": [@([d integerForKey:kSettingsLayoutHomeScalePct]) stringValue]}];
-        [out addObject:@{@"title": @"Dock scale %",     @"value": [@([d integerForKey:kSettingsLayoutDockScalePct]) stringValue]}];
+        [out addObject:@{@"title": @"主屏缩放 %",     @"value": [@([d integerForKey:kSettingsLayoutHomeScalePct]) stringValue]}];
+        [out addObject:@{@"title": @"Dock 缩放 %",     @"value": [@([d integerForKey:kSettingsLayoutDockScalePct]) stringValue]}];
     } else if (section == SectionStatBar) {
         [out addObject:@{@"title": @"Celsius",             @"value": [d boolForKey:kSettingsStatBarCelsius]    ? @"On" : @"Off"}];
-        [out addObject:@{@"title": @"Show CPU %",          @"value": [d boolForKey:kSettingsStatBarShowCPU]    ? @"On" : @"Off"}];
-        [out addObject:@{@"title": @"Show CPU/RAM labels", @"value": [d boolForKey:kSettingsStatBarShowLabels] ? @"On" : @"Off"}];
-        [out addObject:@{@"title": @"Show net speed",      @"value": [d boolForKey:kSettingsStatBarShowNet]    ? @"On" : @"Off"}];
-        [out addObject:@{@"title": @"Network speed only",  @"value": [d boolForKey:kSettingsStatBarNetworkOnly] ? @"On" : @"Off"}];
-        [out addObject:@{@"title": @"Refresh rate",        @"value": [NSString stringWithFormat:@"%lds",
+        [out addObject:@{@"title": @"显示 CPU 占用",          @"value": [d boolForKey:kSettingsStatBarShowCPU]    ? @"On" : @"Off"}];
+        [out addObject:@{@"title": @"显示 CPU/内存标签", @"value": [d boolForKey:kSettingsStatBarShowLabels] ? @"On" : @"Off"}];
+        [out addObject:@{@"title": @"显示网速",      @"value": [d boolForKey:kSettingsStatBarShowNet]    ? @"On" : @"Off"}];
+        [out addObject:@{@"title": @"仅网速",  @"value": [d boolForKey:kSettingsStatBarNetworkOnly] ? @"On" : @"Off"}];
+        [out addObject:@{@"title": @"刷新频率",        @"value": [NSString stringWithFormat:@"%lds",
                                                                        (long)[d integerForKey:kSettingsStatBarRefreshRateSec]]}];
     } else if (section == SectionNSBar) {
         [out addObject:@{@"title": @"Position", @"value": settings_nsbar_position_name([d integerForKey:kSettingsNSBarPosition])}];
@@ -15016,7 +15016,7 @@ static const NSInteger kPasscodePreviewRow = 1;
                              @"value": settings_nicebar_kind_name(kind)}];
         }
     } else if (section == SectionAppSwitcherGrid) {
-        [out addObject:@{@"title": @"Switcher style",
+        [out addObject:@{@"title": @"切换器样式",
                          @"value": settings_tweak_is_applied(kSettingsAppSwitcherGridEnabled) ? @"Grid" : @"Stock"}];
     } else if (section == SectionFloatingDock) {
         [out addObject:@{@"title": @"Dock",
@@ -15024,12 +15024,12 @@ static const NSInteger kPasscodePreviewRow = 1;
     } else if (section == SectionFastLockXLite) {
         BOOL alwaysOnIntent = [d boolForKey:kSettingsFastLockXLiteEnabled];
         BOOL alwaysOnApplied = settings_tweak_is_applied(kSettingsFastLockXLiteEnabled);
-        [out addObject:@{@"title": @"Always On",
+        [out addObject:@{@"title": @"始终开启",
                          @"value": alwaysOnApplied ? @"Enabled" : (alwaysOnIntent ? @"Queued" : @"Off")}];
-        [out addObject:@{@"title": @"Retry interval",
+        [out addObject:@{@"title": @"重试间隔",
                          @"value": [NSString stringWithFormat:@"%.1fs", settings_fastlockx_lite_retry_interval(d)]}];
         [out addObject:@{@"title": @"Blockers",
-                         @"value": @"In progress"}];
+                         @"value": @"开发中"}];
     } else if (section == SectionPowercuff) {
         NSString *lvl = [d stringForKey:kSettingsPowercuffLevel] ?: @"nominal";
         [out addObject:@{@"title": @"Level", @"value": lvl}];
@@ -15040,10 +15040,10 @@ static const NSInteger kPasscodePreviewRow = 1;
         [out addObject:@{@"title": @"Duration",
                          @"value": [NSString stringWithFormat:@"%llds", settings_lock_duration_value(d)]}];
     } else if (section == SectionNanoRegistry) {
-        [out addObject:@{@"title": @"watchOS limit",      @"value": [@([d integerForKey:kSettingsNanoMaxPairing])       stringValue]}];
-        [out addObject:@{@"title": @"Setup floor",        @"value": [@([d integerForKey:kSettingsNanoMinPairing])       stringValue]}];
+        [out addObject:@{@"title": @"watchOS 上限",      @"value": [@([d integerForKey:kSettingsNanoMaxPairing])       stringValue]}];
+        [out addObject:@{@"title": @"配对下限",        @"value": [@([d integerForKey:kSettingsNanoMinPairing])       stringValue]}];
         [out addObject:@{@"title": @"Legacy chip floor",  @"value": [@([d integerForKey:kSettingsNanoMinPairingChipID]) stringValue]}];
-        [out addObject:@{@"title": @"Multi-watch switch", @"value": [@([d integerForKey:kSettingsNanoMinQuickSwitch])   stringValue]}];
+        [out addObject:@{@"title": @"多手表切换", @"value": [@([d integerForKey:kSettingsNanoMinQuickSwitch])   stringValue]}];
     } else if (section == SectionThemer) {
         [out addObject:@{@"title": @"Theme", @"value": settings_themer_selected_theme_display_name()}];
     } else if (section == SectionSnowBoardLite) {
@@ -15051,7 +15051,7 @@ static const NSInteger kPasscodePreviewRow = 1;
     } else if (section == SectionPasscodeTheme) {
         NSDictionary *passcodeTheme = settings_passcode_selected_theme();
         [out addObject:@{@"title": @"Style",
-                         @"value": passcodeTheme ? settings_passcode_selected_theme_display_name() : @"None selected"}];
+                         @"value": passcodeTheme ? settings_passcode_selected_theme_display_name() : @"尚未选择"}];
         if (passcodeTheme) {
             [out addObject:@{@"title": @"样式包含的数字",
                              @"value": [NSString stringWithFormat:@"%lu/10",
@@ -15127,13 +15127,13 @@ static const NSInteger kPasscodePreviewRow = 1;
         @{ @"title": @"Gravity Lite",       @"icon": @"arrow.down.circle.fill",              @"color": [UIColor systemGreenColor],  @"section": @(SectionGravityLite) },
         @{ @"title": @"App Switcher Grid",  @"icon": @"square.grid.2x2.fill",                @"color": [UIColor systemOrangeColor], @"section": @(SectionAppSwitcherGrid) },
         @{ @"title": @"iPad Dock",          @"icon": @"dock.rectangle",                      @"color": [UIColor systemBlueColor],   @"section": @(SectionFloatingDock) },
-        @{ @"title": @"Location Simulator", @"icon": @"location.fill",                       @"color": [UIColor systemGreenColor],  @"section": @(SectionLocationSim) },
+        @{ @"title": @"位置模拟器", @"icon": @"location.fill",                       @"color": [UIColor systemGreenColor],  @"section": @(SectionLocationSim) },
         @{ @"title": @"SnowBoard Lite",     @"icon": @"square.stack.3d.up.fill",             @"color": [UIColor systemCyanColor],   @"section": @(SectionSnowBoardLite) },
         @{ @"title": @"LiveWP",             @"icon": @"play.rectangle.fill",                 @"color": [UIColor systemPurpleColor], @"section": @(SectionLiveWP) },
         @{ @"title": @"QuickLoader",        @"icon": @"bolt.fill",                           @"color": [UIColor systemYellowColor], @"section": @(SectionQuickLoader) },
         @{ @"title": @"RepoTweaks",         @"icon": @"tray.and.arrow.down.fill",            @"color": [UIColor systemBlueColor],   @"section": @(SectionRepoTweaks) },
         @{ @"title": @"Powercuff",          @"icon": @"bolt.slash.fill",                     @"color": [UIColor systemOrangeColor], @"section": @(SectionPowercuff) },
-        @{ @"title": @"Drag Coefficient",   @"icon": @"dial.medium.fill",                    @"color": [UIColor systemIndigoColor], @"section": @(SectionDragCoefficient) },
+        @{ @"title": @"拖拽系数",   @"icon": @"dial.medium.fill",                    @"color": [UIColor systemIndigoColor], @"section": @(SectionDragCoefficient) },
         @{ @"title": @"Home Layout Extras", @"icon": @"square.dashed.inset.filled",          @"color": [UIColor systemPurpleColor], @"section": @(SectionLayoutExtras) },
         @{ @"title": @"锁屏时长", @"icon": @"lock.rectangle.on.rectangle",       @"color": [UIColor systemIndigoColor], @"section": @(SectionLockScreenDuration) },
         @{ @"title": @"密码样式",     @"icon": @"circle.grid.3x3.fill",                @"color": [UIColor systemPinkColor],   @"section": @(SectionPasscodeTheme) },
@@ -15298,101 +15298,101 @@ UIViewController *settings_make_daemons_viewer(void)
     }
     NSInteger s = self.underlyingSection;
     if (s == SectionLaunch) {
-        return @"kexploit_opa334 runs once per app lifetime. Keep Alive applies only while Cyanide is minimized; an App Switcher kill still terminates the process.";
+        return @"kexploit_opa334 每次应用生命周期内只运行一次。保活仅在 Cyanide 最小化期间生效；从应用切换器杀掉仍会终止该进程。";
     }
     if (s == SectionSBC) {
-        return [NSString stringWithFormat:@"Stock iOS defaults: dock %ld, columns %ld, rows %ld. The optional Dock app move runs after Dock expansion and before page arrangement; the Watusi WhatsApp duplicate is the initial selection. Page defaults are %ld icons on page one and %ld on later pages.",
+        return [NSString stringWithFormat:@"原生 iOS 默认值：Dock %ld、列 %ld、行 %ld。可选的 Dock App 移动在 Dock 扩张之后、页面排列之前进行；初始选择为 Watusi 版 WhatsApp 副本。页面默认值为首页 %ld 个图标，后续页每页 %ld 个。",
                 (long)kSBCDefaultDockIcons, (long)kSBCDefaultCols, (long)kSBCDefaultRows,
                 (long)kSBCDefaultFirstPageIcons, (long)kSBCDefaultOtherPageIcons];
     }
     if (s == SectionDarkSwordTweaks) {
-        return @"Imported from DarkSword-Tweaks. These are SpringBoard memory patches: one you turn off stays active until the next respring.";
+        return @"移植自 DarkSword-Tweaks。这些是 SpringBoard 内存补丁：关闭某项后，它会一直生效直到下次 respring。";
     }
     if (s == SectionDragCoefficient) {
-        return @"Overrides _UIAnimationDragCoefficient in SpringBoard. Type the raw coefficient: 1.00 = stock, 0.50 = 2× faster, 0.25 = 4× faster, minimum 0.01. Imported from kolbicz/DarkSword-Tweaks.";
+        return @"覆写 SpringBoard 中的 _UIAnimationDragCoefficient。请输入原始系数：1.00 = 原生，0.50 = 快 2 倍，0.25 = 快 4 倍，最小值 0.01。移植自 kolbicz/DarkSword-Tweaks。";
     }
     if (s == SectionLockScreenDuration) {
-        return @"Extends the lock screen's own dim-then-sleep timer (separate from Settings > Auto-Lock) so you get more time to read notifications. Type the exact seconds, then tap Apply — it writes the SpringBoard preference SBMinimumLockscreenIdleTime (a global floor) and offers a respring to apply it. Like OTA Updates it is a manual action; the value persists across respring and reboot. Tap Remove to restore stock. Run the chain at least once first so kernel access is active.";
+        return @"在锁屏自身的「变暗后休眠」计时（独立于「设置 > 自动锁定」）基础上延长，让你有更多时间阅读通知。输入精确的秒数后点「应用」——它会写入 SpringBoard 偏好 SBMinimumLockscreenIdleTime（一个全局下限）并提供 respring 以应用。与 OTA 更新一样，这是手动操作；数值在 respring 与重启后都会保留。点「移除」可恢复原生。请先至少运行一次漏洞利用链路，以激活内核访问权限。";
     }
     if (s == SectionLayoutExtras) {
         NSInteger major = [[NSProcessInfo processInfo] operatingSystemVersion].majorVersion;
         if (major >= 26) {
             return [NSString stringWithFormat:
-                @"Adds extra padding and per-icon scaling on top of the stock home/dock layout.\n\n"
-                @"Running on iOS %ld: the upstream config-mutation path doesn't exist (AMUIInfographIconListLayout has no mutable configuration), so the iOS 26 path instead walks the live SBIconListView/SBIconView hierarchy and adjusts frames + iconImageInfo directly. One-shot at Run; iOS 26 may re-fit on a subsequent layout pass (rotation, page swipe).",
+                @"在原生主屏 / Dock 布局之上增加额外留白并按图标缩放。\n\n"
+                @"在 iOS %ld 上运行：上游的配置变更路径不存在（AMUIInfographIconListLayout 没有可变配置），因此 iOS 26 路径改为遍历实时的 SBIconListView/SBIconView 层级，直接调整 frame 与 iconImageInfo。在「运行」时执行一次；iOS 26 可能在随后的布局过程（旋转、翻页）中重新适配。",
                 (long)major];
         }
-        return @"Adds extra padding and per-icon scaling on top of the stock home/dock layout. Defaults are zero padding and 100% scale (no change). Toggle Enable on and hit Run to apply; values aren't persisted across respring.";
+        return @"在原生主屏 / Dock 布局之上增加额外留白并按图标缩放。默认留白为 0、缩放 100%（即不变）。打开「启用」并点「运行」即可应用；数值在 respring 后不保留。";
     }
     if (s == SectionSupervision) {
-        return @"Marks the device as supervised, with \"" @SUPERVISION_ORGANIZATION_NAME @"\" as the organization, so "
-               @"configuration profiles with supervised-only restrictions can be installed. Only the flag "
-               @"is set: no device management is involved and nothing is restricted by itself. "
-               @"Activate and Deactivate are written right away, take effect without a restart (reopen "
-               @"Settings) and persist across reboots. Deactivate puts the previous values back; a device supervised by a "
-               @"real organization is left alone. Uses saved kernel access; a full exploit run is only "
-               @"offered when there is none.";
+        return @"将设备标记为受监管，组织名称为 \"" @SUPERVISION_ORGANIZATION_NAME @"，从而  "
+               @"可以安装仅限受监管设备的配置描述文件。仅设置了该标志 "
+               @"：不涉及任何设备管理，也不会单独限制任何内容。 "
+               @"「启用监管」与「关闭监管」会立即写入，无需重启即可生效（重新打开  "
+               @"「设置」），并在重启后保留。关闭监管会还原此前数值；由真实 "
+               @"组织监管的设备则不受影响。复用已保存的内核访问权限；仅在 "
+               @"没有时才会提供完整的漏洞利用运行。";
     }
     if (s == SectionOTA) {
-        return @"Blocks or restores the launchd jobs that run over-the-air system updates. "
-               @"Tap Disable OTA Updates to block them or Enable OTA Updates to restore them — "
-               @"like Lock Screen Duration these are manual actions, written immediately with no "
-               @"Run or Apply step, and the state persists across reboots. Read Current Status "
-               @"reports whether the update daemons are currently blocked. "
-               @"Run the chain at least once first so kernel access is active. "
-               @"Edits launchd disabled.plist; a reboot or userspace restart is required for "
-               @"changes to take effect.";
+        return @"拦截或恢复运行 OTA 系统更新的 launchd 任务。 "
+               @"点「禁用 OTA 更新」可拦截它们，点「启用 OTA 更新」则可恢复—— "
+               @"与锁屏时长一样，这些都是手动操作，立即写入，无需 "
+               @"「运行」或「应用」步骤，状态在重启后保留。「读取当前状态」 "
+               @"会报告更新守护进程当前是否被拦截。 "
+               @"请先至少运行一次漏洞利用链路，以激活内核访问权限。 "
+               @"会编辑 launchd 的 disabled.plist；要使改动生效，需要 "
+               @"重启或用户态重启。";
     }
     if (s == SectionNanoRegistry) {
-        return @"Changes the watchOS pairing range saved on this iPhone.\n\n"
-               @"Most people should tap Use watchOS Range 99/23/10/6, then Apply Pairing Override. "
-               @"These are pairing protocol generations, not Apple Watch model numbers. "
-               @"99 raises the watchOS pairing ceiling. 23 keeps the generation-23 setup protocol accepted. "
-               @"10 and 6 leave the legacy chip and multi-watch floors at their normal values.\n\n"
-               @"Apple Watch Ultra 3 cannot pair on iOS versions below 26 at this time.\n\n"
-               @"Respring or reboot after applying before you try to pair.";
+        return @"更改本机保存的 watchOS 配对区间。\n\n"
+               @"大多数人应点「使用 watchOS 区间 99/23/10/6」，再点「应用配对覆盖」。 "
+               @"这些是配对协议的代际，并非 Apple Watch 型号编号。 "
+               @"99 抬高 watchOS 配对上限。23 使第 23 代设置协议得以接受。 "
+               @"10 与 6 则让旧芯片下限与多手表下限保持正常值。\n\n"
+               @"目前 Apple Watch Ultra 3 无法在低于 26 的 iOS 版本上配对。\n\n"
+               @"应用后请先 respring 或重启，再尝试配对。";
     }
     if (s == SectionPowercuff) {
-        return @"Underclocks the CPU/GPU via thermalmonitord by simulating thermal pressure. Nominal is the daily-use default. Light, Moderate, and Heavy intentionally underclock the CPU more and can make the device feel laggy, especially on older hardware.";
+        return @"通过模拟热压力，经 thermalmonitord 给 CPU/GPU 降频。Nominal 为日常使用默认值。Light、Moderate、Heavy 会刻意进一步降频，可能让设备感觉卡顿，在老设备上尤甚。";
     }
     if (s == SectionStatBar) {
-        return @"Live overlay. When enabled, StatBar keeps a SpringBoard RemoteCall session open. Refresh rate applies when Cyanide is minimized but the screen is still awake; StatBar pauses while the screen is locked or asleep.";
+        return @"实时悬浮窗。开启后，StatBar 会保持一个 SpringBoard RemoteCall 会话。刷新频率在 Cyanide 最小化但屏幕仍亮时生效；锁屏或休眠时 StatBar 暂停。";
     }
     if (s == SectionNSBar) {
-        return @"Network speed overlay ported from d1y/cyanide-ios. When enabled, NSBar keeps a SpringBoard RemoteCall session open and refreshes roughly once per second.";
+        return @"网速悬浮窗，移植自 d1y/cyanide-ios。开启后，NSBar 会保持一个 SpringBoard RemoteCall 会话，约每秒刷新一次。";
     }
     if (s == SectionNiceBarLite) {
-        return @"Tap a box to choose what it shows. NiceBar Lite places plain text in the configured status-bar slots around the notch or Dynamic Island, including the bottom center position. Weather is fetched from your current location through Open-Meteo and follows the Celsius toggle.";
+        return @"点选方块以选择其显示内容。NiceBar Lite 会把纯文本放进配置的状态栏槽位，环绕刘海或灵动岛，包括底部居中位置。天气通过 Open-Meteo 依据你当前位置获取，并跟随摄氏度开关。";
     }
     if (s == SectionAxonLite) {
-        return @"RemoteCall-only Axon port. It uses a live app-side loop rather than substrate hooks, so it lasts for the active Cyanide SpringBoard session.";
+        return @"仅依赖 RemoteCall 的 Axon 移植版。它使用应用侧实时循环而非 substrate 钩子，因此在当前 Cyanide SpringBoard 会话期间持续有效。";
     }
     if (s == SectionAppSwitcherGrid) {
-        return @"Runtime patch. It changes SpringBoard's app switcher style in memory, writes no system files, and a respring restores stock. Unsupported builds may glitch the app switcher or crash SpringBoard.";
+        return @"运行期补丁。它在内存中更改 SpringBoard 的应用切换器样式，不写入系统文件，respring 即可恢复原生。不受支持的构建可能导致应用切换器异常或使 SpringBoard 崩溃。";
     }
     if (s == SectionFloatingDock) {
-        return @"SpringBoard's own iPad-style Dock with the App Library button, created in memory for the current SpringBoard session. Writes no system files; it turns on SpringBoard's \"App Library in Dock\" preference while active and off again when you turn the tweak off. Works together with Disable App Library: the App Library is then only in the Dock.\n\nPorted from hxhlb/cyanide (Banana).";
+        return @"SpringBoard 自带的 iPad 风格 Dock（含 App 资源库按钮），为当前 SpringBoard 会话在内存中创建。不写入系统文件；启用时打开 SpringBoard 的 \"App Library in Dock\" 偏好，关闭插件时再关闭。可与「禁用 App 资源库」配合使用：此时 App 资源库仅出现在 Dock 中。\n\n移植自 hxhlb/cyanide（Banana）。";
     }
     if (s == SectionGravityLite) {
-        return @"RemoteCall-only core port of Julio Verne's Gravity. Activate applies UIDynamicAnimator gravity, collision, bounce, friction, optional dock physics, and accelerometer steering to SpringBoard icon snapshots right away; there is no Installer package. It can restore the icon layout or fire a manual explosion pulse while the SpringBoard session is active.\n\nNot included in this core port: Activator/Home-button hooks, drag gestures, automatic shake effects, and preference-daemon notifications.";
+        return @"仅依赖 RemoteCall 的 Julio Verne 的 Gravity 核心移植版。激活后即刻把 UIDynamicAnimator 的重力、碰撞、弹跳、摩擦、可选 Dock 物理与加速度计转向应用到 SpringBoard 图标快照上；它不是一个安装器软件包。在 SpringBoard 会话活跃期间，可恢复图标布局或手动触发爆炸脉冲。\n\n本核心移植版未包含：Activator/Home 键钩子、拖拽手势、自动抖动效果，以及偏好守护通知。";
     }
     if (s == SectionLocationSim) {
-        return @"Beta CoreLocation simulation. Requires Apple Maps installed and set up — Maps is the RemoteCall host process that drives the simulation.\n\nThis is a manual tool, not an installable package. Use Simulate Current Target to start; use Restore Real Location to stop simulation and return CoreLocation to the device's real providers. Each run opens the activity log and marks completion when the request returns.\n\nNot all apps respect the simulated location. Apps that use their own location validation or additional signals may ignore it.\n\nCredits: kolbicz for the RemoteCall/CLSimulationManager GPS spoofer prototype, and ezzuldinSt's LSpoof for picker/route references.\n\nWarning: this can affect more than maps. Location-tied system behavior, including time zone and date/time handling, may behave unexpectedly. Only use this if you know what you're doing.";
+        return @"Beta 版 CoreLocation 模拟。需要已安装并配置好的 Apple 地图——地图是驱动模拟的 RemoteCall 宿主进程。\n\n这是一个手动工具，并非可安装软件包。用「模拟当前目标」开始；用「恢复真实位置」停止模拟，让 CoreLocation 回到设备真实的定位来源。每次运行都会打开活动日志，并在请求返回时标记完成。\n\n并非所有 App 都遵循模拟位置。使用自身定位校验或附加信号的 App 可能会忽略它。\n\n鸣谢：kolbicz 提供 RemoteCall/CLSimulationManager 的 GPS 欺骗原型，ezzuldinSt 的 LSpoof 提供选择器/路线参考。\n\n警告：这可能影响地图之外的内容。与位置绑定的系统行为，包括时区与日期/时间处理，都可能表现异常。请仅在你知道自己在做什么时使用。";
     }
     if (s == SectionThemer) {
-        return @"Legacy icon theme engine settings.\n\n"
-               @"Pick a theme before running the icon theme engine.\n\n"
-               @"Compatibility: when Dynamic Stage Lite is enabled, live icon repair is paused to avoid SpringBoard resprings. The selected theme still applies once.\n\n"
-               @"Custom themes can be a folder of PNG files named by bundle ID, such as com.apple.mobilesafari.png, or a binary plist mapping bundle IDs to PNG data. Import copies the theme into Cyanide's Documents/Themes folder. Theme Format Guide includes examples and plist exports.";
+        return @"旧版图标主题引擎设置。\n\n"
+               @"运行图标主题引擎前请先选择一个主题。\n\n"
+               @"兼容性：启用 Dynamic Stage Lite 时，实时图标修复会暂停，以避免 SpringBoard respring。所选主题仍会应用一次。\n\n"
+               @"自定义主题可以是一个按套装 ID 命名的 PNG 文件文件夹（如 com.apple.mobilesafari.png），也可以是一个把套装 ID 映射到 PNG 数据的二进制 plist。导入会把主题复制到 Cyanide 的 Documents/Themes 文件夹。「主题格式指南」包含示例与 plist 导出。";
     }
     if (s == SectionSnowBoardLite) {
-        return @"SnowBoard/IconBundles importer ported from d1y/cyanide-ios. Folder imports are copied into Cyanide's Documents/SnowBoardLite library and applied through the existing icon replacement pipeline.\n\nThe import copies theme assets into Cyanide's local storage so the original theme in Files is not changed.\n\nCompatibility: SnowBoard Lite keeps live icon repair active and reuses the SpringBoard RemoteCall channel between repair ticks. Re-run it after a respring if icons reset.";
+        return @"SnowBoard/IconBundles 导入器，移植自 d1y/cyanide-ios。文件夹导入会被复制到 Cyanide 的 Documents/SnowBoardLite 资源库，并通过既有的图标替换管线应用。\n\n导入会把主题资源复制到 Cyanide 的本地存储，因此「文件」中的原始主题不会被改动。\n\n兼容性：SnowBoard Lite 保持实时图标修复活跃，并在修复间隔复用 SpringBoard RemoteCall 通道。若图标在 respring 后重置，请重新运行。";
     }
     if (s == SectionLiveWP) {
-        return @"Video wallpaper ported from d1y/cyanide-ios. Select an MP4, MOV, or M4V; Cyanide copies it into Documents/LiveWP and plays it in SpringBoard while the RemoteCall session stays alive.";
+        return @"视频壁纸，移植自 d1y/cyanide-ios。选择 MP4、MOV 或 M4V；Cyanide 会把它复制到 Documents/LiveWP，并在 RemoteCall 会话存活期间于 SpringBoard 中播放。";
     }
     if (s == SectionPasscodeTheme) {
-        return @"Replaces the Lock Screen keypad artwork with a style you import here. Every write is verified, and each keypad original is saved before the first change so Restore Original Digits can put the stock art back. Run the chain at least once first so kernel access is active. Lock and unlock (or respring) to see the change; touch and hold Import Originals to erase the saved originals.";
+        return @"用你在此导入的样式替换锁屏键盘 artwork。每次写入都会校验，且每次键盘原始数据在首次改动前都会被保存，以便「还原原始数字」能把原生图形写回。请先至少运行一次漏洞利用链路，以激活内核访问权限。锁定再解锁（或 respring）即可看到变化；长按「导入原始数据」可清除已保存的原始数据。";
     }
     return nil;
 }
@@ -17001,7 +17001,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     [[NSUserDefaults standardUserDefaults] setObject:finalScript forKey:@"QuickLoaderSavedJS"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
-    NSLog(@"[Cyanide] Dynamic JS Tweak Saved Successfully!");
+    NSLog(@"[Cyanide] 动态 JS 插件保存成功！");
 }
 
 
@@ -18074,7 +18074,7 @@ void cyanide_present_contact(UIViewController *host)
         note.font = [UIFont systemFontOfSize:12.0];
         note.textColor = UIColor.secondaryLabelColor;
         note.text = settings_device_is_a18_above()
-            ? @"A18/M4 only. pe_v3 is the default: it stages 2 GB, hunts one mapping, stops "
+            ? @"仅 A18/M4。pe_v3 为默认：它分阶段投入 2 GB，搜寻一个映射后停止 "
                "after a bounded number of unproven reads, and retries on already-proven pages "
                "instead of re-hunting — the hunt is where every aperture panic has occurred. "
                "pe_v1 is kept as an explicit compatibility/debug option; it now has a bounded "
@@ -18127,7 +18127,7 @@ void cyanide_present_contact(UIViewController *host)
         note.numberOfLines = 0;
         note.font = [UIFont systemFontOfSize:12.0];
         note.textColor = a18shapeEnabled ? UIColor.secondaryLabelColor : UIColor.tertiaryLabelColor;
-        note.text = @"A18/M4 only. Pins physical memory so the page after each search mapping is more "
+        note.text = @"仅 A18/M4。固定物理内存，使每次搜索映射之后的页更 "
                      "often ours and valid, lowering the aperture-panic rate. Off uses standard geometry "
                      "(no pin). Dynamic sizes the pin to live jetsam headroom (75%), adapting per device "
                      "to avoid the jetsam kill a fixed size can cause. 3 GB is the fixed 1.5.5 size. "
@@ -18175,7 +18175,7 @@ void cyanide_present_contact(UIViewController *host)
         note.numberOfLines = 0;
         note.font = [UIFont systemFontOfSize:12.0];
         note.textColor = UIColor.secondaryLabelColor;
-        note.text = @"Cyanide waits after each remote call so SpringBoard can settle. Compatible "
+        note.text = @"Cyanide 在每次远程调用后等待，以便 SpringBoard 稳定。兼容 "
                      "waits 50 ms, Fast 5 ms, Fastest only after calls that leave work running. "
                      "Most of a tweak's apply time is this wait — Double Tap to Lock spends about "
                      "13 waits per Home Screen page. Drop to Fast first; if tweaks still apply "
@@ -18503,7 +18503,7 @@ void cyanide_present_contact(UIViewController *host)
     if (darkPatchStillLive) {
         log_user("[DST] %s stays active until SpringBoard restarts.\n", key.UTF8String);
         [self presentRespringPromptWithTitle:@"重启 SpringBoard 以关闭它？"
-                                     message:[NSString stringWithFormat:@"%@ is still active in SpringBoard. "
+                                     message:[NSString stringWithFormat:@"%@ 仍在 SpringBoard 中运行。 "
                                               @"它会一直生效，直到重启 SpringBoard。", row[@"title"] ?: @"此插件"]];
     }
     settings_note_package_configuration_changed(key);
@@ -19168,7 +19168,7 @@ void cyanide_present_contact(UIViewController *host)
         }
         [strongSelf setLocationSimTargetLatitude:latitude
                                        longitude:longitude
-                                            name:@"Exact coordinates"
+                                            name:@"精确坐标"
                                    applyIfActive:!simulateNow];
         if (simulateNow) {
             [strongSelf runLocationSimApply:YES];
