@@ -118,7 +118,7 @@ NSArray<CYDaemonGroup *> *daemon_catalog_groups(void)
                   @"Wallet passes and Apple Pay stop working.",
                   @"Apple Pay, transit cards, car keys and all Wallet passes stop working.",
                   @[ @"com.apple.passd" ]),
-            advanced(@"location", @"Location Services", @"location",
+            advanced(@"location", @"定位服务", @"location",
                   @"GPS and everything that needs your location stops working.",
                   @"Maps, Find My, Weather, location-based reminders and Cyanide's Location Services toggle stop working.",
                   @[ @"com.apple.locationd" ]),

@@ -234,7 +234,7 @@ static CYLocationRequestCompletion g_scene_intent_completion = nil;
     if (linkURL && ![self acceptLinkURL:linkURL]) linkURL = nil;
     if (linkURL) {
         [self setPendingURL:linkURL completion:nil coldLaunched:scene_request_launched_app()];
-        if (g_scene_intent_completion) g_scene_intent_completion(NO, @"Another Location Services request came first.");
+        if (g_scene_intent_completion) g_scene_intent_completion(NO, @"已有另一个定位服务请求先到达。");
     } else {
         // (No request yet when g_scene_intent_url is nil: don't count one.)
         BOOL launched = g_scene_intent_url ? scene_request_launched_app() : NO;
@@ -273,10 +273,10 @@ static CYLocationRequestCompletion g_scene_intent_completion = nil;
 - (void)showBlockedLinkNoticeIfNeeded {
     if (!self.blockedLinkNotice) return;
     self.blockedLinkNotice = NO;
-    [self showAlertTitle:@"Location Services Link"
-                 message:@"A link asked Cyanide to change Location Services. Links are off, so nothing was changed. "
-                         @"Use the Control Center toggle or the Shortcuts action instead, or turn on "
-                         @"Settings → Launch Options → Location Services links."];
+    [self showAlertTitle:@"定位服务链接"
+                 message:@"有链接请求 Cyanide 修改定位服务。链接功能已关闭，因此未做任何改动。"
+                         @"请改用控制中心开关或「快捷指令」操作，或者开启 "
+                         @"设置 → 启动选项 → 定位服务链接。"];
 }
 
 // A request waiting for activation. A newer one replaces it; the replaced
@@ -288,7 +288,7 @@ static CYLocationRequestCompletion g_scene_intent_completion = nil;
     self.pendingActionCompletion = completion;
     self.pendingActionCold = cold;
     self.pendingActionBroughtToFront = cold || !g_scene_visit_user_owned;
-    if (replaced && replaced != completion) replaced(NO, @"A newer Location Services request replaced this one.");
+    if (replaced && replaced != completion) replaced(NO, @"有更新的定位服务请求取代了这一条。");
 }
 
 - (void)receiveActionURL:(NSURL *)url scene:(UIScene *)scene completion:(CYLocationRequestCompletion)completion coldLaunched:(BOOL)cold {
@@ -314,7 +314,7 @@ static CYLocationRequestCompletion g_scene_intent_completion = nil;
         called = YES;
         completion(ok, message ?: @"");
     };
-    if (![url isKindOfClass:NSURL.class]) { once(NO, @"Invalid request."); return; }
+    if (![url isKindOfClass:NSURL.class]) { once(NO, @"无效的请求。"); return; }
     for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
         if ([scene.delegate isKindOfClass:SceneDelegate.class]) {
             // A live scene means Cyanide was already open (in front or
@@ -326,7 +326,7 @@ static CYLocationRequestCompletion g_scene_intent_completion = nil;
             return;
         }
     }
-    if (g_scene_intent_completion) g_scene_intent_completion(NO, @"A newer Location Services request replaced this one.");
+    if (g_scene_intent_completion) g_scene_intent_completion(NO, @"有更新的定位服务请求取代了这一条。");
     g_scene_intent_url = url;
     g_scene_intent_completion = once;
 }
@@ -350,7 +350,7 @@ static BOOL scene_parse_location_url(NSURL *url, int *desiredOut, BOOL *keepCard
     NSURLComponents *c = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
     NSString *scheme = c.scheme.lowercaseString;
     if (!c || !([scheme isEqualToString:@"cyanide"] || [scheme isEqualToString:@"com.zeroxjf.ios-cyanide1"])) {
-        *error = @"Unsupported link.";
+        *error = @"不支持的链接。";
         return NO;
     }
     NSString *path = c.path ?: @"";
@@ -358,7 +358,7 @@ static BOOL scene_parse_location_url(NSURL *url, int *desiredOut, BOOL *keepCard
     NSDictionary<NSString *, NSNumber *> *actions = @{ @"/toggle": @-1, @"/on": @1, @"/off": @0 };
     NSNumber *action = actions[path.lowercaseString];
     if (action == nil) {
-        *error = [NSString stringWithFormat:@"Unknown action \"%@\". Use /toggle, /on or /off.", path];
+        *error = [NSString stringWithFormat:@"未知操作 \"%@\"。请使用 /toggle、/on 或 /off。", path];
         return NO;
     }
     BOOL keep = NO, showLog = NO;
@@ -366,19 +366,19 @@ static BOOL scene_parse_location_url(NSURL *url, int *desiredOut, BOOL *keepCard
     for (NSURLQueryItem *item in c.queryItems) {
         // An option given twice has no clear meaning: refuse it.
         if ([seen containsObject:item.name]) {
-            *error = [NSString stringWithFormat:@"Option \"%@\" is given more than once.", item.name];
+            *error = [NSString stringWithFormat:@"选项 \"%@\" 被重复指定。", item.name];
             return NO;
         }
         [seen addObject:item.name ?: @""];
         BOOL value;
         if (!scene_parse_bool(item.value, &value)) {
-            *error = [NSString stringWithFormat:@"%@ must be 1 or 0, not \"%@\".", item.name, item.value ?: @""];
+            *error = [NSString stringWithFormat:@"%@ 必须是 1 或 0，而不是 \"%@\"。", item.name, item.value ?: @""];
             return NO;
         }
         if ([item.name isEqualToString:@"keepInSwitcher"]) keep = value;
         else if ([item.name isEqualToString:@"log"]) showLog = value;
         else {
-            *error = [NSString stringWithFormat:@"Unknown option \"%@\".", item.name];
+            *error = [NSString stringWithFormat:@"未知选项 \"%@\"。", item.name];
             return NO;
         }
     }
@@ -462,10 +462,10 @@ static void scene_announce(NSString *text)
 // checkmark) once the state is confirmed.
 - (void)applyQuietTarget:(int)target done:(BOOL)done {
     self.quietTarget = target;
-    if (target < 0) { self.quietTitle.text = @"Location Services"; return; }
+    if (target < 0) { self.quietTitle.text = @"定位服务"; return; }
     NSString *state = target ? @"On" : @"Off";
-    self.quietTitle.text = done ? [NSString stringWithFormat:@"Location Services %@", state]
-                                : [NSString stringWithFormat:@"Turning %@ Location Services", state];
+    self.quietTitle.text = done ? [NSString stringWithFormat:@"定位服务 %@", state]
+                                : [NSString stringWithFormat:@"正在%@定位服务", state];
     if (done) {
         if (@available(iOS 17.0, *)) [self.quietIcon removeAllSymbolEffects];
         self.quietIcon.image = [UIImage systemImageNamed:@"checkmark.circle.fill" withConfiguration:scene_quiet_symbol_config()];
@@ -550,7 +550,7 @@ static void scene_announce(NSString *text)
     self.quietPhaseShownNs = 0;
     [self.quietProgress.layer removeAllAnimations];
     [self.quietProgress setProgress:0.05f animated:NO];
-    self.quietStatus.text = @"Starting…";
+    self.quietStatus.text = @"正在开始…";
     if (@available(iOS 17.0, *)) [self.quietIcon removeAllSymbolEffects];
     [self applyQuietTarget:target done:NO];
     // A gentle pulse while it works (not with Reduce Motion).
@@ -633,7 +633,7 @@ static const double kQuietMinPhase = 0.35;   // a phase stays readable at least 
         // cleanup before it leaves.
         [self applyQuietTarget:self.quietTarget done:YES];
         BOOL noChange = [text hasPrefix:@"Already"];
-        self.quietStatus.text = noChange ? @"No change needed" : @"Finishing up…";
+        self.quietStatus.text = noChange ? @"无需更改" : @"正在收尾…";
         scene_announce(self.quietTitle.text);
     } else {
         self.quietStatus.text = [text stringByAppendingString:@"…"];
@@ -711,15 +711,15 @@ static const double kQuietMinPhase = 0.35;   // a phase stays readable at least 
          broughtToFront:(BOOL)broughtToFront {
     if (![url.host.lowercaseString isEqualToString:@"location-services"]) {
         NSLog(@"[URL] unhandled %@", url);
-        if (requester) requester(NO, @"Unsupported link.");
+        if (requester) requester(NO, @"不支持的链接。");
         return;
     }
     if (self.actionInProgress) {
         // The running request owns the screen: no alert over its progress
         // or log, just tell the requester and VoiceOver.
         NSLog(@"[URL] rejected while a change is in progress: %@", url);
-        scene_announce(@"A Location Services change is already in progress.");
-        if (requester) requester(NO, @"A Location Services change is already in progress.");
+        scene_announce(@"已有定位服务更改正在进行中。");
+        if (requester) requester(NO, @"已有定位服务更改正在进行中。");
         return;
     }
     if (settings_switcher_removal_pending()) {
@@ -734,10 +734,10 @@ static const double kQuietMinPhase = 0.35;   // a phase stays readable at least 
         // killed mid-flight — so fail fast instead of letting the caller
         // watch a progress screen that is about to disappear.
         NSLog(@"[URL] rejected: an App Switcher card removal is still pending: %@", url);
-        NSString *busy = @"Cyanide is closing from the previous run. Try again in a few seconds.";
+        NSString *busy = @"上一次运行的 Cyanide 还在关闭中。请过几秒再试。";
         scene_announce(busy);
         if (requester) requester(NO, busy);
-        else [self showAlertTitle:@"Location Services" message:busy];
+        else [self showAlertTitle:@"定位服务" message:busy];
         return;
     }
     int desired = -1;
@@ -745,7 +745,7 @@ static const double kQuietMinPhase = 0.35;   // a phase stays readable at least 
     NSString *parseError = nil;
     if (!scene_parse_location_url(url, &desired, &keepCard, &showLog, &parseError)) {
         [self hideQuietCover];   // an early cover for this link must not stay
-        [self showAlertTitle:@"Location Services Link" message:parseError];
+        [self showAlertTitle:@"定位服务链接" message:parseError];
         if (requester) requester(NO, parseError);
         return;
     }
@@ -814,12 +814,12 @@ static const double kQuietMinPhase = 0.35;   // a phase stays readable at least 
             if (operationCallbackHandled) return;
             operationCallbackHandled = YES;
             NSString *message = [rawMessage isEqualToString:kSettingsFullExploitRequiredMessage]
-                ? @"Cyanide has no saved kernel access (for example after a restart). Open Cyanide and run it once, then try again."
+                ? @"Cyanide 没有已保存的内核权限（例如重启之后）。请打开 Cyanide 运行一次，然后重试。"
                 : rawMessage;
             if (observer) [NSNotificationCenter.defaultCenter removeObserver:observer];
             typeof(self) me = weakSelf;
             if (!me || generation != me.actionGeneration) {
-                finish(NO, @"The Location Services request was superseded before it finished.");
+                finish(NO, @"定位服务请求在完成前已被取代。");
                 return;
             }
             if (!ok && [rawMessage isEqualToString:kSettingsFullExploitRequiredMessage]) {
@@ -831,18 +831,18 @@ static const double kQuietMinPhase = 0.35;   // a phase stays readable at least 
                     typeof(self) retryOwner = weakSelf;
                     if (!retryOwner || generation != retryOwner.actionGeneration ||
                         !retryOwner.actionInProgress) {
-                        finish(NO, @"The Location Services retry was superseded before it finished.");
+                        finish(NO, @"定位服务重试在完成前已被取代。");
                         return;
                     }
                     if (!ready) {
                         retryOwner.actionInProgress = NO;
                         NSString *retryMessage =
-                            @"Location Services request cancelled: kernel access was not acquired.";
+                            @"定位服务请求已取消：未获取到内核权限。";
                         finish(NO, retryMessage);
                         if (!showLog) {
                             UIViewController *top = [retryOwner topViewController];
                             if (![top isKindOfClass:UIAlertController.class]) {
-                                [retryOwner showAlertTitle:@"Location Services" message:retryMessage];
+                                [retryOwner showAlertTitle:@"定位服务" message:retryMessage];
                             }
                         } else {
                             scene_announce(retryMessage);
@@ -864,7 +864,7 @@ static const double kQuietMinPhase = 0.35;   // a phase stays readable at least 
             if (!ok) {
                 if (!showLog) {
                     [me hideQuietCover];
-                    [me showAlertTitle:@"Location Services" message:message];
+                    [me showAlertTitle:@"定位服务" message:message];
                 }
                 return;   // the log (log=1) already shows the failure
             }

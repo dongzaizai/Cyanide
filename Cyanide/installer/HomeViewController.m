@@ -28,7 +28,7 @@ static const CGFloat kMargin = 20.0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"Home";
+    self.title = @"首页";
     self.view.backgroundColor = UIColor.systemGroupedBackgroundColor;
     self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
     self.navigationController.navigationBar.prefersLargeTitles = YES;
@@ -134,16 +134,16 @@ static const CGFloat kMargin = 20.0;
     [d setBool:YES forKey:kAskedKey];
 
     UIAlertController *ac = [UIAlertController
-        alertControllerWithTitle:@"Faster tweak apply"
-                         message:@"Cyanide now defaults to the Fastest apply speed, which cuts the wait between remote calls. Switch to Fastest? You can change this any time in Settings → Launch Options."
+        alertControllerWithTitle:@"更快的插件应用"
+                         message:@"Cyanide 现在默认使用最快的应用速度，可缩短两次远程调用之间的等待。要切换到「最快」吗？之后随时可以在 设置 → 启动选项 里修改。"
                   preferredStyle:UIAlertControllerStyleAlert];
     __weak typeof(self) weakSelf = self;
-    [ac addAction:[UIAlertAction actionWithTitle:@"Not Now"
+    [ac addAction:[UIAlertAction actionWithTitle:@"以后再说"
                                            style:UIAlertActionStyleCancel
                                          handler:^(UIAlertAction *_) {
         [weakSelf offerPeV3AfterDismissal];
     }]];
-    [ac addAction:[UIAlertAction actionWithTitle:@"Switch to Fastest"
+    [ac addAction:[UIAlertAction actionWithTitle:@"切换到最快"
                                            style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction *_) {
         [d setInteger:2 forKey:kSettingsRemoteSettleMode];
@@ -179,11 +179,11 @@ static const CGFloat kMargin = 20.0;
     [d setBool:YES forKey:kAskedKey];
 
     UIAlertController *ac = [UIAlertController
-        alertControllerWithTitle:@"Try the pe_v3 exploit path?"
-                         message:@"This version adds pe_v3, a newer exploit method for A18 / M4 devices. It probably causes fewer reboots: it stops early instead of reading memory that is likely to panic the device, and retries cleanly instead.\n\nSwitch to pe_v3? You can change this any time in Settings → Launch Options → A18 exploit path."
+        alertControllerWithTitle:@"试试 pe_v3 漏洞利用路径？"
+                         message:@"此版本新增 pe_v3，一种面向 A18 / M4 设备的更新漏洞利用方式。它有望减少重启：遇到可能导致设备 panic 的内存时不强行读取，而是提前停止并干净地重试。\n\n要切换到 pe_v3 吗？之后随时可以在 设置 → 启动选项 → A18 利用路径 里修改。"
                   preferredStyle:UIAlertControllerStyleAlert];
-    [ac addAction:[UIAlertAction actionWithTitle:@"Keep Current" style:UIAlertActionStyleCancel handler:nil]];
-    [ac addAction:[UIAlertAction actionWithTitle:@"Switch to pe_v3"
+    [ac addAction:[UIAlertAction actionWithTitle:@"保持当前" style:UIAlertActionStyleCancel handler:nil]];
+    [ac addAction:[UIAlertAction actionWithTitle:@"切换到 pe_v3"
                                            style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction *_) {
         [d setInteger:2 forKey:kSettingsA18ExploitPath];
@@ -232,7 +232,7 @@ static const CGFloat kMargin = 20.0;
 
     UILabel *tagline = [[UILabel alloc] init];
     tagline.translatesAutoresizingMaskIntoConstraints = NO;
-    tagline.text = @"SpringBoard tweaks for stock iOS";
+    tagline.text = @"为原生 iOS 打造的 SpringBoard 插件";
     tagline.font = [UIFont systemFontOfSize:17.0 weight:UIFontWeightBold];
     tagline.textColor = UIColor.whiteColor;
     tagline.textAlignment = NSTextAlignmentCenter;
@@ -240,7 +240,7 @@ static const CGFloat kMargin = 20.0;
 
     UILabel *sub = [[UILabel alloc] init];
     sub.translatesAutoresizingMaskIntoConstraints = NO;
-    sub.text = [NSString stringWithFormat:@"No jailbreak required · v%@", ver];
+    sub.text = [NSString stringWithFormat:@"无需越狱 · v%@", ver];
     sub.font = [UIFont systemFontOfSize:13.0 weight:UIFontWeightMedium];
     sub.textColor = [UIColor colorWithWhite:1.0 alpha:0.65];
     sub.textAlignment = NSTextAlignmentCenter;
@@ -282,17 +282,17 @@ static const CGFloat kMargin = 20.0;
     row.spacing = 12.0;
     row.distribution = UIStackViewDistributionFillEqually;
 
-    [row addArrangedSubview:[self actionCard:@"Packages"
+    [row addArrangedSubview:[self actionCard:@"软件包"
                                        icon:@"shippingbox.fill"
                                       color:UIColor.systemBlueColor
                                         sel:@selector(openPackagesTab)]];
     if (repotweaks_sources_enabled()) {
-        [row addArrangedSubview:[self actionCard:@"Sources"
+        [row addArrangedSubview:[self actionCard:@"源"
                                            icon:@"tray.and.arrow.down.fill"
                                           color:UIColor.systemGreenColor
                                             sel:@selector(openSourcesTab)]];
     } else {
-        [row addArrangedSubview:[self actionCard:@"Settings"
+        [row addArrangedSubview:[self actionCard:@"设置"
                                            icon:@"gear"
                                           color:UIColor.systemGrayColor
                                             sel:@selector(openSettingsTab)]];
@@ -384,8 +384,8 @@ static const CGFloat kMargin = 20.0;
     NSArray *changes = [latest[@"changes"] isKindOfClass:NSArray.class] ? latest[@"changes"] : nil;
 
     UILabel *header = [self sectionHeader:version.length
-        ? [NSString stringWithFormat:@"What's New in %@", [version hasPrefix:@"v"] ? [version substringFromIndex:1] : version]
-        : @"What's New"];
+        ? [NSString stringWithFormat:@"%@ 更新内容", [version hasPrefix:@"v"] ? [version substringFromIndex:1] : version]
+        : @"更新内容"];
     [s addArrangedSubview:header];
     [s setCustomSpacing:18.0 afterView:header];
 
@@ -401,7 +401,7 @@ static const CGFloat kMargin = 20.0;
     // The whole card opens Settings → What's New; this row says so.
     UIButton *all = [UIButton buttonWithType:UIButtonTypeSystem];
     UIButtonConfiguration *cfg = [UIButtonConfiguration plainButtonConfiguration];
-    cfg.title = shown ? @"See All Changes" : @"See This Version's Changes";
+    cfg.title = shown ? @"查看全部更新" : @"查看此版本更新";
     cfg.image = [UIImage systemImageNamed:@"chevron.right"
                         withConfiguration:[UIImageSymbolConfiguration configurationWithPointSize:12.0 weight:UIImageSymbolWeightSemibold]];
     cfg.imagePlacement = NSDirectionalRectEdgeTrailing;
@@ -431,36 +431,36 @@ static const CGFloat kMargin = 20.0;
     // get it by themselves on A18/M4. Runs the exploit alone, with the log.
     // A local strong reference: the property is weak, so assigning the new
     // view to it directly released it before it was added (no row at all).
-    UIView *kernelRow = [self bigActionButton:@"Run Exploit"
-                                          sub:@"Kernel access for the tools"
+    UIView *kernelRow = [self bigActionButton:@"运行漏洞利用"
+                                          sub:@"为工具获取内核权限"
                                          icon:@"lock.open.fill"
                                         color:UIColor.systemPurpleColor
                                           sel:@selector(runExploit)];
     kernelRow.hidden = settings_kernel_access_available();
     [s addArrangedSubview:kernelRow];
     self.kernelAccessRow = kernelRow;
-    [s addArrangedSubview:[self bigActionButton:@"Process Viewer"
-                                          sub:@"See and quit running processes"
+    [s addArrangedSubview:[self bigActionButton:@"进程查看器"
+                                          sub:@"查看并结束正在运行的进程"
                                          icon:@"list.bullet.rectangle.fill"
                                         color:UIColor.systemIndigoColor
                                           sel:@selector(openProcessViewer)]];
-    [s addArrangedSubview:[self bigActionButton:@"File Browser"
-                                          sub:@"Browse files and edit plists"
+    [s addArrangedSubview:[self bigActionButton:@"文件浏览器"
+                                          sub:@"浏览文件、编辑 plist"
                                          icon:@"folder.fill"
                                         color:UIColor.systemBlueColor
                                           sel:@selector(openFileBrowser)]];
-    [s addArrangedSubview:[self bigActionButton:@"Daemon Manager"
-                                          sub:@"Turn system services off and on"
+    [s addArrangedSubview:[self bigActionButton:@"守护进程管理"
+                                          sub:@"开启或关闭系统服务"
                                          icon:@"gearshape.2.fill"
                                         color:UIColor.systemTealColor
                                           sel:@selector(openDaemons)]];
-    [s addArrangedSubview:[self bigActionButton:@"Cache Cleaner"
-                                          sub:@"Free space from app caches"
+    [s addArrangedSubview:[self bigActionButton:@"缓存清理"
+                                          sub:@"释放应用缓存占用的空间"
                                          icon:@"trash.fill"
                                         color:UIColor.systemCyanColor
                                           sel:@selector(openCleaner)]];
-    [s addArrangedSubview:[self bigActionButton:@"System Info"
-                                          sub:@"Battery, uptime, kernel access, storage"
+    [s addArrangedSubview:[self bigActionButton:@"系统信息"
+                                          sub:@"电池、运行时间、内核权限、存储"
                                          icon:@"info.circle.fill"
                                         color:UIColor.systemGreenColor
                                           sel:@selector(openSystemInfo)]];
@@ -474,16 +474,16 @@ static const CGFloat kMargin = 20.0;
     UIView *card = [self card];
     UIStackView *s = [self vstackInCard:card spacing:12.0];
 
-    [s addArrangedSubview:[self sectionHeader:@"Get Started"]];
+    [s addArrangedSubview:[self sectionHeader:@"开始使用"]];
 
-    [s addArrangedSubview:[self bigActionButton:@"Open QuickLoader"
-                                          sub:@"Run a local .js tweak file"
+    [s addArrangedSubview:[self bigActionButton:@"打开 QuickLoader"
+                                          sub:@"运行本地 .js 插件文件"
                                          icon:@"bolt.fill"
                                         color:UIColor.systemOrangeColor
                                           sel:@selector(openQuickLoader)]];
     if (repotweaks_sources_enabled()) {
-        [s addArrangedSubview:[self bigActionButton:@"Add a Source"
-                                              sub:@"Browse and install JS tweaks from repos"
+        [s addArrangedSubview:[self bigActionButton:@"添加源"
+                                              sub:@"从源中浏览并安装 JS 插件"
                                              icon:@"plus.circle.fill"
                                             color:UIColor.systemGreenColor
                                               sel:@selector(openSourcesTab)]];
@@ -587,7 +587,7 @@ static const CGFloat kMargin = 20.0;
     ]];
     [s addArrangedSubview:headerWrap];
 
-    [s addArrangedSubview:[self linkCell:@"Report a Bug" icon:@"exclamationmark.bubble.fill"
+    [s addArrangedSubview:[self linkCell:@"反馈问题" icon:@"exclamationmark.bubble.fill"
                                   color:UIColor.systemRedColor url:kGitHubIssuesURL sep:YES]];
     [s addArrangedSubview:[self linkCell:@"GitHub" icon:@"chevron.left.forwardslash.chevron.right"
                                   color:UIColor.systemGrayColor url:kGitHubRepoURL sep:NO]];
@@ -771,7 +771,7 @@ static const CGFloat kMargin = 20.0;
     UITabBarController *tab = self.tabBarController;
     if (!tab) return;
     for (NSUInteger i = 0; i < tab.viewControllers.count; i++) {
-        if ([tab.viewControllers[i].tabBarItem.title isEqualToString:@"Packages"]) {
+        if ([tab.viewControllers[i].tabBarItem.title isEqualToString:@"软件包"]) {
             tab.selectedIndex = i;
             return;
         }
@@ -784,7 +784,7 @@ static const CGFloat kMargin = 20.0;
     if (!tab) return;
     for (NSUInteger i = 0; i < tab.viewControllers.count; i++) {
         UIViewController *vc = tab.viewControllers[i];
-        if ([vc.tabBarItem.title isEqualToString:@"Settings"]) {
+        if ([vc.tabBarItem.title isEqualToString:@"设置"]) {
             UINavigationController *nav = [vc isKindOfClass:UINavigationController.class] ? (UINavigationController *)vc : nil;
             if (!nav) return;
             [nav popToRootViewControllerAnimated:NO];
@@ -793,7 +793,7 @@ static const CGFloat kMargin = 20.0;
             // QuickLoader has no package page to return to. It belongs with the
             // JS-tweak sources flow, so the back button goes to the Sources front
             // page instead of back to Home -- unless Sources is switched off.
-            ql.installerReturnTabTitle = repotweaks_sources_enabled() ? @"Sources" : @"Home";
+            ql.installerReturnTabTitle = repotweaks_sources_enabled() ? @"源" : @"首页";
             ql.installerReturnResetsTargetTab = YES;
             [nav pushViewController:ql animated:NO];
             tab.selectedIndex = i;
@@ -809,8 +809,8 @@ static const CGFloat kMargin = 20.0;
         typeof(self) me = weakSelf;
         [me updateKernelAccessRow];
         if (!ready || !me || me.presentedViewController) return;
-        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Kernel Access Ready"
-            message:@"Process Viewer, File Browser, Daemon Manager, Cache Cleaner and System Info can use it now."
+        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"内核权限已就绪"
+            message:@"进程查看器、文件浏览器、守护进程管理、缓存清理和系统信息现在都可以使用了。"
             preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [me presentViewController:ac animated:YES completion:nil];
@@ -848,7 +848,7 @@ static const CGFloat kMargin = 20.0;
     if (!tab) return;
     for (NSUInteger i = 0; i < tab.viewControllers.count; i++) {
         UIViewController *vc = tab.viewControllers[i];
-        if (![vc.tabBarItem.title isEqualToString:@"Settings"]) continue;
+        if (![vc.tabBarItem.title isEqualToString:@"设置"]) continue;
         UINavigationController *nav = [vc isKindOfClass:UINavigationController.class] ? (UINavigationController *)vc : nil;
         [nav popToRootViewControllerAnimated:NO];
         tab.selectedIndex = i;
@@ -860,12 +860,12 @@ static const CGFloat kMargin = 20.0;
 
 - (void)openSourcesTab
 {
-    [self openTabNamed:@"Sources"];
+    [self openTabNamed:@"源"];
 }
 
 - (void)openSettingsTab
 {
-    [self openTabNamed:@"Settings"];
+    [self openTabNamed:@"设置"];
 }
 
 - (void)openTabNamed:(NSString *)title

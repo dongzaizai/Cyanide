@@ -26,8 +26,8 @@ static NSString * const kSearchCellID = @"SearchPkgCell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"Packages";
-    self.navigationItem.title = @"Packages";
+    self.title = @"软件包";
+    self.navigationItem.title = @"软件包";
     self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
     self.navigationController.navigationBar.prefersLargeTitles = YES;
     self.searchText = @"";
@@ -41,7 +41,7 @@ static NSString * const kSearchCellID = @"SearchPkgCell";
     self.searchCtl = [[UISearchController alloc] initWithSearchResultsController:nil];
     self.searchCtl.searchResultsUpdater = self;
     self.searchCtl.obscuresBackgroundDuringPresentation = NO;
-    self.searchCtl.searchBar.placeholder = @"Search all tweaks";
+    self.searchCtl.searchBar.placeholder = @"搜索全部插件";
     self.navigationItem.searchController = self.searchCtl;
     self.navigationItem.hidesSearchBarWhenScrolling = NO;
 
@@ -97,7 +97,7 @@ static NSString * const kSearchCellID = @"SearchPkgCell";
                                                  style:UIBarButtonItemStylePlain
                                                 target:self
                                                 action:@selector(reapplyAppliedTweaks)];
-            item.accessibilityLabel = @"Re-apply tweaks";
+            item.accessibilityLabel = @"重新应用插件";
             self.navigationItem.rightBarButtonItem = item;
         }
     } else {
@@ -122,7 +122,7 @@ static NSString * const kSearchCellID = @"SearchPkgCell";
     // tab's job now, so this file reads no repotweaks_* state any more.
     NSMutableArray<Package *> *visible = [NSMutableArray array];
     for (Package *p in [PackageCatalog allPackages]) {
-        if ([p.category isEqualToString:@"JavaScript Tweaks"]) continue;
+        if ([p.category isEqualToString:@"JavaScript 插件"]) continue;
         [visible addObject:p];
     }
 
@@ -177,7 +177,7 @@ static NSString * const kSearchCellID = @"SearchPkgCell";
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if ([self isSearchActive]) return nil;
-    return CYSectionHeaderView(@"All Packages");
+    return CYSectionHeaderView(@"全部软件包");
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
@@ -214,11 +214,11 @@ static NSString * const kSearchCellID = @"SearchPkgCell";
     if (disabledForInstall) config.textProperties.color = UIColor.secondaryLabelColor;
 
     if (unsupported && installed && pkg.shortDescription.length > 0) {
-        config.secondaryText = [NSString stringWithFormat:@"Installed, unsupported here · %@ · %@",
+        config.secondaryText = [NSString stringWithFormat:@"已安装，此处不支持 · %@ · %@",
                                 pkg.installDisabledReason,
                                 pkg.shortDescription];
     } else if (unsupported && installed) {
-        config.secondaryText = [NSString stringWithFormat:@"Installed, unsupported here · %@",
+        config.secondaryText = [NSString stringWithFormat:@"已安装，此处不支持 · %@",
                                 pkg.installDisabledReason];
     } else if (unsupported && pkg.shortDescription.length > 0) {
         config.secondaryText = [NSString stringWithFormat:@"%@ · %@", pkg.installDisabledReason, pkg.shortDescription];
@@ -256,7 +256,7 @@ static NSString * const kSearchCellID = @"SearchPkgCell";
         cell.accessoryView = pill;
     } else if (unsupported) {
         UILabel *pill = [[UILabel alloc] init];
-        pill.text = [pkg.category isEqualToString:@"In Development"] ? @"DISABLED" : @"UNSUPPORTED";
+        pill.text = [pkg.category isEqualToString:@"开发中"] ? @"已禁用" : @"不受支持";
         pill.font = [UIFont systemFontOfSize:11.0 weight:UIFontWeightHeavy];
         pill.textColor = UIColor.systemOrangeColor;
         pill.backgroundColor = [UIColor.systemOrangeColor colorWithAlphaComponent:0.15];

@@ -95,7 +95,7 @@ static NSString * const kSourcesLastRefreshKey = @"RepoTweaksLastRefreshTimestam
     if (existing.count == 0) return;
     // Rebuild once: presence of the Home tab means it already ran.
     for (UIViewController *vc in existing) {
-        if ([vc.tabBarItem.title isEqualToString:@"Home"]) return;
+        if ([vc.tabBarItem.title isEqualToString:@"首页"]) return;
     }
 
     // Reuse the storyboard-instantiated root VCs (they carry their configured
@@ -107,9 +107,9 @@ static NSString * const kSourcesLastRefreshKey = @"RepoTweaksLastRefreshTimestam
         if (!root) continue;
         NSString *cls = NSStringFromClass(root.class);
         NSString *t = vc.tabBarItem.title;
-        if ([cls isEqualToString:@"PackagesViewController"] || [t isEqualToString:@"Packages"]) pkgRoot = root;
-        else if ([cls isEqualToString:@"SettingsViewController"] || [t isEqualToString:@"Settings"]) setRoot = root;
-        else if ([cls isEqualToString:@"LogViewController"] || [t isEqualToString:@"Log"]) logRoot = root;
+        if ([cls isEqualToString:@"PackagesViewController"] || [t isEqualToString:@"软件包"]) pkgRoot = root;
+        else if ([cls isEqualToString:@"SettingsViewController"] || [t isEqualToString:@"设置"]) setRoot = root;
+        else if ([cls isEqualToString:@"LogViewController"] || [t isEqualToString:@"日志"]) logRoot = root;
     }
 
     // Detach the reused roots from their old (storyboard) nav controllers before
@@ -120,18 +120,18 @@ static NSString * const kSourcesLastRefreshKey = @"RepoTweaksLastRefreshTimestam
         }
     }
 
-    if (pkgRoot) { pkgRoot.title = @"Packages"; pkgRoot.navigationItem.title = @"Packages"; }
+    if (pkgRoot) { pkgRoot.title = @"软件包"; pkgRoot.navigationItem.title = @"软件包"; }
 
     HomeViewController *home = [[HomeViewController alloc] init];
     SourcesViewController *sources = [[SourcesViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
-    self.sourcesNav = [self cy_tabNavWithRoot:sources title:@"Sources" symbol:@"tray.and.arrow.down.fill"];
+    self.sourcesNav = [self cy_tabNavWithRoot:sources title:@"源" symbol:@"tray.and.arrow.down.fill"];
 
     NSMutableArray<UIViewController *> *tabs = [NSMutableArray array];
-    [tabs addObject:[self cy_tabNavWithRoot:home    title:@"Home"     symbol:@"house.fill"]];
-    if (pkgRoot) [tabs addObject:[self cy_tabNavWithRoot:pkgRoot title:@"Packages" symbol:@"shippingbox.fill"]];
+    [tabs addObject:[self cy_tabNavWithRoot:home    title:@"首页"     symbol:@"house.fill"]];
+    if (pkgRoot) [tabs addObject:[self cy_tabNavWithRoot:pkgRoot title:@"软件包" symbol:@"shippingbox.fill"]];
     if (repotweaks_sources_enabled()) [tabs addObject:self.sourcesNav];
-    if (logRoot) [tabs addObject:[self cy_tabNavWithRoot:logRoot title:@"Log"      symbol:@"terminal"]];
-    if (setRoot) [tabs addObject:[self cy_tabNavWithRoot:setRoot title:@"Settings" symbol:@"gear"]];
+    if (logRoot) [tabs addObject:[self cy_tabNavWithRoot:logRoot title:@"日志"      symbol:@"terminal"]];
+    if (setRoot) [tabs addObject:[self cy_tabNavWithRoot:setRoot title:@"设置" symbol:@"gear"]];
 
     [self setViewControllers:tabs animated:NO];
     self.selectedIndex = 0;
@@ -273,7 +273,7 @@ static NSString * const kSourcesLastRefreshKey = @"RepoTweaksLastRefreshTimestam
         // Back to its usual place, right after Packages.
         NSUInteger insertAt = 1;
         for (NSUInteger i = 0; i < tabs.count; i++) {
-            if ([tabs[i].tabBarItem.title isEqualToString:@"Packages"]) { insertAt = i + 1; break; }
+            if ([tabs[i].tabBarItem.title isEqualToString:@"软件包"]) { insertAt = i + 1; break; }
         }
         [tabs insertObject:self.sourcesNav atIndex:MIN(insertAt, tabs.count)];
     } else {
@@ -336,7 +336,7 @@ static NSString * const kSourcesLastRefreshKey = @"RepoTweaksLastRefreshTimestam
 
     UILabel *label = [[UILabel alloc] init];
     label.translatesAutoresizingMaskIntoConstraints = NO;
-    label.text = @"Refreshing sources…";
+    label.text = @"正在刷新源…";
     label.font = [UIFont systemFontOfSize:13.0 weight:UIFontWeightSemibold];
     label.textColor = UIColor.whiteColor;
     label.tag = 102;
@@ -380,7 +380,7 @@ static NSString * const kSourcesLastRefreshKey = @"RepoTweaksLastRefreshTimestam
     } completion:^(BOOL finished) {
         [spinner stopAnimating];
         checkmark.hidden = NO;
-        label.text = @"Sources up to date";
+        label.text = @"源已是最新";
         [UIView animateWithDuration:0.2 animations:^{
             checkmark.alpha = 1.0;
         }];
@@ -411,7 +411,7 @@ static NSString * const kSourcesLastRefreshKey = @"RepoTweaksLastRefreshTimestam
                                                green:partial ? 0.58 : 0.20
                                                 blue:0.10
                                                alpha:0.95];
-    label.text = partial ? @"Some sources could not be refreshed" : @"Source refresh failed";
+    label.text = partial ? @"部分源刷新失败" : @"源刷新失败";
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (self.refreshBanner != banner) return;
         self.refreshBanner = nil;
@@ -443,7 +443,7 @@ static NSString * const kSourcesLastRefreshKey = @"RepoTweaksLastRefreshTimestam
     NSUInteger count = repotweaks_available_update_count();
     NSString *badge = count > 0 ? [NSString stringWithFormat:@"%lu", (unsigned long)count] : nil;
     for (UIViewController *vc in self.viewControllers) {
-        if ([vc.tabBarItem.title isEqualToString:@"Sources"]) {
+        if ([vc.tabBarItem.title isEqualToString:@"源"]) {
             vc.tabBarItem.badgeValue = badge;
             break;
         }

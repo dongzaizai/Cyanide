@@ -95,7 +95,7 @@ static Package *sources_package_for_tweak(NSString *url, NSDictionary *tweak)
         pkg.installDisabledReason = unsupportedReason;
         pkg.unstableWarning = unsupportedReason;
     } else if ([[NSUserDefaults.standardUserDefaults stringForKey:repotweaks_script_defaults_key(url, tweakID)] length] == 0) {
-        pkg.installDisabledReason = @"Refresh this source before installing.";
+        pkg.installDisabledReason = @"安装前请先刷新此源。";
     }
     return pkg;
 }
@@ -140,15 +140,15 @@ static NSString *category_icon(NSString *cat)
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         map = @{
-            @"Status Bar":          @"chart.bar.fill",
-            @"Home Screen":         @"square.grid.3x3.fill",
+            @"状态栏":          @"chart.bar.fill",
+            @"主屏幕":         @"square.grid.3x3.fill",
             @"Theming":             @"paintbrush.fill",
             @"SpringBoard":         @"sparkle",
             @"System":              @"gear",
             @"Beta":                @"exclamationmark.triangle.fill",
             @"Experimental":        @"flask.fill",
-            @"In Development":      @"hammer.fill",
-            @"JavaScript Tweaks":   @"bolt.fill",
+            @"开发中":      @"hammer.fill",
+            @"JavaScript 插件":   @"bolt.fill",
         };
     });
     return map[cat] ?: @"shippingbox.fill";
@@ -160,15 +160,15 @@ static UIColor *category_color(NSString *cat)
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         map = @{
-            @"Status Bar":          UIColor.systemTealColor,
-            @"Home Screen":         UIColor.systemBlueColor,
+            @"状态栏":          UIColor.systemTealColor,
+            @"主屏幕":         UIColor.systemBlueColor,
             @"Theming":             UIColor.systemPinkColor,
             @"SpringBoard":         UIColor.systemCyanColor,
             @"System":              UIColor.systemGrayColor,
             @"Beta":                UIColor.systemPurpleColor,
             @"Experimental":        UIColor.systemRedColor,
-            @"In Development":      UIColor.systemPurpleColor,
-            @"JavaScript Tweaks":   UIColor.systemOrangeColor,
+            @"开发中":      UIColor.systemPurpleColor,
+            @"JavaScript 插件":   UIColor.systemOrangeColor,
         };
     });
     return map[cat] ?: UIColor.secondaryLabelColor;
@@ -233,9 +233,9 @@ static UIColor *category_color(NSString *cat)
         config.textProperties.color = UIColor.secondaryLabelColor;
     }
     if (installed && unsupportedReason.length && desc.length) {
-        config.secondaryText = [NSString stringWithFormat:@"Installed, unsupported here · %@ · %@", unsupportedReason, desc];
+        config.secondaryText = [NSString stringWithFormat:@"已安装，此处不支持 · %@ · %@", unsupportedReason, desc];
     } else if (installed && unsupportedReason.length) {
-        config.secondaryText = [NSString stringWithFormat:@"Installed, unsupported here · %@", unsupportedReason];
+        config.secondaryText = [NSString stringWithFormat:@"已安装，此处不支持 · %@", unsupportedReason];
     } else if (version.length && compatibility.length && desc.length) {
         config.secondaryText = [NSString stringWithFormat:@"v%@ · %@ · %@", version, compatibility, desc];
     } else if (version.length && compatibility.length) {
@@ -276,7 +276,7 @@ static UIColor *category_color(NSString *cat)
         cell.accessoryView = pill;
     } else if (unsupportedReason.length > 0) {
         UILabel *pill = [[UILabel alloc] init];
-        pill.text = @"UNSUPPORTED";
+        pill.text = @"不受支持";
         pill.font = [UIFont systemFontOfSize:11.0 weight:UIFontWeightHeavy];
         pill.textColor = UIColor.systemOrangeColor;
         pill.backgroundColor = [UIColor.systemOrangeColor colorWithAlphaComponent:0.15];
@@ -337,8 +337,8 @@ static UIColor *category_color(NSString *cat)
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"Sources";
-    self.navigationItem.title = @"Sources";
+    self.title = @"源";
+    self.navigationItem.title = @"源";
     self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
     self.navigationController.navigationBar.prefersLargeTitles = YES;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
@@ -381,7 +381,7 @@ static UIColor *category_color(NSString *cat)
     if (!tab) return;
     for (NSUInteger i = 0; i < tab.viewControllers.count; i++) {
         UIViewController *vc = tab.viewControllers[i];
-        if ([vc.tabBarItem.title isEqualToString:@"Settings"]) {
+        if ([vc.tabBarItem.title isEqualToString:@"设置"]) {
             UINavigationController *nav = [vc isKindOfClass:UINavigationController.class] ? (UINavigationController *)vc : nil;
             if (!nav) return;
             [nav popToRootViewControllerAnimated:NO];
@@ -470,7 +470,7 @@ static UIColor *category_color(NSString *cat)
     config.imageToTextPadding = 12.0;
     config.text = cat;
     config.textProperties.font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightSemibold];
-    config.secondaryText = [NSString stringWithFormat:@"%lu package%@",
+    config.secondaryText = [NSString stringWithFormat:@"%lu 个软件包%@",
                             (unsigned long)count, count == 1 ? @"" : @"s"];
     config.secondaryTextProperties.font = [UIFont systemFontOfSize:14.0 weight:UIFontWeightRegular];
     config.secondaryTextProperties.color = [UIColor.labelColor colorWithAlphaComponent:0.55];
@@ -506,12 +506,12 @@ static UIColor *category_color(NSString *cat)
 
     if (row == 0) {
         config.image = CYIconBadgeImage(@"hammer.fill", UIColor.systemOrangeColor, 32.0);
-        config.text = @"Build Your Own JS Tweak";
-        config.secondaryText = @"Write scripts, declare parameters, use the RemoteCall API";
+        config.text = @"自己动手写 JS 插件";
+        config.secondaryText = @"编写脚本、声明参数、调用 RemoteCall API";
     } else {
         config.image = CYIconBadgeImage(@"server.rack", UIColor.systemIndigoColor, 32.0);
-        config.text = @"Set Up a Tweak Repository";
-        config.secondaryText = @"Host a JSON feed on GitHub Pages or any HTTPS server";
+        config.text = @"搭建插件源";
+        config.secondaryText = @"把 JSON 源托管在 GitHub Pages 或任意 HTTPS 服务器上";
     }
 
     cell.contentConfiguration = config;
@@ -523,8 +523,8 @@ static UIColor *category_color(NSString *cat)
 
 - (void)addSource
 {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Add Source"
-                                                                   message:@"Paste an HTTPS RepoTweaks JSON URL."
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"添加源"
+                                                                   message:@"粘贴 RepoTweaks 的 HTTPS JSON 地址。"
                                                             preferredStyle:UIAlertControllerStyleAlert];
     [alert addTextFieldWithConfigurationHandler:^(UITextField *tf) {
         tf.placeholder = @"https://example.com/packages.json";
@@ -541,7 +541,7 @@ static UIColor *category_color(NSString *cat)
                               object:nil
                             userInfo:@{ @"status": @(success ? RepoTweaksRefreshStatusSuccess
                                                              : RepoTweaksRefreshStatusFailure) }];
-            if (!success) [self presentError:message ?: @"Could not refresh that source."];
+            if (!success) [self presentError:message ?: @"无法刷新该源。"];
         });
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
@@ -572,8 +572,8 @@ static UIColor *category_color(NSString *cat)
 
 - (void)presentError:(NSString *)message
 {
-    UIAlertController *err = [UIAlertController alertControllerWithTitle:@"Source Failed"
-                                                                 message:message ?: @"Could not refresh source."
+    UIAlertController *err = [UIAlertController alertControllerWithTitle:@"源刷新失败"
+                                                                 message:message ?: @"无法刷新源。"
                                                           preferredStyle:UIAlertControllerStyleAlert];
     [err addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
     [self presentViewController:err animated:YES completion:nil];
@@ -604,8 +604,8 @@ static UIColor *category_color(NSString *cat)
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
     if (section == SourcesSectionRepos) {
-        if (self.urls.count == 0) return @"No sources added yet. Tap + to add an HTTPS RepoTweaks JSON URL.";
-        return @"Swipe left to remove a source.";
+        if (self.urls.count == 0) return @"还没有添加任何源。点按 + 添加 RepoTweaks 的 HTTPS JSON 地址。";
+        return @"向左滑动可以删除源。";
     }
     return nil;
 }
@@ -630,9 +630,9 @@ static UIColor *category_color(NSString *cat)
     config.imageProperties.reservedLayoutSize = CGSizeMake(32.0, 32.0);
     config.imageProperties.maximumSize = CGSizeMake(32.0, 32.0);
     config.imageToTextPadding = 12.0;
-    config.text = @"Open QuickLoader";
+    config.text = @"打开 QuickLoader";
     config.textProperties.font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightSemibold];
-    config.secondaryText = @"Run a local .js tweak file";
+    config.secondaryText = @"运行本地 .js 插件文件";
     config.secondaryTextProperties.font = [UIFont systemFontOfSize:14.0 weight:UIFontWeightRegular];
     config.secondaryTextProperties.color = [UIColor.labelColor colorWithAlphaComponent:0.55];
     config.textToSecondaryTextVerticalPadding = 2.0;
@@ -666,14 +666,14 @@ static UIColor *category_color(NSString *cat)
     config.imageProperties.reservedLayoutSize = CGSizeMake(32.0, 32.0);
     config.imageProperties.maximumSize = CGSizeMake(32.0, 32.0);
     config.imageToTextPadding = 12.0;
-    config.text = repoName.length ? repoName : @"Unknown Source";
+    config.text = repoName.length ? repoName : @"未知源";
     config.textProperties.font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightSemibold];
 
     NSUInteger updates = sources_update_count_for_url(url);
     NSMutableString *detail = [NSMutableString string];
     if (author.length) [detail appendFormat:@"%@ · ", author];
-    [detail appendFormat:@"%lu package%@", (unsigned long)tweaks.count, tweaks.count == 1 ? @"" : @"s"];
-    if (updates > 0) [detail appendFormat:@" · %lu update%@", (unsigned long)updates, updates == 1 ? @"" : @"s"];
+    [detail appendFormat:@"%lu 个软件包%@", (unsigned long)tweaks.count, tweaks.count == 1 ? @"" : @"s"];
+    if (updates > 0) [detail appendFormat:@" · %lu 项更新%@", (unsigned long)updates, updates == 1 ? @"" : @"s"];
     config.secondaryText = detail;
     config.secondaryTextProperties.font = [UIFont systemFontOfSize:14.0 weight:UIFontWeightRegular];
     config.secondaryTextProperties.color = updates > 0 ? UIColor.systemBlueColor : [UIColor.labelColor colorWithAlphaComponent:0.55];

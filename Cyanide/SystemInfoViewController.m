@@ -230,11 +230,11 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"System Info";
+    self.title = @"系统信息";
     self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
     self.refreshControl = [UIRefreshControl new];
     [self.refreshControl addTarget:self action:@selector(pullToRefresh) forControlEvents:UIControlEventValueChanged];
-    self.appsStatus = @"Tap to calculate";
+    self.appsStatus = @"点按开始计算";
     self.appSort = [NSUserDefaults.standardUserDefaults integerForKey:kSIAppSortKey];
     [self updateSortMenu];
     [self refreshLocal];
@@ -253,7 +253,7 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
 
 - (void)updateSortMenu
 {
-    NSArray *titles = @[ @"Total Size", @"App Size", @"Data Size", @"Name" ];
+    NSArray *titles = @[ @"总大小", @"应用大小", @"数据大小", @"Name" ];
     NSMutableArray *actions = [NSMutableArray array];
     __weak typeof(self) weakSelf = self;
     for (NSInteger i = 0; i < (NSInteger)titles.count; i++) {
@@ -271,7 +271,7 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
     }
     UIBarButtonItem *item = [[UIBarButtonItem alloc]
         initWithImage:[UIImage systemImageNamed:@"arrow.up.arrow.down"]
-                 menu:[UIMenu menuWithTitle:@"Sort Apps By" children:actions]];
+                 menu:[UIMenu menuWithTitle:@"排序方式" children:actions]];
     item.enabled = self.apps.count > 0;
     self.navigationItem.rightBarButtonItem = item;
 }
@@ -307,13 +307,13 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
         @[ dev.systemName ?: @"iOS", [NSString stringWithFormat:@"%@ (%@)", dev.systemVersion,
                                        si_string_sysctl("kern.osversion") ?: @"?"] ],
         @[ @"Uptime", uptime ],
-        @[ @"Last restart", booted ],
+        @[ @"上次重启", booted ],
     ];
 
     NSDictionary *k = settings_kernel_access_status();
     self.kernelRows = @[
         @[ @"State", k[@"state"] ],
-        @[ @"SpringBoard session", [k[@"springboard"] boolValue] ? @"Open" : @"Closed" ],
+        @[ @"SpringBoard 会话", [k[@"springboard"] boolValue] ? @"Open" : @"Closed" ],
         @[ @"", k[@"detail"] ],
     ];
 
@@ -342,13 +342,13 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
         return [v isKindOfClass:NSNumber.class] ? v : nil;
     };
     NSNumber *cycles = num(@"CycleCount");
-    if (cycles != nil) [rows addObject:@[ @"Cycle count", cycles.stringValue ]];
+    if (cycles != nil) [rows addObject:@[ @"循环次数", cycles.stringValue ]];
     NSNumber *design = num(@"DesignCapacity");
     NSNumber *full = num(@"NominalChargeCapacity") ?: num(@"AppleRawMaxCapacity");
     NSNumber *applePct = num(@"MaximumCapacityPercent");
-    if (applePct != nil) [rows addObject:@[ @"Maximum capacity", [NSString stringWithFormat:@"%@%%", applePct] ]];
+    if (applePct != nil) [rows addObject:@[ @"最大容量", [NSString stringWithFormat:@"%@%%", applePct] ]];
     if (design.doubleValue > 0 && full != nil) {
-        [rows addObject:@[ applePct != nil ? @"Measured capacity" : @"Maximum capacity",
+        [rows addObject:@[ applePct != nil ? @"实测容量" : @"最大容量",
                            [NSString stringWithFormat:@"%.1f%% (%@ of %@ mAh)",
                             100.0 * full.doubleValue / design.doubleValue, full, design] ]];
     }
@@ -362,17 +362,17 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
     if (amps != nil) [rows addObject:@[ @"Current", [NSString stringWithFormat:@"%d mA", amps.intValue] ]];
     NSNumber *charging = num(@"IsCharging"), *external = num(@"ExternalConnected");
     if (charging != nil || external != nil)
-        [rows addObject:@[ @"Power", charging.boolValue ? @"Charging" : external.boolValue ? @"Connected, not charging" : @"On battery" ]];
+        [rows addObject:@[ @"Power", charging.boolValue ? @"Charging" : external.boolValue ? @"已连接，未充电" : @"使用电池" ]];
     self.batteryRows = rows;
-    self.batteryStatus = rows.count ? [NSString stringWithFormat:@"Read from AppleSmartBattery in %@.", source]
-                                    : @"The battery driver returned no values.";
+    self.batteryStatus = rows.count ? [NSString stringWithFormat:@"已从 AppleSmartBattery 读取，耗时 %@。", source]
+                                    : @"电池驱动没有返回任何数值。";
 }
 
 - (void)readBatteryAllowingFullExploit:(BOOL)allowFullExploit
 {
     if (self.readingBattery) return;
     self.readingBattery = YES;
-    if (!self.batteryRows.count) self.batteryStatus = @"Reading…";
+    if (!self.batteryRows.count) self.batteryStatus = @"读取中…";
     [self.tableView reloadData];
     __weak typeof(self) weakSelf = self;
     settings_battery_info_async(allowFullExploit, ^(NSDictionary *battery, NSString *source, NSString *message) {
@@ -397,7 +397,7 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
 {
     if (self.scanningApps) return;
     self.scanningApps = YES;
-    self.appsStatus = @"Calculating… this can take a moment";
+    self.appsStatus = @"计算中… 可能需要一点时间";
     [self.tableView reloadData];
     __weak typeof(self) weakSelf = self;
     void (^scan)(void) = ^{
@@ -408,7 +408,7 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
                 if (!me) return;
                 me.scanningApps = NO;
                 me.apps = [me sortedApps:apps];
-                me.appsStatus = apps.count ? nil : @"No apps could be read. Tap to try again.";
+                me.appsStatus = apps.count ? nil : @"未能读取任何应用。点按重试。";
                 [me updateSortMenu];
                 [me.tableView reloadData];
             });
@@ -423,7 +423,7 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
         BOOL needsRun = [message isEqualToString:kSettingsFullExploitRequiredMessage];
         me.appsStatus = needsRun
             ? kSettingsNoKernelAccessHint
-            : (message ?: @"Filesystem access is not available.");
+            : (message ?: @"文件系统访问不可用。");
         [me.tableView reloadData];
         if (needsRun) [me needsExploit];
     });
@@ -434,7 +434,7 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
 - (void)needsExploit
 {
     __weak typeof(self) weakSelf = self;
-    settings_tool_needs_exploit(self, self.tableView, @"System Info", ^{
+    settings_tool_needs_exploit(self, self.tableView, @"系统信息", ^{
         typeof(self) me = weakSelf;
         if (!me) return;
         if (!me.batteryRows.count) [me readBatteryAllowingFullExploit:NO];
@@ -454,10 +454,10 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
 {
     switch ((SISection)section) {
         case SISectionDevice:  return @"Device";
-        case SISectionKernel:  return @"Kernel Access";
+        case SISectionKernel:  return @"内核权限";
         case SISectionBattery: return @"Battery";
         case SISectionStorage: return @"Storage";
-        case SISectionApps:    return self.apps.count ? [NSString stringWithFormat:@"%lu Apps", (unsigned long)self.apps.count] : @"Apps";
+        case SISectionApps:    return self.apps.count ? [NSString stringWithFormat:@"%lu 个应用", (unsigned long)self.apps.count] : @"Apps";
         default: return nil;
     }
 }
@@ -466,9 +466,9 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
 {
     if (section == SISectionBattery) return self.batteryStatus;
     if (section == SISectionApps)
-        return @"Installed apps only, app bundle plus data container. Shared App Group data and system apps are not "
-               @"included, so iOS Settings can show larger numbers. “≥” marks an app whose folders couldn't all be read. "
-               @"Pull down to recalculate.";
+        return @"仅统计已安装的应用（应用包加数据容器）。共享的 App Group 数据与系统应用"
+               @"不计入，所以 iOS「设置」里显示的数值可能更大。「≥」表示该应用的部分文件夹无法读取。"
+               @"下拉可重新计算。";
     return nil;
 }
 
@@ -533,7 +533,7 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
         case SISectionStorage: return [self valueCell:self.storageRows[row]];
         case SISectionBattery:
             if (self.batteryRows.count) return [self valueCell:self.batteryRows[row]];
-            return [self actionCell:self.readingBattery ? @"Reading battery…" : @"Read Battery Info" busy:self.readingBattery];
+            return [self actionCell:self.readingBattery ? @"正在读取电池…" : @"读取电池信息" busy:self.readingBattery];
         case SISectionApps: {
             if (self.appsStatus && row == 0) return [self actionCell:self.appsStatus busy:self.scanningApps];
             SIApp *app = self.apps[row - (self.appsStatus ? 1 : 0)];
@@ -546,8 +546,8 @@ static NSString * const kSIAppSortKey = @"SystemInfoAppSort";
             c.imageProperties.tintColor = UIColor.tertiaryLabelColor;
             c.text = app.name;
             c.textProperties.numberOfLines = 1;
-            c.secondaryText = [NSString stringWithFormat:@"App %@ · Data %@%@", si_bytes(app.appBytes), si_bytes(app.dataBytes),
-                               app.incomplete ? @" · partly unreadable" : @""];
+            c.secondaryText = [NSString stringWithFormat:@"应用 %@ · 数据 %@%@", si_bytes(app.appBytes), si_bytes(app.dataBytes),
+                               app.incomplete ? @" · 部分不可读" : @""];
             c.secondaryTextProperties.color = UIColor.secondaryLabelColor;
             c.secondaryTextProperties.numberOfLines = 1;
             cell.contentConfiguration = c;

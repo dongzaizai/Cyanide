@@ -929,7 +929,7 @@ static NSString *nbl_text_for_slot(NiceBarLiteSlotConfig slot, bool celsius)
         case NiceBarLiteContentTimeFormat:
             return nbl_date_with_format(slot.timeFormat && slot.timeFormat[0] ? @(slot.timeFormat) : @"HH:mm");
         case NiceBarLiteContentWeather:
-            return slot.weatherText && slot.weatherText[0] ? @(slot.weatherText) : @"Weather --";
+            return slot.weatherText && slot.weatherText[0] ? @(slot.weatherText) : @"天气 --";
         case NiceBarLiteContentOff:
         default:
             return @"";

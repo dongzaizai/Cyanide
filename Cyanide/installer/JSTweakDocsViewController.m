@@ -13,7 +13,7 @@
     self.view.backgroundColor = UIColor.systemGroupedBackgroundColor;
 
     BOOL repoMode = (self.docsMode == JSTweakDocsModeSetupRepo);
-    self.title = repoMode ? @"Set Up a Repo" : @"Build a JS Tweak";
+    self.title = repoMode ? @"搭建插件源" : @"编写 JS 插件";
 
     UIBarButtonItem *done = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                          target:self action:@selector(dismiss)];
@@ -59,12 +59,12 @@
 
 - (void)buildTweakDocsInStack:(UIStackView *)stack
 {
-    [stack addArrangedSubview:[self introCard:@"Build JavaScript Tweaks"
-                                        body:@"Write .js scripts that run inside SpringBoard through Cyanide's RemoteCall bridge. Publish them as a source repo or load them locally with QuickLoader."
-                                      credit:@"JavaScript engine contributed by @MinePlayer16"]];
+    [stack addArrangedSubview:[self introCard:@"编写 JavaScript 插件"
+                                        body:@"编写在 SpringBoard 内通过 Cyanide 的 RemoteCall 桥运行的 .js 脚本。可以把它们发布成插件源，也可以用 QuickLoader 在本地加载。"
+                                      credit:@"JavaScript 引擎由 @MinePlayer16 贡献"]];
 
-    [stack addArrangedSubview:[self docCard:@"Writing a Tweak"
-        body:@"A tweak is a plain .js file that runs inside JavaScriptCore. 64-bit pointers are passed as hex strings (e.g. \"0x105f2a000\"). Wrap your code in an IIFE:\n\n"
+    [stack addArrangedSubview:[self docCard:@"编写插件"
+        body:@"插件就是一个运行在 JavaScriptCore 里的普通 .js 文件。64 位指针以十六进制字符串传递（例如 \"0x105f2a000\"）。请把代码包在 IIFE 中：\n\n"
               "(() => {\n"
               "  log(\"Hello from my tweak!\");\n"
               "  var app = r_msg2(\n"
@@ -75,8 +75,8 @@
               "})();\n\n"
               "Use log() to print to Cyanide's Log tab. Use r_msg2_main() instead of r_msg2() for anything that touches UIKit views."]];
 
-    [stack addArrangedSubview:[self docCard:@"Parameter Declaration"
-        body:@"Add @param comments at the top of your script. Cyanide parses them and generates native UI controls in Settings.\n\n"
+    [stack addArrangedSubview:[self docCard:@"参数声明"
+        body:@"在脚本顶部添加 @param 注释。Cyanide 会解析它们，并在「设置」里生成原生控件。\n\n"
               "Syntax:\n"
               "// @param: type | varName | Label | default | range\n\n"
               "Types:\n\n"
@@ -91,7 +91,7 @@
               "Default values auto-populate on first install. The slider shows a \"(Def)\" indicator when at the declared default."]];
 
     [stack addArrangedSubview:[self docCard:@"RemoteCall API"
-        body:@"These functions are injected into every JS context:\n\n"
+        body:@"以下函数会被注入到每个 JS 上下文中：\n\n"
               "log(message)\n"
               "  Print to Cyanide's log console.\n\n"
               "r_class(name) → pointer\n"
@@ -110,23 +110,23 @@
               "r_responds(target, selector) → bool\n"
               "  Check if an object responds to a selector."]];
 
-    [stack addArrangedSubview:[self docCard:@"Reading Parameters (QuickLoader)"
-        body:@"QuickLoader scripts can read their @param values at runtime:\n\n"
+    [stack addArrangedSubview:[self docCard:@"读取参数（QuickLoader）"
+        body:@"QuickLoader 脚本可以在运行时读取自己的 @param 值：\n\n"
               "r_pref_num(\"blurRadius\")   → float\n"
               "r_pref_bool(\"enableBlur\")  → boolean\n"
               "r_pref_str(\"tintColor\")    → string\n\n"
               "RepoTweaks scripts receive their parameters as pre-injected global variables instead."]];
 
     [stack addArrangedSubview:[self docCard:@"Timers"
-        body:@"Standard timer functions are mapped to GCD background queues so they never block the UI:\n\n"
+        body:@"标准定时器函数被映射到 GCD 后台队列，因此不会阻塞界面：\n\n"
               "setInterval(fn, ms) → id\n"
               "clearInterval(id)\n"
               "setTimeout(fn, ms) → id\n"
               "clearTimeout(id)\n\n"
               "All active timers are automatically cancelled when the tweak is disabled or Cyanide cleans up."]];
 
-    [stack addArrangedSubview:[self docCard:@"Color Allocation Example"
-        body:@"64-bit IPC can't pass CGFloat arrays directly. Allocate colors through CIColor:\n\n"
+    [stack addArrangedSubview:[self docCard:@"颜色分配示例"
+        body:@"64 位 IPC 无法直接传递 CGFloat 数组。请通过 CIColor 分配颜色：\n\n"
               "var hex = \"#00FFCC\".replace('#','');\n"
               "var r = parseInt(hex.substring(0,2),16)/255;\n"
               "var g = parseInt(hex.substring(2,4),16)/255;\n"
@@ -142,7 +142,7 @@
               "r_msg2(str, \"release\");"]];
 
     [stack addArrangedSubview:[self docCard:@"Tips"
-        body:@"• Always use r_msg2_main for view manipulation — r_msg2 on a background thread can crash SpringBoard.\n"
+        body:@"• 操作视图时务必使用 r_msg2_main —— 在后台线程调用 r_msg2 会让 SpringBoard 崩溃。\n"
               "• Release r_nsstr allocations to avoid leaking memory in the SpringBoard process.\n"
               "• Use r_responds to check selectors before calling them — iOS versions differ.\n"
               "• Test locally with QuickLoader before publishing to a repo.\n"
@@ -153,12 +153,12 @@
 
 - (void)buildRepoDocsInStack:(UIStackView *)stack
 {
-    [stack addArrangedSubview:[self introCard:@"Set Up a Tweak Repository"
-                                        body:@"Host your JavaScript tweaks as an HTTPS JSON feed that Cyanide users can add in the Sources tab. No server-side code needed — a GitHub Pages repo or any static file host works."
+    [stack addArrangedSubview:[self introCard:@"搭建插件源"
+                                        body:@"把你的 JavaScript 插件以 HTTPS JSON 源的形式托管，Cyanide 用户可以在「源」标签页中添加。完全不需要服务端代码 —— GitHub Pages 仓库或任意静态文件托管都可以。"
                                       credit:nil]];
 
-    [stack addArrangedSubview:[self docCard:@"Repository JSON Format"
-        body:@"Create a JSON file with this structure:\n\n"
+    [stack addArrangedSubview:[self docCard:@"插件源的 JSON 格式"
+        body:@"创建一个包含以下结构的 JSON 文件：\n\n"
               "{\n"
               "  \"repoName\": \"My Repo\",\n"
               "  \"author\": \"yourname\",\n"
@@ -176,7 +176,7 @@
               "}\n\n"
               "Host it at any HTTPS URL. Users paste this URL into Cyanide's Sources tab."]];
 
-    [stack addArrangedSubview:[self docCard:@"Required Fields"
+    [stack addArrangedSubview:[self docCard:@"必填字段"
         body:@"repoName\n"
               "  Display name shown in the Sources list.\n\n"
               "author\n"
@@ -195,7 +195,7 @@
               "  HTTPS URL to the .js file. Cyanide\n"
               "  downloads and caches it on refresh."]];
 
-    [stack addArrangedSubview:[self docCard:@"Optional Fields"
+    [stack addArrangedSubview:[self docCard:@"可选字段"
         body:@"tweaks[].symbol\n"
               "  SF Symbol name for the tweak icon\n"
               "  (e.g. \"paintpalette.fill\", \"wind\").\n"
@@ -208,8 +208,8 @@
               "Custom icon images are not yet supported\n"
               "but are planned for a future update."]];
 
-    [stack addArrangedSubview:[self docCard:@"Hosting with GitHub Pages"
-        body:@"1. Create a public GitHub repo\n"
+    [stack addArrangedSubview:[self docCard:@"用 GitHub Pages 托管"
+        body:@"1. 创建一个公开的 GitHub 仓库\n"
               "2. Add your .js tweak files\n"
               "3. Add a JSON file (e.g. tweaks.json)\n"
               "   pointing scriptURLs to the raw files:\n\n"
@@ -220,15 +220,15 @@
               "5. Share the JSON URL with users:\n"
               "   https://yourname.github.io/repo/tweaks.json"]];
 
-    [stack addArrangedSubview:[self docCard:@"Updating Tweaks"
-        body:@"To push an update:\n\n"
+    [stack addArrangedSubview:[self docCard:@"更新插件"
+        body:@"要推送一次更新：\n\n"
               "1. Update the .js file at the same URL\n"
               "2. Bump the version string in the JSON\n"
               "3. Commit and push\n\n"
               "Cyanide checks for updates every few hours. When the repo version is newer than the installed version, the Sources tab shows an update badge. Users tap the tweak to reinstall the latest version."]];
 
-    [stack addArrangedSubview:[self docCard:@"Multiple Tweaks"
-        body:@"Add more entries to the tweaks array:\n\n"
+    [stack addArrangedSubview:[self docCard:@"多个插件"
+        body:@"在 tweaks 数组中添加更多条目：\n\n"
               "\"tweaks\": [\n"
               "  { \"id\": \"me.hidedock\", … },\n"
               "  { \"id\": \"me.colordock\", … },\n"
@@ -237,7 +237,7 @@
               "Each tweak needs its own unique id and scriptURL. They all share the repo's author and repoName."]];
 
     [stack addArrangedSubview:[self docCard:@"Tips"
-        body:@"• Use descriptive ids like \"yourname.tweakname\" to avoid collisions with other repos.\n"
+        body:@"• 使用有辨识度的 id，例如 \"yourname.tweakname\"，以免与其他源冲突。\n"
               "• Keep descriptions short — they show as one or two lines in the package list.\n"
               "• Bump the version on every change so users get the update badge.\n"
               "• Test scripts locally with QuickLoader before adding them to your repo.\n"
@@ -255,7 +255,7 @@
 {
     [UIPasteboard generalPasteboard].string = [self markdownString];
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                   message:@"Copied to clipboard"
+                                                                   message:@"已拷贝到剪贴板"
                                                             preferredStyle:UIAlertControllerStyleAlert];
     [self presentViewController:alert animated:YES completion:nil];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -285,7 +285,7 @@
 - (NSString *)tweakMarkdown
 {
     return
-    @"# Cyanide JavaScript Tweak Documentation\n\n"
+    @"# Cyanide JavaScript 插件文档\n\n"
     "JavaScript engine contributed by @MinePlayer16.\n\n"
     "---\n\n"
     "## Writing a Tweak\n\n"
@@ -322,7 +322,7 @@
 - (NSString *)repoMarkdown
 {
     return
-    @"# Cyanide Repo Setup Guide\n\n"
+    @"# Cyanide 插件源搭建指南\n\n"
     "## JSON Format\n\n"
     "```json\n"
     "{\n"

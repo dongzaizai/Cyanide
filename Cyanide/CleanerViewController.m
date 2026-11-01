@@ -772,7 +772,7 @@ static BOOL cleaner_intro_accepted(void)
 - (instancetype)init
 {
     self = [super initWithStyle:UITableViewStyleInsetGrouped];
-    if (self) self.title = @"Cache Cleaner";
+    if (self) self.title = @"缓存清理";
     return self;
 }
 
@@ -788,7 +788,7 @@ static BOOL cleaner_intro_accepted(void)
     self.searchCtrl = [[UISearchController alloc] initWithSearchResultsController:nil];
     self.searchCtrl.searchResultsUpdater = self;
     self.searchCtrl.obscuresBackgroundDuringPresentation = NO;
-    self.searchCtrl.searchBar.placeholder = @"Filter apps";
+    self.searchCtrl.searchBar.placeholder = @"筛选应用";
     self.navigationItem.searchController = self.searchCtrl;
     self.navigationItem.hidesSearchBarWhenScrolling = YES;
     self.definesPresentationContext = YES;
@@ -836,24 +836,24 @@ static BOOL cleaner_intro_accepted(void)
 {
     if (cleaner_intro_accepted() || self.presentedViewController) return;
     UIAlertController *ac = [UIAlertController
-        alertControllerWithTitle:@"Before You Clean"
-                         message:@"Cache Cleaner removes the contents of each app's Library/Caches and tmp folders, plus optional CrashReporter logs. "
-                                 @"Documents, settings, logins and other app data are not touched. Active apps are checked again before each folder. "
-                                 @"Detection is best-effort; close apps before cleaning.\n\n"
-                                 @"What can happen:\n"
-                                 @"• Apps load slower at first and use data to rebuild their caches.\n"
-                                 @"• Some apps keep offline content (music, podcasts, maps, game data) in their cache. "
-                                 @"It has to be downloaded again — check large caches before cleaning.\n"
-                                 @"• Rarely, an app asks you to sign in again or loses an unsent draft.\n"
-                                 @"• An app waiting in the background may crash once when you return to it.\n\n"
-                                 @"Reported sizes are logical file sizes; actual recovered storage can differ. "
-                                 @"Apps refill their caches as you use them."
+        alertControllerWithTitle:@"清理之前"
+                         message:@"缓存清理会删除每个应用 Library/Caches 与 tmp 文件夹的内容，以及可选的 CrashReporter 日志。"
+                                 @"「文稿」、设置、登录状态和其他应用数据不会被改动。每次清理前都会再次检查该应用是否正在使用。"
+                                 @"活跃应用的检测并非绝对可靠；清理前请先关闭应用。\n\n"
+                                 @"可能出现的情况：\n"
+                                 @"• 应用首次加载会变慢，并消耗流量重建缓存。\n"
+                                 @"• 部分应用会把离线内容（音乐、播客、地图、游戏数据）放在缓存里。"
+                                 @"这些内容需要重新下载 —— 清理前请留意体积较大的缓存。\n"
+                                 @"• 少数情况下，应用会要求重新登录，或丢失尚未发送的草稿。\n"
+                                 @"• 在后台挂起的应用，回到前台时可能会崩溃一次。\n\n"
+                                 @"显示的体积是逻辑文件大小，实际释放的空间可能不同。"
+                                 @"随着使用，应用会重新填满缓存。"
                   preferredStyle:UIAlertControllerStyleAlert];
     __weak typeof(self) weakSelf = self;
     [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *a) {
         [weakSelf.navigationController popViewControllerAnimated:YES];
     }]];
-    [ac addAction:[UIAlertAction actionWithTitle:@"Got It" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
+    [ac addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
         [NSUserDefaults.standardUserDefaults setInteger:kCleanerIntroVersion forKey:kCleanerIntroAcceptedKey];
         [weakSelf updateControls];
         if (!weakSelf.accessReady && !weakSelf.loading) [weakSelf ensureAccessAllowingFullExploit:NO];
@@ -1069,10 +1069,10 @@ static BOOL cleaner_intro_accepted(void)
     BOOL enabled = !self.loading && !self.cleaning && self.accessReady && count > 0 &&
                    !selectedAppsNeedProcessList;
     UIButtonConfiguration *cfg = self.cleanButton.configuration;
-    if (self.cleaning) cfg.title = @"Cleaning…";
+    if (self.cleaning) cfg.title = @"清理中…";
     else if (count > 0)
-        cfg.title = [NSString stringWithFormat:@"Clean Selected · %@", cleaner_bytes([self selectedBytes])];
-    else cfg.title = @"Select Items to Clean";
+        cfg.title = [NSString stringWithFormat:@"清理所选 · %@", cleaner_bytes([self selectedBytes])];
+    else cfg.title = @"选择要清理的项目";
     self.cleanButton.configuration = cfg;
     self.cleanButton.enabled = enabled;
     self.cleanProgress.hidden = !self.cleaning;
@@ -1098,25 +1098,25 @@ static BOOL cleaner_intro_accepted(void)
         if (item.selected) selected++;
     }
     BOOL allSelected = selectable > 0 && selected == selectable;
-    UIAction *selectAll = [UIAction actionWithTitle:allSelected ? @"Deselect All" : @"Select All Apps"
+    UIAction *selectAll = [UIAction actionWithTitle:allSelected ? @"取消全选" : @"全选应用"
                                               image:[UIImage systemImageNamed:allSelected ? @"circle" : @"checkmark.circle"]
                                          identifier:nil handler:^(UIAction *x) { [weakSelf toggleSelectAll:nil]; }];
     if (busy || !self.processListAvailable || selectable == 0) selectAll.attributes = UIMenuElementAttributesDisabled;
     NSUInteger large = 0;
     for (CYCleanerItem *item in self.items)
         if (!item.active && !item.systemApp && item.totalBytes >= kCleanerLargeCacheBytes) large++;
-    UIAction *selectLarge = [UIAction actionWithTitle:@"Select Large Caches (50 MB+)"
+    UIAction *selectLarge = [UIAction actionWithTitle:@"选择大缓存（50 MB 以上）"
                                                 image:[UIImage systemImageNamed:@"externaldrive.badge.checkmark"]
                                            identifier:nil handler:^(UIAction *x) { [weakSelf selectLargeCaches:nil]; }];
-    selectLarge.subtitle = large ? [NSString stringWithFormat:@"%lu app%@", (unsigned long)large, large == 1 ? @"" : @"s"]
-                                 : @"None this large";
+    selectLarge.subtitle = large ? [NSString stringWithFormat:@"%lu 个应用%@", (unsigned long)large, large == 1 ? @"" : @"s"]
+                                 : @"没有这么大的";
     if (busy || !self.processListAvailable || large == 0) selectLarge.attributes = UIMenuElementAttributesDisabled;
-    UIAction *folders = [UIAction actionWithTitle:@"Review Folders" image:[UIImage systemImageNamed:@"folder"]
+    UIAction *folders = [UIAction actionWithTitle:@"查看文件夹" image:[UIImage systemImageNamed:@"folder"]
                                        identifier:nil handler:^(UIAction *x) { [weakSelf showSelectedFolders:nil]; }];
     if (busy || count == 0) folders.attributes = UIMenuElementAttributesDisabled;
     UIMenu *menu = [UIMenu menuWithChildren:@[
         [UIMenu menuWithTitle:@"" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:@[ selectAll, selectLarge, folders ]],
-        [UIMenu menuWithTitle:@"Sort By" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:@[
+        [UIMenu menuWithTitle:@"排序" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:@[
             sortAction(@"Size", CYCleanerSortSize), sortAction(@"Name", CYCleanerSortName),
         ]],
     ]];
@@ -1169,11 +1169,11 @@ static BOOL cleaner_intro_accepted(void)
         BOOL needsFullRun = [message isEqualToString:kSettingsFullExploitRequiredMessage];
         self.accessMessage = needsFullRun
             ? kSettingsNoKernelAccessHint
-            : (message ?: @"Filesystem access is not available.");
+            : (message ?: @"文件系统访问不可用。");
         [self.tableView reloadData];
         [self updateControls];
         if (needsFullRun) {
-            settings_tool_needs_exploit(self, self.tableView, @"Cache Cleaner", ^{
+            settings_tool_needs_exploit(self, self.tableView, @"缓存清理", ^{
                 [weakSelf ensureAccessAllowingFullExploit:NO];
             });
         }
@@ -1375,7 +1375,7 @@ static BOOL cleaner_intro_accepted(void)
                 }
                 if (logBytes > 0) {
                     crashLogs = [[CYCleanerItem alloc] init];
-                    crashLogs.name = @"Crash Logs";
+                    crashLogs.name = @"崩溃日志";
                     crashLogs.cacheBytes = logBytes;
                     crashLogs.fileCount = logFiles;
                     crashLogs.logRoots = logRoots;
@@ -1475,8 +1475,8 @@ static BOOL cleaner_intro_accepted(void)
     BOOL logsSelected = self.crashLogs.selected;
     if (appCount > 0 && !self.processListAvailable) {
         UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle:@"Kernel Access Needed"
-                             message:@"Cache Cleaner cannot tell which apps are active without kernel access. Run the chain once, then try again."
+            alertControllerWithTitle:@"需要内核权限"
+                             message:@"没有内核权限，缓存清理无法判断哪些应用正在使用。请先运行一次漏洞利用链，然后重试。"
                       preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:alert animated:YES completion:nil];
@@ -1486,13 +1486,13 @@ static BOOL cleaner_intro_accepted(void)
     if (count == 0) return;
 
     NSMutableString *message = [NSMutableString stringWithFormat:
-        @"Remove the selected disposable data (%@ in logical file sizes)? Documents, settings and app data are not touched.",
+        @"要删除所选的临时数据（逻辑大小 %@）吗？「文稿」、设置和应用数据不会被改动。",
         cleaner_bytes([self selectedBytes])];
     if (appCount > 0)
-        [message appendFormat:@" %lu app cache/temp folder%@.", (unsigned long)appCount, appCount == 1 ? @"" : @"s"];
-    if (logsSelected) [message appendString:@" CrashReporter logs."];
-    [message appendString:@" Apps may need to redownload content."];
-    UIAlertController *confirm = [UIAlertController alertControllerWithTitle:@"Clean Caches?"
+        [message appendFormat:@" %lu 个应用的缓存/tmp 文件夹%@。", (unsigned long)appCount, appCount == 1 ? @"" : @"s"];
+    if (logsSelected) [message appendString:@" CrashReporter 日志。"];
+    [message appendString:@" 应用可能需要重新下载内容。"];
+    UIAlertController *confirm = [UIAlertController alertControllerWithTitle:@"清理缓存？"
                                                                      message:message
                                                               preferredStyle:UIAlertControllerStyleAlert];
     [confirm addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
@@ -1689,27 +1689,27 @@ static BOOL cleaner_intro_accepted(void)
                     self.sectionCacheValid = NO;  // everything moves to Not Checked
                 }
                 NSMutableString *result = [NSMutableString stringWithFormat:
-                    @"Removed %@ (logical size).", cleaner_bytes(freed)];
+                    @"已删除 %@（逻辑大小）。", cleaner_bytes(freed)];
                 if (cleanedApps > 0)
-                    [result appendFormat:@" %lu app%@ cleaned.", (unsigned long)cleanedApps,
+                    [result appendFormat:@" 已清理 %lu 个应用%@。", (unsigned long)cleanedApps,
                      cleanedApps == 1 ? @"" : @"s"];
-                if (cleanedLogs) [result appendString:@" Crash logs removed."];
+                if (cleanedLogs) [result appendString:@" 已删除崩溃日志。"];
                 if (skippedActive > 0)
-                    [result appendFormat:@" Skipped %lu active app%@.", (unsigned long)skippedActive,
+                    [result appendFormat:@" 已跳过 %lu 个正在使用的应用%@。", (unsigned long)skippedActive,
                      skippedActive == 1 ? @"" : @"s"];
                 if (skippedChanged > 0)
-                    [result appendFormat:@" Skipped %lu app%@ that changed since the scan; rescan to clean.",
+                    [result appendFormat:@" 已跳过 %lu 个自扫描后有变动的应用%@；请重新扫描后再清理。",
                      (unsigned long)skippedChanged, skippedChanged == 1 ? @"" : @"s"];
                 if (failedItems > 0)
-                    [result appendFormat:@" Some files in %lu item%@ could not be removed.",
+                    [result appendFormat:@" %lu 个项目%@中有部分文件无法删除。",
                      (unsigned long)failedItems, failedItems == 1 ? @"" : @"s"];
                 if (interrupted)
-                    [result appendString:@" Cleaning stopped at a safety limit or background expiration; results are partial."];
+                    [result appendString:@" 清理因安全上限或后台超时而中止，结果不完整。"];
                 if (processUnavailable)
-                    [result appendString:@" Stopped: active-app detection was unavailable; remaining roots were not cleaned."];
+                    [result appendString:@" 已停止：无法检测正在使用的应用，其余目录未清理。"];
                 // Users read a refill minutes later as "it didn't work".
                 if (freed > 0)
-                    [result appendString:@" Apps rebuild their caches as you use them, so some of this space will be used again."];
+                    [result appendString:@" 随着使用，应用会重建缓存，这部分空间会再次被占用。"];
                 self.resultText = result;
                 NSMutableDictionary<NSString *, CYCleanerItem *> *results = [NSMutableDictionary dictionary];
                 CYCleanerItem *logsResult = nil;
@@ -1757,9 +1757,9 @@ static BOOL cleaner_intro_accepted(void)
     NSUInteger count = section == CYCleanerSectionSummary ? 0 : [self itemsInSection:section].count;
     if (!count) return nil;
     switch ((CYCleanerSection)section) {
-        case CYCleanerSectionApps:   return [NSString stringWithFormat:@"Apps (%lu)", (unsigned long)count];
-        case CYCleanerSectionSystem: return [NSString stringWithFormat:@"Built-in Apps (%lu)", (unsigned long)count];
-        case CYCleanerSectionLogs:   return [NSString stringWithFormat:@"Crash Logs (%lu)", (unsigned long)count];
+        case CYCleanerSectionApps:   return [NSString stringWithFormat:@"应用（%lu）", (unsigned long)count];
+        case CYCleanerSectionSystem: return [NSString stringWithFormat:@"内置应用（%lu）", (unsigned long)count];
+        case CYCleanerSectionLogs:   return [NSString stringWithFormat:@"崩溃日志（%lu）", (unsigned long)count];
         default: return nil;
     }
 }
@@ -1771,7 +1771,7 @@ static BOOL cleaner_intro_accepted(void)
     NSUInteger count = [self itemsInSection:section].count;
     if (!count) return nil;
     UIButtonConfiguration *cfg = [UIButtonConfiguration plainButtonConfiguration];
-    cfg.title = [NSString stringWithFormat:@"%@ (%lu)", self.processListAvailable ? @"Skipped — In Use" : @"Not Checked",
+    cfg.title = [NSString stringWithFormat:@"%@（%lu）", self.processListAvailable ? @"已跳过 — 正在使用" : @"未检查",
                  (unsigned long)count];
     cfg.image = [UIImage systemImageNamed:self.skippedExpanded ? @"chevron.down" : @"chevron.right"];
     cfg.imagePlacement = NSDirectionalRectEdgeTrailing;
@@ -1800,11 +1800,11 @@ static BOOL cleaner_intro_accepted(void)
     // Right under the card, where it's seen: how the list works.
     if (section == CYCleanerSectionSummary)
         return !self.loading && self.items.count
-            ? @"Tap an app or Crash Logs to select or deselect it. Touch and hold an app to open its cache folders in the File Browser."
+            ? @"点按应用或「崩溃日志」可以选中或取消选中。长按应用可在文件浏览器中打开它的缓存文件夹。"
             : nil;
     if (section != CYCleanerSectionSkipped) return nil;
-    return @"Only Library/Caches and tmp contents, plus the optional CrashReporter folders, are removed. "
-           @"Documents, settings and app data are not touched. Active-app checks are best-effort; built-in apps and Crash Logs are not selected by default.";
+    return @"只会删除 Library/Caches 与 tmp 的内容，以及可选的 CrashReporter 文件夹。"
+           @"「文稿」、设置和应用数据不会被改动。活跃应用检测并非绝对可靠；内置应用与崩溃日志默认不选中。";
 }
 
 - (void)configureSummary:(CYCleanerSummaryCell *)cell
@@ -1815,38 +1815,38 @@ static BOOL cleaner_intro_accepted(void)
         cell.bar.progressTintColor = UIColor.systemBlueColor;
         switch (self.phase) {
             case CYCleanerPhaseAccess:
-                cell.captionLabel.text = @"Getting File Access";
-                cell.totalLabel.text = @"Preparing…";
+                cell.captionLabel.text = @"正在获取文件访问权限";
+                cell.totalLabel.text = @"准备中…";
                 cell.bar.progress = 0;
-                cell.statusLabel.text = @"Cyanide opens SpringBoard to reach other apps' folders. This takes a few "
-                                        @"seconds the first time after Cyanide starts.";
+                cell.statusLabel.text = @"Cyanide 会打开 SpringBoard 来访问其他应用的文件夹。首次使用时，在 Cyanide 启动后需要几"
+                                        @"秒钟。";
                 break;
             case CYCleanerPhaseFinding:
-                cell.captionLabel.text = @"Finding Apps";
+                cell.captionLabel.text = @"正在查找应用";
                 cell.totalLabel.text = self.foundTotal ? [NSString stringWithFormat:@"%lu / %lu",
                                                           (unsigned long)self.foundDone, (unsigned long)self.foundTotal] : @"…";
                 cell.bar.progress = self.foundTotal ? (float)self.foundDone / (float)self.foundTotal : 0;
-                cell.statusLabel.text = @"Reading each app's name and icon.";
+                cell.statusLabel.text = @"正在读取各应用的名称与图标。";
                 break;
             case CYCleanerPhaseProcesses:
-                cell.captionLabel.text = @"Checking Running Apps";
+                cell.captionLabel.text = @"正在检查运行中的应用";
                 cell.totalLabel.text = @"…";
                 cell.bar.progress = 1;
-                cell.statusLabel.text = @"Apps in use are left alone.";
+                cell.statusLabel.text = @"正在使用的应用会被跳过。";
                 break;
             case CYCleanerPhaseLogs:
-                cell.captionLabel.text = @"Checking Crash Logs";
+                cell.captionLabel.text = @"正在检查崩溃日志";
                 cell.totalLabel.text = @"…";
                 cell.bar.progress = 1;
-                cell.statusLabel.text = @"Reading CrashReporter folders.";
+                cell.statusLabel.text = @"正在读取 CrashReporter 文件夹。";
                 break;
             case CYCleanerPhaseScanning:
-                cell.captionLabel.text = @"Measuring Caches";
+                cell.captionLabel.text = @"正在统计缓存体积";
                 cell.totalLabel.text = self.scanTotal ? [NSString stringWithFormat:@"%lu / %lu",
                                                          (unsigned long)self.scanDone, (unsigned long)self.scanTotal] : @"…";
                 cell.bar.progress = self.scanTotal ? (float)self.scanDone / (float)self.scanTotal : 0;
-                cell.statusLabel.text = self.scanName.length ? [NSString stringWithFormat:@"Checking %@…", self.scanName]
-                                                             : @"Starting…";
+                cell.statusLabel.text = self.scanName.length ? [NSString stringWithFormat:@"正在检查 %@…", self.scanName]
+                                                             : @"正在开始…";
                 break;
         }
         return;
@@ -1854,11 +1854,11 @@ static BOOL cleaner_intro_accepted(void)
     [cell.spinner stopAnimating];
     cell.bar.progressTintColor = UIColor.systemBlueColor;
     if (!self.accessReady) {
-        cell.captionLabel.text = @"Cache Cleaner";
+        cell.captionLabel.text = @"缓存清理";
         cell.totalLabel.text = @"—";
         cell.bar.progress = 0;
-        cell.statusLabel.text = self.accessMessage ?: (cleaner_intro_accepted() ? @"Filesystem access is not available."
-                                                                                : @"Read the note first; nothing is scanned until then.");
+        cell.statusLabel.text = self.accessMessage ?: (cleaner_intro_accepted() ? @"文件系统访问不可用。"
+                                                                                : @"请先阅读上面的说明；在此之前不会进行任何扫描。");
         return;
     }
     cell.captionLabel.text = @"Reclaimable";
@@ -1866,11 +1866,11 @@ static BOOL cleaner_intro_accepted(void)
     cell.bar.progress = total ? (float)((double)selected / (double)total) : 0;
     NSMutableArray<NSString *> *lines = [NSMutableArray array];
     if (self.resultText) [lines addObject:self.resultText];
-    [lines addObject:[NSString stringWithFormat:@"%@ selected in %lu item%@", cleaner_bytes(selected),
+    [lines addObject:[NSString stringWithFormat:@"已在 %lu 个项目%@中选中 %@", cleaner_bytes(selected),
                       (unsigned long)[self selectedCount], [self selectedCount] == 1 ? @"" : @"s"]];
-    [lines addObject:@"Logical file sizes, not guaranteed recovered storage."];
+    [lines addObject:@"逻辑文件大小，实际释放的空间不一定相同。"];
     if (!self.processListAvailable)
-        [lines addObject:@"Kernel access is unavailable, so apps in use can't be detected and nothing can be cleaned."];
+        [lines addObject:@"内核权限不可用，因此无法检测正在使用的应用，也无法清理。"];
     cell.statusLabel.text = [lines componentsJoinedByString:@"\n"];
 }
 
@@ -1894,15 +1894,15 @@ static BOOL cleaner_intro_accepted(void)
     if (item.isCrashLogs) {
         cell.iconView.image = [UIImage systemImageNamed:@"doc.text.magnifyingglass"];
         cell.iconView.tintColor = UIColor.systemOrangeColor;
-        cell.detailLabel.text = [NSString stringWithFormat:@"%lu crash log file%@ · CrashReporter",
+        cell.detailLabel.text = [NSString stringWithFormat:@"%lu 个崩溃日志文件%@ · CrashReporter",
                                  (unsigned long)item.fileCount, item.fileCount == 1 ? @"" : @"s"];
-        if (item.incomplete) cell.detailLabel.text = [cell.detailLabel.text stringByAppendingString:@" · incomplete scan"];
+        if (item.incomplete) cell.detailLabel.text = [cell.detailLabel.text stringByAppendingString:@" · 扫描不完整"];
     } else {
         NSMutableArray<NSString *> *parts = [NSMutableArray array];
-        if (item.cacheBytes > 0) [parts addObject:[NSString stringWithFormat:@"%@ cache", cleaner_bytes(item.cacheBytes)]];
-        if (item.tempBytes > 0) [parts addObject:[NSString stringWithFormat:@"%@ temp", cleaner_bytes(item.tempBytes)]];
-        if (item.active) [parts addObject:@"in use"];
-        else if (item.incomplete) [parts addObject:@"incomplete scan"];
+        if (item.cacheBytes > 0) [parts addObject:[NSString stringWithFormat:@"%@ 缓存", cleaner_bytes(item.cacheBytes)]];
+        if (item.tempBytes > 0) [parts addObject:[NSString stringWithFormat:@"%@ 临时文件", cleaner_bytes(item.tempBytes)]];
+        if (item.active) [parts addObject:@"正在使用"];
+        else if (item.incomplete) [parts addObject:@"扫描不完整"];
         cell.detailLabel.text = [parts componentsJoinedByString:@" · "];
     }
     cell.sizeLabel.text = item.incomplete ? [@"≥ " stringByAppendingString:cleaner_bytes(item.totalBytes)]
@@ -1958,7 +1958,7 @@ static BOOL cleaner_intro_accepted(void)
         if (item.isCrashLogs) {
             for (NSString *root in item.logRoots) {
                 NSString *name = root.lastPathComponent.length ? root.lastPathComponent : root;
-                [actions addObject:[UIAction actionWithTitle:[NSString stringWithFormat:@"Show %@ in File Browser", name]
+                [actions addObject:[UIAction actionWithTitle:[NSString stringWithFormat:@"在文件浏览器中显示 %@", name]
                                                        image:[UIImage systemImageNamed:@"folder"]
                                                   identifier:nil
                                                      handler:^(UIAction *a) { [weakSelf openInFileBrowser:root]; }]];
@@ -1966,10 +1966,10 @@ static BOOL cleaner_intro_accepted(void)
         } else {
             NSString *caches = [item.container.path stringByAppendingPathComponent:@"Library/Caches"];
             NSString *tmp = [item.container.path stringByAppendingPathComponent:@"tmp"];
-            [actions addObject:[UIAction actionWithTitle:@"Show Caches in File Browser" image:[UIImage systemImageNamed:@"folder"]
+            [actions addObject:[UIAction actionWithTitle:@"在文件浏览器中显示缓存" image:[UIImage systemImageNamed:@"folder"]
                                                identifier:nil handler:^(UIAction *a) { [weakSelf openInFileBrowser:caches]; }]];
             if (item.tempBytes > 0)
-                [actions addObject:[UIAction actionWithTitle:@"Show tmp in File Browser" image:[UIImage systemImageNamed:@"folder"]
+                [actions addObject:[UIAction actionWithTitle:@"在文件浏览器中显示 tmp" image:[UIImage systemImageNamed:@"folder"]
                                                   identifier:nil handler:^(UIAction *a) { [weakSelf openInFileBrowser:tmp]; }]];
         }
         return [UIMenu menuWithTitle:item.name children:actions];
@@ -1984,7 +1984,7 @@ static BOOL cleaner_intro_accepted(void)
 - (instancetype)init
 {
     self = [super initWithStyle:UITableViewStyleInsetGrouped];
-    if (self) self.title = @"Folders to Clean";
+    if (self) self.title = @"要清理的文件夹";
     return self;
 }
 

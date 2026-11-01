@@ -329,14 +329,14 @@ NSString *CyanideNiceBarSystemName(NSInteger item)
 {
     switch (item) {
         case NiceBarLiteSystemBatteryTemp: return @"Battery temp";
-        case NiceBarLiteSystemFreeRAM: return @"Free RAM";
+        case NiceBarLiteSystemFreeRAM: return @"可用内存";
         case NiceBarLiteSystemBatteryPercent: return @"Battery %";
         case NiceBarLiteSystemNetworkSpeed: return @"Network speed";
         case NiceBarLiteSystemUptime: return @"Uptime";
         case NiceBarLiteSystemDate: return @"Date";
         case NiceBarLiteSystemLunarDate: return @"Lunar date";
         case NiceBarLiteSystemTodayTraffic: return @"Today traffic";
-        case NiceBarLiteSystemCurrentIP: return @"Current IP";
+        case NiceBarLiteSystemCurrentIP: return @"当前 IP";
         case NiceBarLiteSystemFreeDisk: return @"Free disk";
         case NiceBarLiteSystemThermalState: return @"Thermal state";
     }
@@ -479,7 +479,7 @@ static NSArray<NSDictionary<NSString *, NSString *> *> *CyanideNiceBarTimePreset
 {
     self = [super initWithStyle:UITableViewStyleInsetGrouped];
     if (self) {
-        self.title = slotTitle.length ? slotTitle : @"Date / Time";
+        self.title = slotTitle.length ? slotTitle : @"日期 / 时间";
         self.selectedFormat = selectedFormat.length ? selectedFormat : @"HH:mm";
         self.selection = selection;
         NSMutableArray<NSString *> *titles = [NSMutableArray array];
@@ -556,7 +556,7 @@ static NSArray<NSDictionary<NSString *, NSString *> *> *CyanideNiceBarTimePreset
 {
     self = [super initWithStyle:UITableViewStyleInsetGrouped];
     if (self) {
-        self.title = slotTitle.length ? slotTitle : @"System Item";
+        self.title = slotTitle.length ? slotTitle : @"系统项目";
         self.selectedItem = selectedItem;
         self.selectedLanguage = selectedLanguage.length ? selectedLanguage : @"en";
         self.selection = selection;
@@ -576,7 +576,7 @@ static NSArray<NSDictionary<NSString *, NSString *> *> *CyanideNiceBarTimePreset
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    return section == 0 ? @"System Item" : @"Thermal State Language";
+    return section == 0 ? @"系统项目" : @"Thermal State Language";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -729,7 +729,7 @@ NSString *CyanideNiceBarWeatherSummary(NSInteger code, BOOL chinese)
                  useCelsius ? 1 : 0);
         if (!CLLocationManager.locationServicesEnabled) {
             log_user("[NICEBAR] Weather failed: location services disabled.\n");
-            [self finishWithOK:NO text:@"Weather --" temp:nil code:nil fetched:NO];
+            [self finishWithOK:NO text:@"天气 --" temp:nil code:nil fetched:NO];
             return;
         }
         if (!self.locationManager) {
@@ -789,7 +789,7 @@ NSString *CyanideNiceBarWeatherSummary(NSInteger code, BOOL chinese)
     printf("[NICEBAR] weather location failed: %s\n", error.localizedDescription.UTF8String ?: "unknown");
     log_user("[NICEBAR] Weather location failed: %s.\n", error.localizedDescription.UTF8String ?: "unknown");
     self.locationRequestInFlight = NO;
-    [self finishWithOK:NO text:@"Weather --" temp:nil code:nil fetched:NO];
+    [self finishWithOK:NO text:@"天气 --" temp:nil code:nil fetched:NO];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
@@ -798,7 +798,7 @@ NSString *CyanideNiceBarWeatherSummary(NSInteger code, BOOL chinese)
     self.locationRequestInFlight = NO;
     CLLocation *location = locations.lastObject;
     if (!location) {
-        [self finishWithOK:NO text:@"Weather --" temp:nil code:nil fetched:NO];
+        [self finishWithOK:NO text:@"天气 --" temp:nil code:nil fetched:NO];
         return;
     }
     [self fetchWeatherForLocation:location];
@@ -821,7 +821,7 @@ NSString *CyanideNiceBarWeatherSummary(NSInteger code, BOOL chinese)
     NSURL *url = [NSURL URLWithString:urlString];
     if (!url) {
         self.weatherFetchInFlight = NO;
-        [self finishWithOK:NO text:@"Weather --" temp:nil code:nil fetched:NO];
+        [self finishWithOK:NO text:@"天气 --" temp:nil code:nil fetched:NO];
         return;
     }
 
@@ -838,7 +838,7 @@ NSString *CyanideNiceBarWeatherSummary(NSInteger code, BOOL chinese)
             if (error || data.length == 0) {
                 printf("[NICEBAR] weather fetch failed: %s\n", error.localizedDescription.UTF8String ?: "no data");
                 log_user("[NICEBAR] Weather fetch failed: %s.\n", error.localizedDescription.UTF8String ?: "no data");
-                [self finishWithOK:NO text:@"Weather --" temp:nil code:nil fetched:NO];
+                [self finishWithOK:NO text:@"天气 --" temp:nil code:nil fetched:NO];
                 return;
             }
             NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -847,7 +847,7 @@ NSString *CyanideNiceBarWeatherSummary(NSInteger code, BOOL chinese)
             NSNumber *code = [current isKindOfClass:NSDictionary.class] ? current[@"weather_code"] : nil;
             if (![temp isKindOfClass:NSNumber.class] || ![code isKindOfClass:NSNumber.class]) {
                 log_user("[NICEBAR] Weather fetch returned invalid response.\n");
-                [self finishWithOK:NO text:@"Weather --" temp:nil code:nil fetched:NO];
+                [self finishWithOK:NO text:@"天气 --" temp:nil code:nil fetched:NO];
                 return;
             }
             NSString *summary = CyanideNiceBarWeatherSummary(code.integerValue, NO);
@@ -867,7 +867,7 @@ NSString *CyanideNiceBarWeatherSummary(NSInteger code, BOOL chinese)
                 code:(NSNumber *)code
              fetched:(BOOL)fetched
 {
-    NSString *resolved = text.length ? text : @"Weather --";
+    NSString *resolved = text.length ? text : @"天气 --";
     NSArray<CyanideNiceBarWeatherCompletion> *callbacks = [self.pendingCompletions copy];
     [self.pendingCompletions removeAllObjects];
     for (CyanideNiceBarWeatherCompletion callback in callbacks) {

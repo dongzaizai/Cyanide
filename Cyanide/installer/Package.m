@@ -99,7 +99,7 @@ static BOOL PackageRepoScriptRequiresNativeBridge(NSString *rawScript)
                          longDescription:longDescription
                                  version:version.length ? version : @"1.0"
                                   author:author.length ? author : source
-                                category:@"JavaScript Tweaks"
+                                category:@"JavaScript 插件"
                               symbolName:@"shippingbox.and.arrow.down.fill"
                                     kind:PackageInstallKindRepoTweak
                               enabledKey:nil

@@ -260,7 +260,7 @@ BOOL settings_snowboardlite_has_selected_theme(void)
 
 NSString *settings_snowboardlite_selected_theme_display_name(void)
 {
-    if (settings_sbl_selected_builtin_ios6()) return @"iOS 6 Theme";
+    if (settings_sbl_selected_builtin_ios6()) return @"iOS 6 主题";
     NSDictionary *theme = settings_sbl_selected_theme();
     NSString *name = theme[@"name"];
     return name.length > 0 ? name : @"None";
@@ -315,7 +315,7 @@ BOOL settings_sbl_import_folder_theme_named(NSURL *url,
     if (error && *error) return NO;
 
     NSString *baseName = displayName.length ? displayName :
-        (url.lastPathComponent.length ? url.lastPathComponent : @"Imported Theme");
+        (url.lastPathComponent.length ? url.lastPathComponent : @"导入的主题");
     NSString *themeID = [NSString stringWithFormat:@"sbl-%llu",
                          (unsigned long long)(NSDate.date.timeIntervalSince1970 * 1000.0)];
     NSString *themeDir = [root stringByAppendingPathComponent:themeID];

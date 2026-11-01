@@ -33,7 +33,7 @@
         <scene sceneID="cy4-QU-ZIz">
             <objects>
                 <navigationController id="8yM-QB-lo1" userLabel="Settings" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Settings" image="gear" catalog="system" id="90p-V5-FPd">
+                    <tabBarItem key="tabBarItem" title="设置" image="gear" catalog="system" id="90p-V5-FPd">
                         <color key="badgeColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBarItem>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="YsO-k3-Sb5">
@@ -57,7 +57,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Settings" id="Ofz-kh-Dfg"/>
+                    <navigationItem key="navigationItem" title="设置" id="Ofz-kh-Dfg"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1bh-fX-dfw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -67,7 +67,7 @@
         <scene sceneID="InsScNav">
             <objects>
                 <navigationController id="InsNv001" userLabel="Packages" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Packages" image="shippingbox.fill" catalog="system" id="InsTb001"/>
+                    <tabBarItem key="tabBarItem" title="软件包" image="shippingbox.fill" catalog="system" id="InsTb001"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="InsNb001">
                         <rect key="frame" x="0.0" y="118" width="393" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -89,7 +89,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Packages" id="InsNi001"/>
+                    <navigationItem key="navigationItem" title="软件包" id="InsNi001"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="InsFr002" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -99,7 +99,7 @@
         <scene sceneID="LogScNav">
             <objects>
                 <navigationController id="LogNv001" userLabel="Log" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Log" image="terminal" catalog="system" id="LogTb001"/>
+                    <tabBarItem key="tabBarItem" title="日志" image="terminal" catalog="system" id="LogTb001"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="LogNb001">
                         <rect key="frame" x="0.0" y="118" width="393" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -122,7 +122,7 @@
                         <color key="backgroundColor" red="0.02" green="0.05" blue="0.06" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeArea" id="LogSa001"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Log" id="LogNi001"/>
+                    <navigationItem key="navigationItem" title="日志" id="LogNi001"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LogFr002" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

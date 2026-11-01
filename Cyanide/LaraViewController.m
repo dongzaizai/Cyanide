@@ -19,7 +19,7 @@
 #import <PhotosUI/PhotosUI.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-static NSString * const kLaraCredit = @"Ported from lara by rooootdev.";
+static NSString * const kLaraCredit = @"移植自 rooootdev 的 lara。";
 
 typedef struct { int mode; const char *title; } LaraHUDMode;
 static const LaraHUDMode kLaraHUDModes[] = {
@@ -51,16 +51,16 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
         _hudMode = -2;
         _prefStates = [NSMutableDictionary dictionary];
         switch (tool) {
-            case LaraToolPerformanceHUD: self.title = @"Performance HUD"; break;
-            case LaraToolDebugOverlay:   self.title = @"Debug Overlay"; break;
-            case LaraToolUpsideDown:     self.title = @"Upside Down"; break;
-            case LaraToolHiddenSettings: self.title = @"Hidden Settings"; break;
-            case LaraToolJIT:            self.title = @"JIT Enabler"; break;
-            case LaraToolAppLimit:       self.title = @"3-App Limit"; break;
-            case LaraToolCards:          self.title = @"Wallet Card Art"; break;
-            case LaraToolDecrypt:        self.title = @"App Decrypt"; break;
-            case LaraToolSpringBoard:    self.title = @"SpringBoard Tools"; break;
-            case LaraToolFonts:          self.title = @"Font Overwrite"; break;
+            case LaraToolPerformanceHUD: self.title = @"性能 HUD"; break;
+            case LaraToolDebugOverlay:   self.title = @"调试浮层"; break;
+            case LaraToolUpsideDown:     self.title = @"倒置屏幕"; break;
+            case LaraToolHiddenSettings: self.title = @"隐藏设置"; break;
+            case LaraToolJIT:            self.title = @"JIT 开启器"; break;
+            case LaraToolAppLimit:       self.title = @"3 应用限制"; break;
+            case LaraToolCards:          self.title = @"钱包卡片图案"; break;
+            case LaraToolDecrypt:        self.title = @"应用解密"; break;
+            case LaraToolSpringBoard:    self.title = @"SpringBoard 工具"; break;
+            case LaraToolFonts:          self.title = @"字体替换"; break;
         }
     }
     return self;
@@ -114,14 +114,14 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
 {
     unsigned long long fontSize = [NSFileManager.defaultManager attributesOfItemAtPath:fontPath error:nil].fileSize;
     UIAlertController *sheet = [UIAlertController alertControllerWithTitle:fontPath.lastPathComponent
-        message:[NSString stringWithFormat:@"%@. Replace which system font? It has to be the same size or smaller.",
+        message:[NSString stringWithFormat:@"%@。要替换哪个系统字体？替换字体的体积必须相同或更小。",
                  [NSByteCountFormatter stringFromByteCount:(long long)fontSize countStyle:NSByteCountFormatterCountStyleFile]]
         preferredStyle:UIAlertControllerStyleActionSheet];
     __weak typeof(self) weakSelf = self;
     for (FontOWTarget t = 0; t < FontOWTargetCount; t++) {
         unsigned long long max = fontow_target_size(t);
         if (!max) continue;
-        NSString *title = [NSString stringWithFormat:@"%@ (up to %@)", fontow_target_title(t),
+        NSString *title = [NSString stringWithFormat:@"%@（最大 %@）", fontow_target_title(t),
                            [NSByteCountFormatter stringFromByteCount:(long long)max countStyle:NSByteCountFormatterCountStyleFile]];
         UIAlertAction *a = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
             [weakSelf fontsRun:YES target:t font:fontPath];
@@ -140,15 +140,15 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
 {
     __block NSString *outcome = nil;
     __weak typeof(self) weakSelf = self;
-    [self runNamed:apply ? @"Replacing the font" : @"Restoring the font"
+    [self runNamed:apply ? @"正在替换字体" : @"正在还原字体"
               work:^BOOL{ return apply ? fontow_apply(target, fontPath, &outcome) : fontow_restore(target, &outcome); }
               done:^(BOOL ok) {
         typeof(self) me = weakSelf;
         if (!me) return;
-        me.status = outcome ?: (ok ? nil : @"It didn't work. Check the log.");
+        me.status = outcome ?: (ok ? nil : @"没有成功。请查看日志。");
         if (ok && me.view.window)
-            settings_present_respring_prompt(me, @"Respring Now?",
-                [NSString stringWithFormat:@"SpringBoard loads the %@ again after a respring. If it keeps crashing afterwards, force-restart the device: the original font comes back.",
+            settings_present_respring_prompt(me, @"现在重启 SpringBoard？",
+                [NSString stringWithFormat:@"重启 SpringBoard 后会重新加载 %@。如果之后仍然持续崩溃，请强制重启设备：原字体会恢复。",
                  fontow_target_title(target).lowercaseString]);
     }];
 }
@@ -158,7 +158,7 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
 {
     if (self.busy) return;
     self.busy = YES;
-    self.status = @"Looking for apps…";
+    self.status = @"正在查找应用…";
     [self.tableView reloadData];
     __weak typeof(self) weakSelf = self;
     settings_unlock_filesystem_async(NO, ^(BOOL ok, NSString *message) {
@@ -167,9 +167,9 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
         if (!ok) {
             me.busy = NO;
             BOOL needsRun = [message isEqualToString:kSettingsFullExploitRequiredMessage];
-            me.status = needsRun ? kSettingsNoKernelAccessHint : (message ?: @"Filesystem access is not available.");
+            me.status = needsRun ? kSettingsNoKernelAccessHint : (message ?: @"文件系统访问不可用。");
             [me.tableView reloadData];
-            if (needsRun) settings_tool_needs_exploit(me, me.tableView, @"JIT Enabler", ^{ [weakSelf listJITApps]; });
+            if (needsRun) settings_tool_needs_exploit(me, me.tableView, @"JIT 开启器", ^{ [weakSelf listJITApps]; });
             return;
         }
         BOOL limit = me.tool == LaraToolAppLimit, cards = me.tool == LaraToolCards, decrypt = me.tool == LaraToolDecrypt;
@@ -182,12 +182,12 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
                 me2.busy = NO;
                 me2.jitApps = apps;
                 // Keep a result message set while the list reloaded.
-                BOOL placeholder = [me2.status isEqualToString:@"Looking for apps…"];
+                BOOL placeholder = [me2.status isEqualToString:@"正在查找应用…"];
                 me2.status = apps.count ? (placeholder ? nil : me2.status)
-                    : decrypt ? @"No App Store apps found."
-                    : cards ? @"No cards found in Wallet."
-                    : limit ? @"No sideloaded apps found."
-                    : @"No app here can get JIT. It only works for apps installed with a development profile (get-task-allow), e.g. sideloaded with a developer certificate.";
+                    : decrypt ? @"没有找到 App Store 应用。"
+                    : cards ? @"钱包中没有找到卡片。"
+                    : limit ? @"没有找到侧载应用。"
+                    : @"这里的应用都无法获得 JIT。只有用开发描述文件（get-task-allow）安装的应用才行，例如用开发者证书侧载的应用。";
                 [me2.tableView reloadData];
             });
         });
@@ -217,7 +217,7 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
             });
             return;
         }
-        me.status = ok ? nil : (message ?: @"It didn't work. Check the log.");
+        me.status = ok ? nil : (message ?: @"没有成功。请查看日志。");
         if (done) done(ok);
         [me.tableView reloadData];
     });
@@ -354,8 +354,8 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
     __weak typeof(self) weakSelf = self;
     [self runNamed:@"Applying" work:^BOOL{ return sbmat_apply_in_session(config, &why); }
               done:^(BOOL ok) {
-        weakSelf.status = ok ? @"Applied. Open a folder, Control Center or the app switcher to see the rest."
-                             : (why ?: @"It didn't work. Check the log.");
+        weakSelf.status = ok ? @"已应用。打开文件夹、控制中心或应用切换器可以看到其余效果。"
+                             : (why ?: @"没有成功。请查看日志。");
         if (ok) settings_sbtools_note(YES);
     }];
 }
@@ -396,14 +396,14 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if (self.tool == LaraToolFonts) return section == 0 ? @"Your Fonts" : @"System Fonts";
+    if (self.tool == LaraToolFonts) return section == 0 ? @"你的字体" : @"系统字体";
     if (self.tool == LaraToolSpringBoard) {
         const SBMatItem *item = [self sbItemForSection:section];
         return item ? @(item->title) : nil;
     }
     if (section != 1 || !self.jitApps.count) return nil;
-    if (self.tool == LaraToolAppLimit) return @"Sideloaded Apps";
-    if (self.tool == LaraToolDecrypt) return @"App Store Apps";
+    if (self.tool == LaraToolAppLimit) return @"侧载应用";
+    if (self.tool == LaraToolDecrypt) return @"App Store 应用";
     return nil;
 }
 
@@ -413,34 +413,34 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
     NSString *about = nil;
     switch (self.tool) {
         case LaraToolPerformanceHUD:
-            about = @"Core Animation's frame-rate and GPU overlay. Stays on until you turn it off or restart the device.";
+            about = @"Core Animation 的帧率与 GPU 浮层。会一直显示，直到你关闭它或重启设备。";
             break;
         case LaraToolDebugOverlay:
-            about = @"Apple's internal UIKit inspector. After enabling, double-tap the status bar to open it. Lasts until the next respring.";
+            about = @"Apple 内部的 UIKit 检查器。启用后双击状态栏即可打开。持续到下次重启 SpringBoard。";
             break;
         case LaraToolUpsideDown:
-            about = @"Lets the Home Screen and Lock Screen rotate to portrait upside down. Lasts until the next respring.";
+            about = @"允许主屏幕与锁定屏幕旋转到倒置竖屏。持续到下次重启 SpringBoard。";
             break;
         case LaraToolHiddenSettings:
-            about = @"Hidden iOS preferences. Most take effect after a respring and stay until you turn them off.";
+            about = @"隐藏的 iOS 偏好设置。多数项在重启 SpringBoard 后生效，并会一直保留到你关闭。";
             break;
         case LaraToolDecrypt:
-            about = @"Makes a decrypted IPA of an App Store app on this device, e.g. to inject a tweak into it and sideload it. The app is started in the background and its code is read decrypted from it; app extensions run separately and are left out. IPAs stay on this device (Documents/Decrypted) until you share them. Use it only for apps you own; removing copy protection may be restricted where you live.";
+            about = @"在本机为 App Store 应用生成解密的 IPA，例如用来注入插件后再侧载。应用会在后台启动，并从其内存中读取解密后的代码；应用扩展独立运行，不包含在内。IPA 会留在本机（Documents/Decrypted），直到你分享出去。请仅对你自己拥有的应用使用；在你所在的地区，移除复制保护可能受到限制。";
             break;
         case LaraToolCards:
-            about = @"Replace the picture of a card in Wallet with your own (cosmetic only). The original is backed up and can be restored. Respring or reopen Wallet to see the change.";
+            about = @"把钱包中某张卡片的图片换成你自己的（仅外观）。原始图片会先备份，可以还原。重启 SpringBoard 或重新打开钱包即可看到变化。";
             break;
         case LaraToolAppLimit:
-            about = @"With a free Apple ID, iOS allows only 3 sideloaded apps: installd marks each one, and only marked apps count. Removing the marks frees the slots. Run it again after installing or refreshing (re-signing) an app, which marks it again.";
+            about = @"使用免费 Apple ID 时，iOS 只允许 3 个侧载应用：installd 会给每个应用打标记，只有被标记的应用才计入限制。移除标记即可释放名额。安装或刷新（重新签名）应用后会再次被打上标记，届时再运行一次即可。";
             break;
         case LaraToolSpringBoard:
-            about = @"Changes the material behind the dock, folders, Control Center, notification banners and the app switcher: Apple's (Visible), your own tint and blur (Color), or none (Disabled). Tap Apply after changing something. It works in SpringBoard's memory, so a respring undoes it: apply again after one.\n\nNotification Banners: on the Lock Screen, iOS draws notifications as one shared blur cut into rounded shapes. With Color they drop out of it and show square there (with lara's files too); banners elsewhere stay rounded.\n\nControl Center Blur: with Color, Control Center's own uncolored blur shows for a moment while it closes; iOS fades it separately.";
+            about = @"更改程序坞、文件夹、控制中心、通知横幅和应用切换器背后的材质：Apple 原生（可见）、你自己的色调与模糊（着色），或完全移除（禁用）。修改后请点按「应用」。它只作用于 SpringBoard 的内存，重启 SpringBoard 就会失效：重启后再应用一次。\n\n通知横幅：在锁定屏幕上，iOS 会把通知画成一整块模糊再裁成圆角形状。选择「着色」后，它们会脱离这块模糊而显示为直角（配合 lara 的文件也一样）；其他位置的横幅仍保持圆角。\n\n控制中心模糊：选择「着色」后，控制中心关闭时会短暂露出它自带的未着色模糊，iOS 是单独对其做淡出的。";
             break;
         case LaraToolFonts:
-            about = @"Replaces a system font in memory: nothing on the sealed system volume changes, and a restart always brings the original back; Restore does it without one (the original is backed up first). Import a .ttf, .otf or .ttc from Files, tap it and pick the font to replace; it has to be the same size or smaller. A plain font is adapted to the system font on the device first (its weights and names, as lara's font patcher does; kerning is dropped if it has to be scaled). Fonts with PostScript (CFF) outlines can't be adapted. Lock Screen Clock changes every clock style at once; the weight slider has no effect on the new font. If SpringBoard keeps crashing after the respring, force-restart the device.";
+            about = @"在内存中替换系统字体：密封的系统卷上不会有任何改动，重启一定恢复原字体；「还原」可以不重启就恢复（会先备份原字体）。从「文件」中导入 .ttf、.otf 或 .ttc，点按它并选择要替换的字体；新字体体积必须相同或更小。普通字体会先适配设备上的系统字体（字重与名称，与 lara 的字体修补器一致；若需要缩放则会丢弃字距）。使用 PostScript（CFF）轮廓的字体无法适配。锁定屏幕时钟会一次性更改所有时钟样式；字重滑块对新字体无效。如果重启 SpringBoard 后仍持续崩溃，请强制重启设备。";
             break;
         case LaraToolJIT:
-            about = @"Tap an app to open it with JIT (for emulators and similar apps). Only apps signed with a development profile can get it. JIT lasts until the app quits; some apps can't tell it's on.";
+            about = @"点按应用即可用 JIT 打开它（适用于模拟器等应用）。只有用开发描述文件签名的应用才能获得。JIT 会持续到应用退出；有些应用无法察觉它已开启。";
             break;
     }
     NSMutableArray *parts = [NSMutableArray array];
@@ -464,16 +464,16 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
             break;
         }
         case LaraToolDebugOverlay:
-            c.text = @"Enable Debug Overlay";
+            c.text = @"启用调试浮层";
             c.textProperties.color = self.busy ? UIColor.secondaryLabelColor : UIColor.systemBlueColor;
             break;
         case LaraToolUpsideDown:
-            c.text = @"Enable Upside Down";
+            c.text = @"启用倒置屏幕";
             c.textProperties.color = self.busy ? UIColor.secondaryLabelColor : UIColor.systemBlueColor;
             break;
         case LaraToolFonts: {
             if (indexPath.section == 0 && indexPath.row == (NSInteger)self.fonts.count) {
-                c.text = @"Import Font…";
+                c.text = @"导入字体…";
                 c.image = [UIImage systemImageNamed:@"plus.circle.fill"];
                 c.textProperties.color = self.busy ? UIColor.secondaryLabelColor : UIColor.systemBlueColor;
                 break;
@@ -492,16 +492,16 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
             FontOWTarget t = (FontOWTarget)indexPath.row;
             bool replaced = fontow_is_replaced(t);
             c.text = fontow_target_title(t);
-            c.secondaryText = !fontow_target_size(t) ? @"Not on this iOS version"
-                            : replaced ? @"Replaced — tap to restore the original" : @"Original";
+            c.secondaryText = !fontow_target_size(t) ? @"此 iOS 版本不支持"
+                            : replaced ? @"已替换 — 点按还原原始字体" : @"Original";
             c.secondaryTextProperties.color = replaced ? UIColor.systemOrangeColor : UIColor.secondaryLabelColor;
             if (!replaced) cell.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         }
         case LaraToolSpringBoard: {
             if (indexPath.section == 0 && indexPath.row == 2) {
-                c.text = @"Apply with Tweaks";
-                c.secondaryText = @"Applies this look in every Apply Tweaks run too, e.g. after a respring.";
+                c.text = @"随插件一起应用";
+                c.secondaryText = @"每次「应用插件」时也会套用这个外观，例如在重启 SpringBoard 之后。";
                 c.secondaryTextProperties.color = UIColor.secondaryLabelColor;
                 UISwitch *sw = [UISwitch new];
                 sw.on = [NSUserDefaults.standardUserDefaults boolForKey:kSettingsSBToolsWithTweaks];
@@ -511,7 +511,7 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
                 break;
             }
             if (indexPath.section == 0) {
-                c.text = indexPath.row == 0 ? @"Apply" : @"Reset All";
+                c.text = indexPath.row == 0 ? @"Apply" : @"全部重置";
                 c.textProperties.color = self.busy ? UIColor.secondaryLabelColor
                                        : indexPath.row == 0 ? UIColor.systemBlueColor : UIColor.systemRedColor;
                 break;
@@ -580,9 +580,9 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
                 NSUInteger n = 0;
                 for (NSString *f in [NSFileManager.defaultManager contentsOfDirectoryAtPath:app_decrypt_output_dir() error:nil])
                     if ([f.pathExtension isEqualToString:@"ipa"]) n++;
-                c.text = @"Decrypted IPAs";
-                c.secondaryText = n ? [NSString stringWithFormat:@"%lu IPA%@ — open to share or delete", (unsigned long)n, n == 1 ? @"" : @"s"]
-                                    : @"None yet";
+                c.text = @"已解密的 IPA";
+                c.secondaryText = n ? [NSString stringWithFormat:@"%lu 个 IPA%@ — 打开可分享或删除", (unsigned long)n, n == 1 ? @"" : @"s"]
+                                    : @"还没有";
                 c.secondaryTextProperties.color = UIColor.secondaryLabelColor;
                 c.image = [UIImage systemImageNamed:@"shippingbox.fill"];
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -600,7 +600,7 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
         case LaraToolCards: {
             NSDictionary *card = self.jitApps[indexPath.row];
             c.text = card[@"name"];
-            c.secondaryText = [card[@"hasBackup"] boolValue] ? @"Custom image — tap to change or restore" : @"Original image";
+            c.secondaryText = [card[@"hasBackup"] boolValue] ? @"自定义图片 — 点按更改或还原" : @"原始图片";
             c.secondaryTextProperties.color = UIColor.secondaryLabelColor;
             c.image = card[@"preview"] ?: [UIImage systemImageNamed:@"creditcard"];
             c.imageProperties.maximumSize = CGSizeMake(64, 41);
@@ -610,15 +610,15 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
         case LaraToolAppLimit: {
             if (indexPath.section == 0) {
                 NSUInteger marked = [self markedAppCount];
-                c.text = marked ? [NSString stringWithFormat:@"Remove Limit Marks (%lu)", (unsigned long)marked]
-                                : @"No App Counts Toward the Limit";
+                c.text = marked ? [NSString stringWithFormat:@"移除限制标记（%lu）", (unsigned long)marked]
+                                : @"没有应用计入限制";
                 c.textProperties.color = (marked && !self.busy) ? UIColor.systemBlueColor : UIColor.secondaryLabelColor;
                 break;
             }
             NSDictionary *app = self.jitApps[indexPath.row];
             int marked = [app[@"marked"] intValue];
             c.text = app[@"name"];
-            c.secondaryText = marked == 1 ? @"Counts toward the limit" : marked == 0 ? @"Not counted" : @"Unknown";
+            c.secondaryText = marked == 1 ? @"计入限制" : marked == 0 ? @"不计入" : @"Unknown";
             c.secondaryTextProperties.color = marked == 1 ? UIColor.systemOrangeColor : UIColor.secondaryLabelColor;
             c.image = app[@"icon"] ?: [UIImage systemImageNamed:@"app.dashed"];
             c.imageProperties.maximumSize = CGSizeMake(36, 36);
@@ -649,19 +649,19 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
     switch (self.tool) {
         case LaraToolPerformanceHUD: {
             int mode = kLaraHUDModes[indexPath.row].mode;
-            [self runNamed:@"Setting the HUD" work:^BOOL{ return lara_perf_hud_set_in_session(mode); }
+            [self runNamed:@"正在设置 HUD" work:^BOOL{ return lara_perf_hud_set_in_session(mode); }
                       done:^(BOOL ok) { if (ok) weakSelf.hudMode = mode; }];
             break;
         }
         case LaraToolDebugOverlay: {
             CGRect screen = self.view.window.windowScene.screen.bounds;   // UIKit: read here, on main
             [self runNamed:@"Enabling" work:^BOOL{ return lara_debug_overlay_enable_in_session(screen); }
-                      done:^(BOOL ok) { if (ok) weakSelf.status = @"Enabled. Double-tap the status bar."; }];
+                      done:^(BOOL ok) { if (ok) weakSelf.status = @"已启用。双击状态栏即可打开。"; }];
             break;
         }
         case LaraToolUpsideDown: {
             [self runNamed:@"Enabling" work:^BOOL{ return lara_upside_down_enable_in_session(); }
-                      done:^(BOOL ok) { if (ok) weakSelf.status = @"Enabled. Turn the device upside down."; }];
+                      done:^(BOOL ok) { if (ok) weakSelf.status = @"已启用。把设备倒过来即可。"; }];
             break;
         }
         case LaraToolSpringBoard:
@@ -701,13 +701,13 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
             NSDictionary *app = self.jitApps[indexPath.row];
             NSString *bid = app[@"bundleID"], *name = app[@"name"];
             __block int err = 0;
-            [self runNamed:[NSString stringWithFormat:@"Opening %@ with JIT", name]
+            [self runNamed:[NSString stringWithFormat:@"正在以 JIT 打开 %@", name]
                       work:^BOOL{ err = lara_jit_enable_in_session(bid); return err == 0; }
                       done:^(BOOL ok) {
-                weakSelf.status = ok ? [NSString stringWithFormat:@"JIT is on for %@ until it quits.", name]
-                    : err == ESRCH ? [NSString stringWithFormat:@"%@ didn't start. Open it once, then try again.", name]
-                    : err == EPERM ? [NSString stringWithFormat:@"iOS refused to attach to %@. It needs a development profile (get-task-allow).", name]
-                    : [NSString stringWithFormat:@"JIT couldn't be enabled for %@ (error %d). Check the log.", name, err];
+                weakSelf.status = ok ? [NSString stringWithFormat:@"%@ 已开启 JIT，直到它退出。", name]
+                    : err == ESRCH ? [NSString stringWithFormat:@"%@ 未能启动。请先打开一次，然后重试。", name]
+                    : err == EPERM ? [NSString stringWithFormat:@"iOS 拒绝附加到 %@。它需要开发描述文件（get-task-allow）。", name]
+                    : [NSString stringWithFormat:@"无法为 %@ 开启 JIT（错误 %d）。请查看日志。", name, err];
             }];
             break;
         }
@@ -718,8 +718,8 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
 
 - (void)confirmDecrypt:(NSDictionary *)app
 {
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Decrypt %@?", app[@"name"]]
-        message:@"Makes a decrypted IPA of this app for your own use (e.g. tweak injection and sideloading). It can take a while for large apps; keep Cyanide open."
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"解密 %@？", app[@"name"]]
+        message:@"为此应用生成一份解密的 IPA 供你自己使用（例如注入插件后侧载）。大型应用可能需要较长时间；请保持 Cyanide 打开。"
         preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     __weak typeof(self) weakSelf = self;
@@ -733,7 +733,7 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
 {
     if (self.busy) return;
     self.busy = YES;
-    self.status = [NSString stringWithFormat:@"Decrypting %@…", app[@"name"]];
+    self.status = [NSString stringWithFormat:@"正在解密 %@…", app[@"name"]];
     // Show the progress where it's visible (the footer is below the list).
     self.navigationItem.prompt = self.status;
     [self showProgressBar];
@@ -774,22 +774,22 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
         if ([message isEqualToString:kSettingsFullExploitRequiredMessage]) {
             me.status = kSettingsNoKernelAccessHint;
             [me.tableView reloadData];
-            settings_tool_needs_exploit(me, me.tableView, @"App Decrypt", ^{ [weakSelf decrypt:app]; });
+            settings_tool_needs_exploit(me, me.tableView, @"应用解密", ^{ [weakSelf decrypt:app]; });
             return;
         }
-        NSString *failure = error ?: message ?: @"Decryption failed. Check the log.";
-        me.status = ipa ? [NSString stringWithFormat:@"Saved %@.", ipa.lastPathComponent] : failure;
+        NSString *failure = error ?: message ?: @"解密失败。请查看日志。";
+        me.status = ipa ? [NSString stringWithFormat:@"已保存 %@。", ipa.lastPathComponent] : failure;
         [me.tableView reloadData];
         if (!me.view.window) return;
         // An alert, not just the footer: that is below the whole app list.
         UIAlertController *ac = [UIAlertController
-            alertControllerWithTitle:ipa ? @"IPA Ready" : @"Decryption Failed"
-                             message:ipa ? [NSString stringWithFormat:@"%@ is saved in Decrypted IPAs.%@", ipa.lastPathComponent,
+            alertControllerWithTitle:ipa ? @"IPA 已就绪" : @"解密失败"
+                             message:ipa ? [NSString stringWithFormat:@"%@ 已保存到「已解密的 IPA」。%@", ipa.lastPathComponent,
                                             error.length ? [@"\n\n" stringByAppendingString:error] : @""] : failure
                       preferredStyle:UIAlertControllerStyleAlert];
         if (ipa) {
             NSString *path = ipa;
-            [ac addAction:[UIAlertAction actionWithTitle:@"Share…" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
+            [ac addAction:[UIAlertAction actionWithTitle:@"分享…" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
                 typeof(self) me2 = weakSelf;
                 UITableViewCell *cell = [me2.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
                 if (me2) filebrowser_share_file(me2, path, NO, nil, cell, nil);
@@ -836,14 +836,14 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:card[@"name"] message:nil
                                                          preferredStyle:UIAlertControllerStyleActionSheet];
     __weak typeof(self) weakSelf = self;
-    [ac addAction:[UIAlertAction actionWithTitle:@"Choose Image…" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
+    [ac addAction:[UIAlertAction actionWithTitle:@"选择图片…" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
         [weakSelf pickImageForCard:card];
     }]];
     if ([card[@"hasBackup"] boolValue]) {
-        [ac addAction:[UIAlertAction actionWithTitle:@"Restore Original" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *a) {
+        [ac addAction:[UIAlertAction actionWithTitle:@"还原原始图片" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *a) {
             NSString *err = nil;
             BOOL ok = lara_wallet_card_restore(card, &err);
-            weakSelf.status = ok ? @"Original restored. Respring or reopen Wallet to see it." : err;
+            weakSelf.status = ok ? @"已还原原始图片。重启 SpringBoard 或重新打开钱包即可看到。" : err;
             [weakSelf listJITApps];
         }]];
     }
@@ -897,7 +897,7 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
     }];
     NSString *err = nil;
     BOOL ok = lara_wallet_card_set_image(card, UIImagePNGRepresentation(scaled), &err);
-    self.status = ok ? @"Card image replaced. Respring or reopen Wallet to see it." : err;
+    self.status = ok ? @"卡片图案已替换。重启 SpringBoard 或重新打开钱包即可看到。" : err;
     [self listJITApps];
 }
 
@@ -909,7 +909,7 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
     for (NSDictionary *app in self.jitApps) if ([app[@"marked"] intValue] == 1) [paths addObject:app[@"path"]];
     if (!paths.count || self.busy) return;
     self.busy = YES;
-    self.status = @"Removing the marks…";
+    self.status = @"正在移除标记…";
     [self.tableView reloadData];
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
@@ -926,9 +926,9 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
             me.busy = NO;
             [me listJITApps];
             me.status = done == paths.count
-                ? [NSString stringWithFormat:@"Removed the mark from %lu app%@.", (unsigned long)done, done == 1 ? @"" : @"s"]
-                : [NSString stringWithFormat:@"Removed %lu of %lu: %@", (unsigned long)done, (unsigned long)paths.count,
-                                             lastError ?: @"see the log"];
+                ? [NSString stringWithFormat:@"已从 %lu 个应用%@移除标记。", (unsigned long)done, done == 1 ? @"" : @"s"]
+                : [NSString stringWithFormat:@"已移除 %lu / %lu：%@", (unsigned long)done, (unsigned long)paths.count,
+                                             lastError ?: @"查看日志"];
         });
     });
 }
@@ -944,7 +944,7 @@ static const NSInteger kLaraHUDModeCount = sizeof(kLaraHUDModes) / sizeof(kLaraH
         typeof(self) me = weakSelf;
         if (ok) {
             me.prefStates[@(index)] = @(on);
-            me.status = @"Saved. Respring to apply.";
+            me.status = @"已保存。重启 SpringBoard 后生效。";
         }
     }];
 }

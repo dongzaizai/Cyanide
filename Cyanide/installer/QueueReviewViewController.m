@@ -52,7 +52,7 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
 
     self.emptyLabel = [[UILabel alloc] init];
     self.emptyLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    self.emptyLabel.text = @"No pending changes\nQueue packages from the Packages tab";
+    self.emptyLabel.text = @"没有待处理的变更\n请从「软件包」标签页把软件包加入队列";
     self.emptyLabel.font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightMedium];
     self.emptyLabel.textColor = UIColor.tertiaryLabelColor;
     self.emptyLabel.textAlignment = NSTextAlignmentCenter;
@@ -112,7 +112,7 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
     [container addSubview:self.confirmButton];
 
     UIButtonConfiguration *clearCfg = [UIButtonConfiguration plainButtonConfiguration];
-    clearCfg.title = @"Clear Queue";
+    clearCfg.title = @"清空队列";
     clearCfg.baseForegroundColor = UIColor.systemRedColor;
     clearCfg.titleTextAttributesTransformer = ^NSDictionary<NSAttributedStringKey,id> *(NSDictionary<NSAttributedStringKey,id> *incoming) {
         NSMutableDictionary *attrs = [incoming mutableCopy];
@@ -154,9 +154,9 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
 
     NSString *confirmTitle;
     if (count == 1) {
-        confirmTitle = @"Confirm 1 Change";
+        confirmTitle = @"确认 1 项变更";
     } else if (count > 1) {
-        confirmTitle = [NSString stringWithFormat:@"Confirm %ld Changes", (long)count];
+        confirmTitle = [NSString stringWithFormat:@"确认 %ld 项变更", (long)count];
     } else {
         confirmTitle = @"Confirm";
     }
@@ -190,14 +190,14 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
 
     UILabel *title = [[UILabel alloc] init];
     title.translatesAutoresizingMaskIntoConstraints = NO;
-    title.text = @"Hide Home Bar must run alone";
+    title.text = @"「隐藏主屏横条」必须单独运行";
     title.font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightBold];
     title.textColor = UIColor.labelColor;
     [card addSubview:title];
 
     UILabel *body = [[UILabel alloc] init];
     body.translatesAutoresizingMaskIntoConstraints = NO;
-    body.text = @"It edits the system home-indicator asset and then needs a respring. Confirm only Hide Home Bar, respring, then queue your other tweaks.";
+    body.text = @"它会修改系统的 Home 指示条素材，之后需要重启 SpringBoard。请只确认「隐藏主屏横条」，重启后再把其他插件加入队列。";
     body.font = [UIFont systemFontOfSize:13.0 weight:UIFontWeightRegular];
     body.textColor = UIColor.secondaryLabelColor;
     body.numberOfLines = 0;
@@ -343,7 +343,7 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
             else if (allSameKind && commonKind == PackageInstallKindRepoTweak) label = @"Remove";
             else label = @"Deactivate";
             break;
-        case QueueReviewSectionReApply: label = @"Already Active"; break;
+        case QueueReviewSectionReApply: label = @"已生效"; break;
         default: return nil;
     }
     return [NSString stringWithFormat:@"%@  ·  %ld", label, (long)list.count];
@@ -365,10 +365,10 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
     switch ((QueueReviewSection)section) {
         case QueueReviewSectionInstall:
             if (![self queueIncludesHideHomeBar]) return nil;
-            return @"Hide Home Bar must run by itself because it edits the system home-indicator asset and then needs a respring. Run it alone first, then apply other tweaks after the respring.";
+            return @"「隐藏主屏横条」必须单独运行，因为它会修改系统的 Home 指示条素材，之后需要重启 SpringBoard。请先单独运行它，重启之后再应用其他插件。";
         case QueueReviewSectionReApply:
             if ([self reApplyPackages].count == 0) return nil;
-            return @"These are already installed, not new pending changes. Confirming re-runs the chain so RemoteCall-backed tweaks come back after a force-quit. To stop one from running, deactivate it from the Packages tab, or use Reset All Packages in Settings → Quick Actions.";
+            return @"这些已经安装，并不是新的待处理变更。确认后会重新运行利用链，让依赖 RemoteCall 的插件在强制退出后恢复。想阻止某一项运行，请到「软件包」标签页将其停用，或使用 设置 → 快捷操作 中的「重置全部软件包」。";
         default:
             return nil;
     }
@@ -382,9 +382,9 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
     }
     NSArray<Package *> *packages = [self packagesForSection:indexPath.section];
     if (indexPath.row >= (NSInteger)packages.count) {
-        cell.textLabel.text = @"No longer pending";
+        cell.textLabel.text = @"已不再待处理";
         cell.textLabel.font = [UIFont systemFontOfSize:17.0 weight:UIFontWeightRegular];
-        cell.detailTextLabel.text = @"This queue row was already applied or cleared.";
+        cell.detailTextLabel.text = @"该队列条目已被应用或清除。";
         cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
         cell.detailTextLabel.font = [UIFont systemFontOfSize:12.0];
         cell.imageView.image = [UIImage systemImageNamed:@"checkmark.circle"];
@@ -400,7 +400,7 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
                           [pkg.enabledKey isEqualToString:kSettingsQuickLoaderEnabled]);
     if (isQuickLoader) {
         NSString *scriptName = [[NSUserDefaults standardUserDefaults] stringForKey:@"QuickLoaderSourceScriptName"];
-        cell.textLabel.text = scriptName.length ? [NSString stringWithFormat:@"QuickLoader: %@", scriptName] : pkg.name;
+        cell.textLabel.text = scriptName.length ? [NSString stringWithFormat:@"QuickLoader：%@", scriptName] : pkg.name;
     } else {
         cell.textLabel.text = pkg.name;
     }
@@ -411,23 +411,23 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
         case QueueReviewSectionInstall:
             switch (pkg.kind) {
                 case PackageInstallKindNanoRegistry:
-                    cell.detailTextLabel.text = @"Pending override apply";
+                    cell.detailTextLabel.text = @"待应用覆盖项";
                     cell.detailTextLabel.textColor = self.view.tintColor;
                     break;
                 case PackageInstallKindCallRecordingSound:
-                    cell.detailTextLabel.text = @"Pending sound silence";
+                    cell.detailTextLabel.text = @"待静音提示音";
                     cell.detailTextLabel.textColor = UIColor.systemOrangeColor;
                     break;
                 case PackageInstallKindHideHomeBar:
-                    cell.detailTextLabel.text = @"Runs alone; respring required";
+                    cell.detailTextLabel.text = @"需单独运行；需要重启 SpringBoard";
                     cell.detailTextLabel.textColor = UIColor.systemOrangeColor;
                     break;
                 case PackageInstallKindRepoTweak:
-                    cell.detailTextLabel.text = @"Install pending";
+                    cell.detailTextLabel.text = @"待安装";
                     cell.detailTextLabel.textColor = UIColor.systemGreenColor;
                     break;
                 default:
-                    cell.detailTextLabel.text = @"Activation pending";
+                    cell.detailTextLabel.text = @"待启用";
                     cell.detailTextLabel.textColor = UIColor.systemGreenColor;
                     break;
             }
@@ -435,23 +435,23 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
         case QueueReviewSectionUninstall:
             switch (pkg.kind) {
                 case PackageInstallKindNanoRegistry:
-                    cell.detailTextLabel.text = @"Pending override remove";
+                    cell.detailTextLabel.text = @"待移除覆盖项";
                     cell.detailTextLabel.textColor = UIColor.systemRedColor;
                     break;
                 case PackageInstallKindCallRecordingSound:
-                    cell.detailTextLabel.text = @"Pending sound restore";
+                    cell.detailTextLabel.text = @"待恢复提示音";
                     cell.detailTextLabel.textColor = UIColor.systemGreenColor;
                     break;
                 case PackageInstallKindHideHomeBar:
-                    cell.detailTextLabel.text = @"Pending respring restore";
+                    cell.detailTextLabel.text = @"待恢复重启设置";
                     cell.detailTextLabel.textColor = UIColor.systemGreenColor;
                     break;
                 case PackageInstallKindRepoTweak:
-                    cell.detailTextLabel.text = @"Removal pending";
+                    cell.detailTextLabel.text = @"待移除";
                     cell.detailTextLabel.textColor = UIColor.systemRedColor;
                     break;
                 default:
-                    cell.detailTextLabel.text = @"Deactivation pending";
+                    cell.detailTextLabel.text = @"待停用";
                     cell.detailTextLabel.textColor = UIColor.systemRedColor;
                     break;
             }
@@ -459,8 +459,8 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
         case QueueReviewSectionReApply:
             cell.detailTextLabel.text =
                 [pkg.enabledKey isEqualToString:kSettingsSBCEnabled]
-                    ? @"Enabled; will apply"
-                    : @"Active; will refresh";
+                    ? @"已启用；将被应用"
+                    : @"已生效；将刷新";
             cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
             break;
         default:
@@ -521,8 +521,8 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
     }
     if (includesHideHomeBar && count > 1) {
         UIAlertController *ac = [UIAlertController
-            alertControllerWithTitle:@"Run Hide Home Bar Alone"
-                             message:@"Hide Home Bar edits the system home-indicator asset and needs a respring after it applies. Remove the other pending changes, run Hide Home Bar by itself, then apply other tweaks after the respring."
+            alertControllerWithTitle:@"单独运行「隐藏主屏横条」"
+                             message:@"「隐藏主屏横条」会修改系统的 Home 指示条素材，应用后需要重启 SpringBoard。请先移除其他待处理变更，单独运行「隐藏主屏横条」，重启后再应用其他插件。"
                       preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK"
                                                style:UIAlertActionStyleDefault
@@ -556,8 +556,8 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
 
 - (void)presentInstallStillRunningAlert
 {
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Install Running"
-                                                                message:@"An install is still running."
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"安装进行中"
+                                                                message:@"仍有安装正在进行。"
                                                          preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
     [self presentViewController:ac animated:YES completion:nil];
@@ -566,8 +566,8 @@ static BOOL QueuePackageIsHideHomeBar(Package *pkg)
 - (void)didTapClear
 {
     if ([PackageQueue sharedQueue].pendingCount == 0) return;
-        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Clear Queue?"
-                                                                message:@"Discard all pending activation / deactivation changes."
+        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"清空队列？"
+                                                                message:@"放弃所有待处理的启用 / 停用变更。"
                                                          preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     [ac addAction:[UIAlertAction actionWithTitle:@"Clear" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *_) {

@@ -305,9 +305,9 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (section == 0) return CYSectionHeaderView(@"Tweak Infos");
-    if (section == 1) return CYSectionHeaderView(@"Tweak Status");
-    return CYSectionHeaderView(@"Personalization Options");
+    if (section == 0) return CYSectionHeaderView(@"插件信息");
+    if (section == 1) return CYSectionHeaderView(@"插件状态");
+    return CYSectionHeaderView(@"个性化选项");
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section { return 46.0; }
 
@@ -331,7 +331,7 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
     if (indexPath.section == 1) {
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"toggle-cell"];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.textLabel.text = @"Enable Tweak";
+        cell.textLabel.text = @"启用插件";
 
         UISwitch *sw = [[UISwitch alloc] init];
         NSString *toggleKey = repotweaks_enabled_defaults_key(self.repoURL, self.tweakID);
@@ -429,7 +429,7 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
 
         void (^updateLabelText)(float) = ^(float value) {
             if (fabs(value - defVal) < 0.01) {
-                valLabel.text = [NSString stringWithFormat:@"%.2f (Def)", value];
+                valLabel.text = [NSString stringWithFormat:@"%.2f（默认）", value];
             } else {
                 valLabel.text = [NSString stringWithFormat:@"%.2f", value];
             }
@@ -485,7 +485,7 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
     if (section == 0) {
         NSDictionary *repo = settings_repotweaks_repo_for_url(self.repoURL);
         NSString *author = settings_string_or_empty(repo[@"author"]);
-        return CYSectionHeaderView([NSString stringWithFormat:@"By %@", author.length ? author : @"Unknown"]);
+        return CYSectionHeaderView([NSString stringWithFormat:@"作者 %@", author.length ? author : @"Unknown"]);
     }
     return nil;
 }
@@ -503,7 +503,7 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
 
     // The Delete Button
     if (indexPath.section == 1) {
-        cell.textLabel.text = @"Delete Repository";
+        cell.textLabel.text = @"删除源";
         cell.textLabel.textColor = [UIColor systemRedColor];
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         return cell;
@@ -632,7 +632,7 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
 }
 
 - (void)addRepo {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Add Source" message:@"Paste the RAW link to your packages.json" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"添加源" message:@"粘贴你 packages.json 的 RAW 链接" preferredStyle:UIAlertControllerStyleAlert];
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) { textField.placeholder = @"https://raw.githubusercontent.com/..."; }];
     [alert addAction:[UIAlertAction actionWithTitle:@"Add" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         NSString *url = alert.textFields.firstObject.text;
@@ -640,8 +640,8 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
             repotweaks_add_repo(url, ^(BOOL success, NSString *message) {
                 [self updateData];
                 if (!success) {
-                    UIAlertController *err = [UIAlertController alertControllerWithTitle:@"Source Failed"
-                                                                                 message:message ?: @"Could not refresh that repository."
+                    UIAlertController *err = [UIAlertController alertControllerWithTitle:@"源刷新失败"
+                                                                                 message:message ?: @"无法刷新该源。"
                                                                           preferredStyle:UIAlertControllerStyleAlert];
                     [err addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
                     [self presentViewController:err animated:YES completion:nil];
@@ -658,8 +658,8 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
     if (urls.count == 0) return;
 
     // Refresh Alert
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Refreshing Sources"
-                                                                   message:@"Nuking old scripts and downloading the latest..."
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"正在刷新源"
+                                                                   message:@"正在清除旧脚本并下载最新版本…"
                                                             preferredStyle:UIAlertControllerStyleAlert];
     [self presentViewController:alert animated:YES completion:nil];
 
@@ -684,7 +684,7 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
 // Native tweak sections
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView { return 2; }
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    return CYSectionHeaderView(section == 0 ? @"Sources" : @"All Tweaks");
+    return CYSectionHeaderView(section == 0 ? @"源" : @"全部插件");
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section { return 46.0; }
 
@@ -704,7 +704,7 @@ static NSArray<NSDictionary *> *settings_repotweaks_tweaks_for_url(NSString *rep
         NSDictionary *repo = settings_repotweaks_repo_for_url(url);
 
         NSString *repoName = settings_string_or_empty(repo[@"repoName"]);
-        cell.textLabel.text = repoName.length ? repoName : @"Unknown Repo";
+        cell.textLabel.text = repoName.length ? repoName : @"未知源";
         cell.detailTextLabel.text = url;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     } else {
@@ -956,7 +956,7 @@ static const NSInteger kDSRespringBadgeTag = 0x5245;   // the logo + label shown
     [badge addSubview:logo];
 
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 88, 240, 24)];
-    label.text = @"Preparing respring…";
+    label.text = @"正在准备重启 SpringBoard…";
     label.font = [UIFont systemFontOfSize:15.0 weight:UIFontWeightSemibold];
     label.textColor = [UIColor colorWithWhite:1.0 alpha:0.8];
     label.textAlignment = NSTextAlignmentCenter;
@@ -1215,7 +1215,7 @@ static NSString * const kSettingsFastLockXLiteRetryInterval = @"FastLockXLiteRet
 // acquire KRW. Shared between the run loop and the progress UI's retry button
 // so the two can never drift apart.
 NSString * const kSettingsRunKRWFailedMessage =
-    @"Failed: kernel primitives were not acquired. Please try running chain again.";
+    @"失败：未获取到内核原语。请重新运行利用链。";
 
 // Auto-retry: when On, a chain run that fails to acquire KRW re-enters itself
 // instead of reporting failure, up to the attempt cap. Each attempt is an
@@ -2674,7 +2674,7 @@ static void settings_handle_springboard_restart(void)
         // A run in flight was working against the old SpringBoard; its own
         // completion may never come (or would report stale success).
         if (g_settings_actions_running == kSettingsLockRun) {
-            settings_post_actions_complete_async(NO, @"SpringBoard restarted during the run — run it again.");
+            settings_post_actions_complete_async(NO, @"SpringBoard 在运行过程中重启了 —— 请重新运行。");
         }
         // Only now, with the old session dropped: the respring cover waits
         // for this, so nothing can reuse stale SpringBoard state meanwhile.
@@ -3329,14 +3329,14 @@ NSString *settings_unsupported_message(void)
 {
     NSString *version = UIDevice.currentDevice.systemVersion ?: @"unknown";
 #if CYANIDE_VPHONE_DEBUG
-    return [NSString stringWithFormat:@"VPhone debug build is bypassing Cyanide's iOS version gate on iOS %@.", version];
+    return [NSString stringWithFormat:@"VPhone 调试版正在绕过 Cyanide 的 iOS 版本检查（iOS %@）。", version];
 #endif
     if (is_unsupported_new_device()) {
-        return @"Not supported on this device: Memory Integrity Enforcement "
+        return @"此设备不受支持：内存完整性保护 "
                 "(iPhone 17 and newer, M5 iPad Pro) blocks the kernel exploit "
                 "this relies on.";
     }
-    return [NSString stringWithFormat:@"Not supported on iOS %@. Supported: iOS/iPadOS 17.0-18.7.1 or 26.0-26.0.1.", version];
+    return [NSString stringWithFormat:@"不支持 iOS %@。支持的版本：iOS/iPadOS 17.0-18.7.1 或 26.0-26.0.1。", version];
 }
 
 // Stage timing for the apply log. Each settings_progress() closes the previous
@@ -3436,7 +3436,7 @@ static void settings_apply_heartbeat_start(NSString *label)
             g_apply_heartbeat_last = tick;
             int secs = (int)(tick - g_apply_heartbeat_since + 0.5);
             log_user("      … %s (%ds)\n", g_apply_heartbeat_label.UTF8String, secs);
-            settings_post_apply_status([NSString stringWithFormat:@"%@ (%ds)", g_apply_heartbeat_label, secs]);
+            settings_post_apply_status([NSString stringWithFormat:@"%@（%d 秒）", g_apply_heartbeat_label, secs]);
         });
         g_apply_heartbeat_timer = t;
         dispatch_resume(t);
@@ -4401,11 +4401,11 @@ static NSString *settings_nicebar_key(NSString *prefix, NSInteger slot)
 static NSString *settings_nicebar_slot_name(NSInteger slot)
 {
     switch ((NiceBarLiteSlot)slot) {
-        case NiceBarLiteSlotTopLeft: return @"Top Left";
-        case NiceBarLiteSlotTopRight: return @"Top Right";
-        case NiceBarLiteSlotBottomLeft: return @"Bottom Left";
-        case NiceBarLiteSlotBottomRight: return @"Bottom Right";
-        case NiceBarLiteSlotBottomCenter: return @"Bottom Center";
+        case NiceBarLiteSlotTopLeft: return @"左上";
+        case NiceBarLiteSlotTopRight: return @"右上";
+        case NiceBarLiteSlotBottomLeft: return @"左下";
+        case NiceBarLiteSlotBottomRight: return @"右下";
+        case NiceBarLiteSlotBottomCenter: return @"底部居中";
         case NiceBarLiteSlotCount: return @"Slot";
     }
     return @"Slot";
@@ -4415,9 +4415,9 @@ static NSString *settings_nicebar_kind_name(NSInteger kind)
 {
     switch ((NiceBarLiteContentKind)kind) {
         case NiceBarLiteContentOff: return @"Off";
-        case NiceBarLiteContentCustomText: return @"Custom Text";
+        case NiceBarLiteContentCustomText: return @"自定义文字";
         case NiceBarLiteContentSystem: return @"System";
-        case NiceBarLiteContentTimeFormat: return @"Date / Time";
+        case NiceBarLiteContentTimeFormat: return @"日期 / 时间";
         case NiceBarLiteContentWeather: return @"Weather";
     }
     return @"Off";
@@ -4426,17 +4426,17 @@ static NSString *settings_nicebar_kind_name(NSInteger kind)
 static NSString *settings_nicebar_system_name(NSInteger item)
 {
     switch ((NiceBarLiteSystemItem)item) {
-        case NiceBarLiteSystemBatteryTemp: return @"Battery Temp";
-        case NiceBarLiteSystemFreeRAM: return @"Free RAM";
+        case NiceBarLiteSystemBatteryTemp: return @"电池温度";
+        case NiceBarLiteSystemFreeRAM: return @"可用内存";
         case NiceBarLiteSystemBatteryPercent: return @"Battery";
-        case NiceBarLiteSystemNetworkSpeed: return @"Network Speed";
+        case NiceBarLiteSystemNetworkSpeed: return @"网速";
         case NiceBarLiteSystemUptime: return @"Uptime";
         case NiceBarLiteSystemDate: return @"Date";
-        case NiceBarLiteSystemLunarDate: return @"Lunar Date";
-        case NiceBarLiteSystemTodayTraffic: return @"Today Traffic";
-        case NiceBarLiteSystemCurrentIP: return @"Current IP";
-        case NiceBarLiteSystemFreeDisk: return @"Free Disk";
-        case NiceBarLiteSystemThermalState: return @"Thermal State";
+        case NiceBarLiteSystemLunarDate: return @"农历日期";
+        case NiceBarLiteSystemTodayTraffic: return @"今日流量";
+        case NiceBarLiteSystemCurrentIP: return @"当前 IP";
+        case NiceBarLiteSystemFreeDisk: return @"可用磁盘";
+        case NiceBarLiteSystemThermalState: return @"热状态";
     }
     return @"System";
 }
@@ -4457,7 +4457,7 @@ static NSString *settings_nicebar_weather_text_for_slot(NSUserDefaults *d, NSInt
     if (![tempNumber isKindOfClass:NSNumber.class] || ![codeNumber isKindOfClass:NSNumber.class]) {
         return [d stringForKey:kSettingsNiceBarLiteWeatherCache] ?:
                [d stringForKey:settings_nicebar_key(kSettingsNiceBarLiteSlotWeatherPrefix, slot)] ?:
-               @"Weather --";
+               @"天气 --";
     }
 
     NSString *language = [d stringForKey:settings_nicebar_key(kSettingsNiceBarLiteSlotWeatherLanguagePrefix, slot)] ?: @"en";
@@ -4496,7 +4496,7 @@ static void settings_nicebar_store_weather_result(NSUserDefaults *d,
                            temp.doubleValue];
         [d setObject:cache forKey:kSettingsNiceBarLiteWeatherCache];
     } else {
-        NSString *resolved = fallbackText.length ? fallbackText : @"Weather --";
+        NSString *resolved = fallbackText.length ? fallbackText : @"天气 --";
         [d setObject:resolved forKey:kSettingsNiceBarLiteWeatherCache];
     }
 
@@ -4511,19 +4511,19 @@ static void settings_nicebar_store_weather_result(NSUserDefaults *d,
 static NSString *settings_nsbar_position_name(NSInteger position)
 {
     switch ((NSBarPosition)position) {
-        case NSBarPositionTopLeft: return @"Top Left";
-        case NSBarPositionBottomLeft: return @"Bottom Left";
-        case NSBarPositionTopRight: return @"Top Right";
-        case NSBarPositionBottomRight: return @"Bottom Right";
+        case NSBarPositionTopLeft: return @"左上";
+        case NSBarPositionBottomLeft: return @"左下";
+        case NSBarPositionTopRight: return @"右上";
+        case NSBarPositionBottomRight: return @"右下";
         case NSBarPositionCenter: return @"Center";
     }
-    return @"Top Left";
+    return @"左上";
 }
 
 static NSString *settings_livewp_video_detail(void)
 {
     NSString *path = livewp_absolute_path();
-    if (path.length == 0) return @"No video selected.";
+    if (path.length == 0) return @"未选择视频。";
     NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
     if (attrs) {
         unsigned long long bytes = [attrs fileSize];
@@ -4532,7 +4532,7 @@ static NSString *settings_livewp_video_detail(void)
         fmt.countStyle = NSByteCountFormatterCountStyleFile;
         return [NSString stringWithFormat:@"%@ (%@)", path.lastPathComponent, [fmt stringFromByteCount:(long long)bytes]];
     }
-    return [NSString stringWithFormat:@"%@ (missing)", path.lastPathComponent ?: path];
+    return [NSString stringWithFormat:@"%@（缺失）", path.lastPathComponent ?: path];
 }
 
 static NiceBarLiteConfig settings_nicebar_config_from_defaults(NSUserDefaults *d)
@@ -4777,10 +4777,10 @@ void settings_present_hide_home_bar_respring_prompt(UIViewController *host)
 {
     BOOL targetHidden = [NSUserDefaults.standardUserDefaults boolForKey:kSettingsHideHomeBarPendingHidden];
     settings_present_respring_prompt(host,
-        (targetHidden ? @"Respring to Hide Home Bar?" : @"Respring to Restore Home Bar?"),
+        (targetHidden ? @"重启 SpringBoard 以隐藏主屏横条？" : @"重启 SpringBoard 以恢复主屏横条？"),
         (targetHidden
-         ? @"Hide Home Bar was applied, but SpringBoard needs to restart before the home indicator disappears."
-         : @"Home Bar restore was queued, but SpringBoard needs to restart before the stock home indicator returns."));
+         ? @"「隐藏主屏横条」已应用，但需要 SpringBoard 重启后 Home 指示条才会消失。"
+         : @"「恢复主屏横条」已加入队列，但需要 SpringBoard 重启后系统默认的 Home 指示条才会回来。"));
 }
 
 void settings_present_respring_prompt(UIViewController *host, NSString *title, NSString *message)
@@ -5250,11 +5250,11 @@ BOOL settings_themer_has_selected_theme(void)
 NSString *settings_themer_selected_theme_display_name(void)
 {
     NSString *theme = settings_themer_selected_theme_id();
-    if ([theme isEqualToString:kThemerThemeBuiltinIOS6]) return @"iOS 6 Theme";
+    if ([theme isEqualToString:kThemerThemeBuiltinIOS6]) return @"iOS 6 主题";
     if ([theme isEqualToString:kThemerThemeCustom]) {
         NSString *name = [[NSUserDefaults standardUserDefaults]
             stringForKey:kSettingsThemerCustomThemeName];
-        return name.length > 0 ? name : @"Imported Theme";
+        return name.length > 0 ? name : @"导入的主题";
     }
     return @"None";
 }
@@ -5264,7 +5264,7 @@ static void settings_themer_import_fail(NSError **error, NSString *message)
     if (error && !*error) {
         *error = [NSError errorWithDomain:@"CyanideThemerImport"
                                      code:1
-                                 userInfo:@{ NSLocalizedDescriptionKey: message ?: @"Import failed." }];
+                                 userInfo:@{ NSLocalizedDescriptionKey: message ?: @"导入失败。" }];
     }
 }
 
@@ -5588,8 +5588,8 @@ static void settings_nano_load_from_plist_into_defaults(BOOL logResult)
 }
 
 static NSString * const kSettingsNanoCachePushFailedMessage =
-    @"Watch pairing override was written. Respring before pairing so the system "
-    @"reloads it — until then the old values are still cached and may overwrite it.";
+    @"手表配对覆盖已写入。配对前请先重启 SpringBoard，让系统"
+    @"重新加载 —— 在此之前旧值仍在缓存中，可能会把它覆盖回去。";
 
 // Synchronous entry point used by both the Settings UI buttons and the
 // Installer's PackageQueue commit path. Logs progress to the in-app log so
@@ -5671,7 +5671,7 @@ static void settings_post_nano_action_complete(BOOL ok, BOOL pushed)
         NSDictionary *info = @{
             kSettingsActionsDidCompleteSuccessKey: @(ok),
             kSettingsActionsDidCompletePartialKey: @(ok && !pushed),
-            kSettingsActionsDidCompleteMessageKey: !ok ? @"Watch pairing override failed. Check the log."
+            kSettingsActionsDidCompleteMessageKey: !ok ? @"手表配对覆盖失败。请查看日志。"
                                                  : (pushed ? @"" : kSettingsNanoCachePushFailedMessage)
         };
         [[NSNotificationCenter defaultCenter]
@@ -7004,7 +7004,7 @@ static void locsvc_switcher_note_safe(BOOL clean)
         // Not clean: the marker stays, so the next run treats it as unconfirmed.
         [d synchronize];
         log_user("[SWITCHER] safe %.2fs after scheduling%s%s\n", safe,
-                 armedDelay > 0 ? [NSString stringWithFormat:@" (card removal at %.2fs)", armedDelay].UTF8String
+                 armedDelay > 0 ? [NSString stringWithFormat:@"（卡片移除于 %.2fs）", armedDelay].UTF8String
                                 : " (removal skipped this run)",
                  !clean ? " — drain NOT clean, not counted as safe"
                         : (armedDelay > 0 && safe > armedDelay ? " — TOO LATE, next delay grows" : ""));
@@ -7275,7 +7275,7 @@ void settings_location_services_set_async(int desired, BOOL allowFullExploit,
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         if (!settings_try_claim_actions_lock("Location Services",
                                              "[LOCSVC] Another action is already running.")) {
-            finishEarly(@"Another action is already running. Try again when it has finished.");
+            finishEarly(@"已有另一个操作正在进行。请等它完成后再试。");
             return;
         }
         // The target is decided now, under the action lock, from one fresh
@@ -7283,7 +7283,7 @@ void settings_location_services_set_async(int desired, BOOL allowFullExploit,
         // changed since, and a toggle must flip what is actually there).
         BOOL enable = desired < 0 ? (locationservices_enabled_local() != 1) : (desired != 0);
         target = enable ? 1 : 0;
-        NSString *verb = enable ? @"Turning on" : @"Turning off";
+        NSString *verb = enable ? @"正在开启" : @"正在关闭";
         __block BOOL ok = NO;
         __block BOOL doneSent = NO;   // the result phase is reported once
         __block NSString *message = nil;
@@ -7298,13 +7298,13 @@ void settings_location_services_set_async(int desired, BOOL allowFullExploit,
             settings_post_actions_complete_async(ok, message ?: @"");
         };
         NSString *(^doneText)(void) = ^NSString *{
-            return [NSString stringWithFormat:@"Location Services %@.", enable ? @"on" : @"off"];
+            return [NSString stringWithFormat:@"定位服务%@。", enable ? @"on" : @"off"];
         };
         @try {
             if (locationservices_enabled_local() == (enable ? 1 : 0)) {
                 ok = YES;
-                message = [NSString stringWithFormat:@"Location Services already %@.", enable ? @"on" : @"off"];
-                step(1.0f, enable ? @"Already on" : @"Already off", 0);
+                message = [NSString stringWithFormat:@"定位服务已经是%@状态。", enable ? @"on" : @"off"];
+                step(1.0f, enable ? @"已是开启" : @"已是关闭", 0);
                 doneSent = YES;
                 return;
             }
@@ -7318,18 +7318,18 @@ void settings_location_services_set_async(int desired, BOOL allowFullExploit,
             // user's go-ahead for a full run (it can reboot A18/M4 devices):
             // without it, report kSettingsFullExploitRequiredMessage and let
             // the caller ask (in-app) or tell the user to open Cyanide.
-            step(0.1f, @"Getting kernel ready", 0);
+            step(0.1f, @"正在准备内核", 0);
             BOOL kernelReady = settings_ensure_kexploit_for_read();
             if (!kernelReady && !settings_tool_may_run_exploit(allowFullExploit)) {
                 message = kSettingsFullExploitRequiredMessage;
                 return;
             }
             if (!kernelReady) {
-                step(0.45f, @"Running the full exploit", 12.0);
+                step(0.45f, @"正在运行完整漏洞利用", 12.0);
                 kernelReady = settings_ensure_kexploit();
             }
             if (!kernelReady) {
-                message = @"Failed: kernel primitives were not acquired. Run the chain, then try again.";
+                message = @"失败：未获取到内核原语。请运行利用链后重试。";
                 return;
             }
             // The longest step is the activation settle window before the
@@ -7342,7 +7342,7 @@ void settings_location_services_set_async(int desired, BOOL allowFullExploit,
                 // The settle window shows as "Getting kernel ready". The
                 // "Connecting" phase is reported when the SpringBoard
                 // connection actually starts (g_springboard_connect_progress).
-                if (settle > 0.3) step(0.7f, @"Getting kernel ready", settle);
+                if (settle > 0.3) step(0.7f, @"正在准备内核", settle);
             }
             g_springboard_connect_progress = ^{ step(0.82f, @"Connecting", 0.5); };
             @synchronized (settings_rc_lock()) {
@@ -7438,13 +7438,13 @@ void settings_location_services_set_async(int desired, BOOL allowFullExploit,
                 if (springboardSent == LSCallUncertain) {
                     // The SpringBoard request may still land; sending it again
                     // from Preferences is exactly what LSCallUncertain forbids.
-                    message = @"Location Services may not have changed: the request's result was lost. "
-                              @"Check the switch, then try again if needed.";
+                    message = @"定位服务可能没有变化：请求的结果丢失了。"
+                              @"请检查开关，必要时再试一次。";
                     return;
                 }
                 if (settings_any_registered_live_loop_running() || settings_has_persistent_springboard_remote_call_user()) {
-                    message = @"SpringBoard didn't change it, and the Preferences fallback would need the "
-                              @"SpringBoard channel closed while live tweaks use it. Stop them and try again.";
+                    message = @"SpringBoard 没有改成功，而偏好设置兜底方案需要"
+                              @"SpringBoard 通道在运行时插件占用期间被关闭。请先停止它们再重试。";
                     return;
                 }
                 // SpringBoard may have been refused because the activation
@@ -7453,13 +7453,13 @@ void settings_location_services_set_async(int desired, BOOL allowFullExploit,
                 // reopen the AMFI/runningboardd deadlock the window prevents.
                 if (clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW) < g_activation_settle_until_ns ||
                     g_app_in_background || settings_cleanup_in_progress()) {
-                    message = @"Cyanide was busy — try again in a moment.";
+                    message = @"Cyanide 正忙 —— 请稍后再试。";
                     return;
                 }
                 // Fallback: Preferences, only if it's already running (see
                 // locationservices_set_enabled_via_running_preferences).
                 log_user("[LOCSVC] No change from SpringBoard; trying a running Preferences…\n");
-                step(0.9f, @"Trying another way", 0.3);
+                step(0.9f, @"正在尝试其他方式", 0.3);
                 LSCallResult sent;
                 @synchronized (settings_rc_lock()) {
                     settings_destroy_springboard_remote_call_locked_internal("switching to Preferences", NO);
@@ -7467,13 +7467,13 @@ void settings_location_services_set_async(int desired, BOOL allowFullExploit,
                 }
                 ok = sent != LSCallNotSent && locationservices_wait_for_state(enable, 3000);
                 if (!ok && sent == LSCallNotSent) {
-                    message = @"Location Services did not change. Opening the Settings app once and trying "
-                              @"again lets Cyanide use it as a fallback.";
+                    message = @"定位服务没有变化。先把「设置」应用打开一次，再重试"
+                              @"可以让 Cyanide 用它作为兜底方案。";
                     return;
                 }
             }
             if (ok && !doneSent) { step(1.0f, @"Done", 0.2); doneSent = YES; }
-            message = ok ? doneText() : @"Location Services did not change. Check the log.";
+            message = ok ? doneText() : @"定位服务没有变化。请查看日志。";
         } @finally {
             g_springboard_connect_progress = nil;
             kexploit_set_full_run_notice(nil);
@@ -7504,7 +7504,7 @@ BOOL settings_filesystem_access_available(void)
 
 NSString * const kSettingsLocationServicesLinksEnabled = @"LocationServicesLinksEnabled";
 NSString * const kSettingsFullExploitRequiredMessage =
-    @"No saved kernel access — this needs a full exploit run first.";
+    @"没有已保存的内核权限 —— 需要先完整运行一次漏洞利用。";
 
 // Lifts the sandbox for the File Browser if it isn't already. `completion`
 // runs on the main queue. See the header for allowFullExploit.
@@ -7520,7 +7520,7 @@ void settings_unlock_filesystem_async(BOOL allowFullExploit,
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         if (!settings_try_claim_actions_lock("File Browser",
                                              "[FILES] Another action is already running.")) {
-            finish(NO, @"Another action is already running. Try again when it has finished.");
+            finish(NO, @"已有另一个操作正在进行。请等它完成后再试。");
             return;
         }
         BOOL ok = NO;
@@ -7536,12 +7536,12 @@ void settings_unlock_filesystem_async(BOOL allowFullExploit,
             }
             if (!kernelReady) kernelReady = settings_ensure_kexploit();
             if (!kernelReady) {
-                message = @"Kernel access could not be acquired. Run the chain, then try again.";
+                message = @"无法获取内核权限。请运行利用链后重试。";
                 return;
             }
             @synchronized (settings_rc_lock()) {
                 if (!settings_ensure_springboard_remote_call_locked()) {
-                    message = @"SpringBoard could not be reached.";
+                    message = @"无法连接到 SpringBoard。";
                     return;
                 }
                 int sbx = escape_sbx_demo2_in_session();
@@ -7552,8 +7552,8 @@ void settings_unlock_filesystem_async(BOOL allowFullExploit,
                 }
             }
             ok = settings_filesystem_access_available();
-            message = ok ? @"Filesystem sandbox lifted — File Browser ready."
-                         : @"The sandbox could not be lifted. Check the log.";
+            message = ok ? @"文件系统沙盒已解除 —— 文件浏览器就绪。"
+                         : @"无法解除沙盒。请查看日志。";
         } @finally {
             settings_release_actions_lock();
             finish(ok, message);
@@ -7580,7 +7580,7 @@ static void settings_run_exploit_with_log_confirmed(UIViewController *presenter,
 {
     g_settings_manual_exploit_running = YES;
     LogViewController *log = [[LogViewController alloc] init];
-    log.title = @"Run Exploit";
+    log.title = @"运行漏洞利用";
     UINavigationController *lnav = [[UINavigationController alloc] initWithRootViewController:log];
     __weak UINavigationController *weakNav = lnav;
     log.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
@@ -7645,13 +7645,13 @@ static void settings_run_exploit_with_log_reason(UIViewController *presenter, NS
         return;
     }
     if (!settings_device_supported()) {
-        settings_simple_alert(presenter, @"Not Supported", settings_unsupported_message());
+        settings_simple_alert(presenter, @"不受支持", settings_unsupported_message());
         if (completion) completion(NO);
         return;
     }
     if (g_settings_manual_exploit_running || settings_run_in_flight()) {
-        settings_simple_alert(presenter, @"Already Running",
-                              @"Another run is in progress. Try again when it has finished.");
+        settings_simple_alert(presenter, @"已在运行",
+                              @"已有一次运行正在进行。请等它完成后再试。");
         if (completion) completion(NO);
         return;
     }
@@ -7668,17 +7668,17 @@ static void settings_run_exploit_with_log_reason(UIViewController *presenter, NS
         return;
     }
     NSString *message = [NSString stringWithFormat:@"%@"
-                        @"Run the exploit now? No tweaks are applied, and the log is shown while it runs. "
-                        @"It can take a while.\n\n"
-                        @"On A18 / M4 a run can reboot the device (about a 50/50 chance). If it does, just try again.",
+                        @"现在运行漏洞利用吗？不会应用任何插件，运行期间会显示日志。"
+                        @"这可能需要一段时间。\n\n"
+                        @"在 A18 / M4 设备上，运行可能导致设备重启（大约一半概率）。如果发生了，直接重试即可。",
                         reason.length ? [reason stringByAppendingString:@"\n\n"] : @""];
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Run Exploit?" message:message
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"运行漏洞利用？" message:message
                                                          preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *a) {
         if (completion) completion(NO);
     }]];
     __weak UIViewController *weakPresenter = presenter;
-    [ac addAction:[UIAlertAction actionWithTitle:@"Run Exploit" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
+    [ac addAction:[UIAlertAction actionWithTitle:@"运行漏洞利用" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
         UIViewController *p = weakPresenter;
         if (p) {
             settings_run_exploit_with_log_confirmed(p, completion);
@@ -7698,7 +7698,7 @@ BOOL settings_kernel_access_available(void)
 }
 
 NSString * const kSettingsNoKernelAccessHint =
-    @"No kernel access. Run the exploit from Home, or open this screen again.";
+    @"没有内核权限。请从首页运行漏洞利用，或重新打开此界面。";
 
 // One behaviour for every tool without kernel access (A18/M4 only; other
 // devices run the exploit by themselves): a "Run Exploit?" popup, once per
@@ -7734,7 +7734,7 @@ void settings_tool_needs_exploit(UIViewController *tool, UITableView *tableView,
                                  void (^retry)(void))
 {
     (void)tableView;
-    NSString *reason = [NSString stringWithFormat:@"%@ needs kernel access, and there is no saved session.", toolName];
+    NSString *reason = [NSString stringWithFormat:@"%@ 需要内核权限，且没有已保存的会话。", toolName];
     void (^again)(void) = [retry copy];
     void (^done)(BOOL) = ^(BOOL ready) { if (ready && again) again(); };
     settings_offer_exploit_popup(tool, reason, done, 10);
@@ -7755,7 +7755,7 @@ void settings_springboard_tool_async(const char *tag, BOOL (^work)(void),
     NSString *owner = [NSString stringWithUTF8String:tag ?: "Tool"];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         if (!settings_try_claim_actions_lock(owner.UTF8String, "[LARA] Another action is already running.")) {
-            finish(NO, @"Another action is already running. Try again when it has finished.");
+            finish(NO, @"已有另一个操作正在进行。请等它完成后再试。");
             return;
         }
         BOOL ok = NO;
@@ -7768,19 +7768,19 @@ void settings_springboard_tool_async(const char *tag, BOOL (^work)(void),
             }
             if (!kernelReady) kernelReady = settings_ensure_kexploit();
             if (!kernelReady) {
-                message = @"Kernel access could not be acquired. Check the log.";
+                message = @"无法获取内核权限。请查看日志。";
                 return;
             }
             @synchronized (settings_rc_lock()) {
                 if (!settings_ensure_springboard_remote_call_locked()) {
-                    message = @"SpringBoard could not be reached.";
+                    message = @"无法连接到 SpringBoard。";
                     return;
                 }
                 ok = work ? work() : YES;
                 if (!settings_has_persistent_springboard_remote_call_user() && g_springboard_rc_ready)
                     settings_destroy_springboard_remote_call_locked_internal_ex(tag ?: "tool", YES, YES);
             }
-            if (!ok && !message) message = @"It didn't work on this device. Check the log.";
+            if (!ok && !message) message = @"在这台设备上没有生效。请查看日志。";
         } @finally {
             settings_release_actions_lock();
             finish(ok, message);
@@ -7795,7 +7795,7 @@ static BOOL settings_daemons_kernel_ready(BOOL allowFullExploit, NSString **mess
     if (settings_ensure_kexploit_for_read()) return YES;
     if (!settings_tool_may_run_exploit(allowFullExploit)) { *message = kSettingsFullExploitRequiredMessage; return NO; }
     if (settings_ensure_kexploit()) return YES;
-    *message = @"Kernel access could not be acquired. Run the chain, then try again.";
+    *message = @"无法获取内核权限。请运行利用链后重试。";
     return NO;
 }
 
@@ -7912,12 +7912,12 @@ void settings_daemons_read_async(BOOL allowFullExploit,
         NSDictionary *disabled = nil, *running = nil;
         NSString *message = nil;
         if (!settings_try_claim_actions_lock("Daemons", "[DAEMONS] Another action is already running.")) {
-            message = @"Another action is already running. Try again when it has finished.";
+            message = @"已有另一个操作正在进行。请等它完成后再试。";
         } else {
             @try {
                 if (settings_daemons_kernel_ready(allowFullExploit, &message)) {
                     disabled = launchd_disabled_read();
-                    if (!disabled) message = @"The list of disabled daemons could not be read. Check the log.";
+                    if (!disabled) message = @"无法读取已禁用守护进程的列表。请查看日志。";
                     else running = settings_daemons_running();
                 }
             } @finally {
@@ -7939,14 +7939,14 @@ NSDictionary *settings_kernel_access_status(void)
     BOOL springboard = g_springboard_rc_ready != 0;
     NSString *state, *detail;
     if (live) {
-        state = @"Active";
-        detail = @"Kernel access is live in Cyanide.";
+        state = @"已生效";
+        detail = @"Cyanide 已获得可用的内核权限。";
     } else if (parked) {
         state = @"Parked";
-        detail = @"Saved in launchd for this boot; restored without a full exploit run.";
+        detail = @"本次开机已保存在 launchd 中；无需完整运行漏洞利用即可恢复。";
     } else {
         state = @"None";
-        detail = @"No saved kernel access for this boot; the next use needs a full exploit run.";
+        detail = @"本次开机没有已保存的内核权限；下次使用需要完整运行一次漏洞利用。";
     }
     return @{ @"state": state, @"detail": detail, @"springboard": @(springboard) };
 }
@@ -8027,17 +8027,17 @@ void settings_battery_info_async(BOOL allowFullExploit,
             if (!settings_device_supported()) {
                 message = settings_unsupported_message();
             } else if (!settings_try_claim_actions_lock("System Info", "[SYSINFO] Another action is already running.")) {
-                message = @"Another action is already running. Try again when it has finished.";
+                message = @"已有另一个操作正在进行。请等它完成后再试。";
             } else {
                 @try {
                     if (settings_daemons_kernel_ready(allowFullExploit, &message)) {
                         @synchronized (settings_rc_lock()) {
                             BOOL opened = !g_springboard_rc_ready;
                             if (!settings_ensure_springboard_remote_call_locked()) {
-                                message = @"SpringBoard could not be reached.";
+                                message = @"无法连接到 SpringBoard。";
                             } else {
                                 battery = settings_battery_props_springboard_locked();
-                                if (!battery) message = @"The battery information could not be read. Check the log.";
+                                if (!battery) message = @"无法读取电池信息。请查看日志。";
                                 if (opened && !settings_has_persistent_springboard_remote_call_user() && g_springboard_rc_ready)
                                     settings_destroy_springboard_remote_call_locked_internal_ex("battery info", YES, YES);
                             }
@@ -8132,7 +8132,7 @@ void settings_daemons_apply_async(NSDictionary<NSString *, NSNumber *> *changes,
         BOOL ok = NO;
         NSString *message = nil;
         if (!settings_try_claim_actions_lock("Daemons", "[DAEMONS] Another action is already running.")) {
-            message = @"Another action is already running. Try again when it has finished.";
+            message = @"已有另一个操作正在进行。请等它完成后再试。";
         } else {
             @try {
                 if (settings_daemons_kernel_ready(allowFullExploit, &message)) {
@@ -8141,8 +8141,8 @@ void settings_daemons_apply_async(NSDictionary<NSString *, NSNumber *> *changes,
                     log_user("[DAEMONS] Disabling %lu, enabling %lu daemon(s)…\n",
                              (unsigned long)off, (unsigned long)(snapshot.count - off));
                     ok = launchd_disabled_apply(snapshot);
-                    message = ok ? @"Saved. Restart the device to apply."
-                                 : @"disabled.plist could not be written. Check the log.";
+                    message = ok ? @"已保存。重启设备后生效。"
+                                 : @"无法写入 disabled.plist。请查看日志。";
                     log_user("%s %s\n", ok ? "[OK]" : "[FAIL]", message.UTF8String);
                 }
             } @finally {
@@ -8164,23 +8164,23 @@ static void settings_supervision_async(int op, BOOL allowFullExploit,
         int state = SupervisionStateUnknown;
         NSString *message = nil;
         if (!settings_try_claim_actions_lock("Supervision", "[SUPERVISION] Another action is already running.")) {
-            message = @"Another action is already running. Try again when it has finished.";
+            message = @"已有另一个操作正在进行。请等它完成后再试。";
         } else {
             @try {
                 BOOL ready = (op < 0) ? settings_ensure_kexploit_for_read()
                                       : settings_daemons_kernel_ready(allowFullExploit, &message);
                 if (!ready) {
-                    if (!message) message = @"Kernel access isn't active. Run the chain first, then try again.";
+                    if (!message) message = @"内核权限未激活。请先运行利用链，然后重试。";
                 } else if (op < 0) {
                     state = supervision_read_state();
                     ok = state != SupervisionStateUnknown;
                 } else {
                     ok = supervision_set(op == 1);
                     if (ok) {
-                        message = op == 1 ? @"Supervision activated. Reopen Settings to see it; restart only if it doesn't show."
-                                          : @"Supervision deactivated. Reopen Settings to see it; restart only if it still shows.";
+                        message = op == 1 ? @"监管模式已激活。重新打开「设置」即可看到；若不显示再重启设备。"
+                                          : @"监管模式已停用。重新打开「设置」即可看到；若仍然显示再重启设备。";
                     } else {
-                        message = @"Supervision could not be changed. Check the log.";
+                        message = @"无法更改监管模式。请查看日志。";
                     }
                     log_user("%s %s\n", ok ? "[OK]" : "[FAIL]", message.UTF8String);
                 }
@@ -8704,10 +8704,10 @@ static NSString *settings_location_sim_mode_summary(NSUserDefaults *d)
 {
     BOOL simulationStarted = [d boolForKey:kSettingsLocationSimStarted];
     NSString *simulation = simulationStarted
-        ? @"Mode: Target simulation started"
-        : @"Mode: Real location requested";
-    NSString *note = simulationStarted ? @"\nUse Restore Real Location to stop it." : @"";
-    return [NSString stringWithFormat:@"%@%@\nTarget: %@", simulation, note,
+        ? @"模式：已开始目标模拟"
+        : @"模式：已请求真实位置";
+    NSString *note = simulationStarted ? @"\n使用「恢复真实位置」即可停止。" : @"";
+    return [NSString stringWithFormat:@"%@%@\n目标：%@", simulation, note,
             settings_location_sim_target_summary(d)];
 }
 
@@ -8839,19 +8839,19 @@ static void settings_schedule_live_apply_for_key(NSString *key)
         if (!settings_location_sim_install_allowed()) {
             log_user("[LOCSIM] Target refresh skipped: Location Simulator is unavailable in this build.\n");
             settings_notify_package_queue_changed_async();
-            settings_post_actions_complete_async(NO, @"Location Simulator is unavailable in this build.");
+            settings_post_actions_complete_async(NO, @"此版本中定位模拟不可用。");
             return;
         }
         if (settings_any_registered_live_loop_running()) {
             log_user("[LOCSIM] Location update deferred: a live SpringBoard tweak is running. Hit Apply Tweaks to serialize the process switch.\n");
             settings_notify_package_queue_changed_async();
-            settings_post_actions_complete_async(NO, @"Location refresh deferred while another live tweak is running.");
+            settings_post_actions_complete_async(NO, @"另一个运行时插件正在运行，定位刷新已推迟。");
             return;
         }
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             if (__sync_val_compare_and_swap(&g_settings_actions_running, kSettingsLockFree, kSettingsLockAction)) {
                 log_user("[LOCSIM] Location update deferred: Apply Tweaks is still running.\n");
-                settings_post_actions_complete_async(NO, @"Location refresh deferred while Apply Tweaks is running.");
+                settings_post_actions_complete_async(NO, @"「应用插件」正在运行，定位刷新已推迟。");
                 settings_notify_package_queue_changed_async();
                 return;
             }
@@ -8859,13 +8859,13 @@ static void settings_schedule_live_apply_for_key(NSString *key)
                 if (!settings_ensure_kexploit()) {
                     printf("[LOCSIM] live target refresh failed to acquire KRW\n");
                     log_user("[LOCSIM] Target refresh failed: kernel primitives were not acquired. Please try running chain again.\n");
-                    settings_post_actions_complete_async(NO, @"Location refresh failed: kernel primitives were not acquired.");
+                    settings_post_actions_complete_async(NO, @"定位刷新失败：未获取到内核原语。");
                     settings_notify_package_queue_changed_async();
                     return;
                 }
                 if (settings_any_registered_live_loop_running()) {
                     log_user("[LOCSIM] Location update deferred: a live SpringBoard tweak started while recovery was running. Hit Apply Tweaks to serialize the process switch.\n");
-                    settings_post_actions_complete_async(NO, @"Location refresh deferred while another live tweak is running.");
+                    settings_post_actions_complete_async(NO, @"另一个运行时插件正在运行，定位刷新已推迟。");
                     settings_notify_package_queue_changed_async();
                     return;
                 }
@@ -8880,7 +8880,7 @@ static void settings_schedule_live_apply_for_key(NSString *key)
                              ok ? "[OK]" : "[WARN]",
                              ok ? "target refreshed" : "did not apply cleanly");
                     settings_post_actions_complete_async(ok,
-                        ok ? @"Location target refreshed." : @"Location refresh failed. Check the log.");
+                        ok ? @"定位目标已刷新。" : @"定位刷新失败。请查看日志。");
                 }
                 settings_notify_package_queue_changed_async();
             } @finally {
@@ -9396,7 +9396,7 @@ void settings_register_defaults(void)
         settings_nicebar_key(kSettingsNiceBarLiteSlotWeatherLanguagePrefix, NiceBarLiteSlotBottomLeft): @"en",
         settings_nicebar_key(kSettingsNiceBarLiteSlotWeatherLanguagePrefix, NiceBarLiteSlotBottomRight): @"en",
         settings_nicebar_key(kSettingsNiceBarLiteSlotWeatherLanguagePrefix, NiceBarLiteSlotBottomCenter): @"en",
-        kSettingsNiceBarLiteWeatherCache: @"Weather --",
+        kSettingsNiceBarLiteWeatherCache: @"天气 --",
 
 
         kSettingsAxonLiteEnabled: @NO,
@@ -9591,7 +9591,7 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                 (void)settings_take_run_preflight_failure();
                 printf("[SETTINGS] another (non-run) action holds the lock; run refused\n");
                 log_user("[RUN] Another action is running. Try again when it has finished.\n");
-                settings_post_actions_complete_async(NO, @"Another action is running. Try again when it has finished.");
+                settings_post_actions_complete_async(NO, @"已有另一个操作正在进行。请等它完成后再试。");
                 return;
             }
             __sync_lock_test_and_set(&g_settings_actions_rerun_requested, 1);
@@ -9613,7 +9613,7 @@ static void settings_run_actions_internal(BOOL pendingOnly)
         log_session_begin();
         BOOL runSucceeded = NO;
         BOOL runHadBlockingFailure = NO;
-        NSString *runCompletionMessage = @"Run failed. Check the log for details.";
+        NSString *runCompletionMessage = @"运行失败。详情请查看日志。";
         // Stages that ran but did not apply. They keep their pending marker
         // (settings_mark_tweak_applied(..., NO)), so the next run retries them;
         // this only makes the final status say so instead of "All finished".
@@ -9758,7 +9758,7 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                 if (!stageStripEnabled) settings_request_stagestrip_stop();
                 log_user("[DONE] No pending runtime changes to apply.\n");
                 runSucceeded = YES;
-                runCompletionMessage = @"Done. No pending runtime changes to apply.";
+                runCompletionMessage = @"完成。没有待应用的运行时改动。";
                 return;
             }
 
@@ -9823,7 +9823,7 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                     settings_progress(&step, total, "Opening SpringBoard injection channel");
                     if (!settings_ensure_springboard_remote_call_locked()) {
                         log_user("[RUN] Failed: could not open the SpringBoard control session. Please try installing tweaks again.\n");
-                        runCompletionMessage = @"Failed: could not open the SpringBoard control session. Please try installing tweaks again.";
+                        runCompletionMessage = @"失败：无法打开 SpringBoard 控制会话。请重新尝试安装插件。";
                         return;
                     }
                     log_user("[OK] SpringBoard channel open.\n");
@@ -9863,7 +9863,7 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                         log_user("%s DarkSword tweaks %s. Continuing with remaining changes…\n",
                                  ok ? "[OK]" : "[WARN]",
                                  ok ? "applied" : "may need a refresh");
-                        if (!ok) [runWarnings addObject:@"DarkSword tweaks"];
+                        if (!ok) [runWarnings addObject:@"DarkSword 插件"];
                     }
 
                     if (runThemer) {
@@ -9874,7 +9874,7 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                         log_user("%s Icon Theme Engine %s.\n",
                                  ok ? "[OK]" : "[WARN]",
                                  ok ? "applied" : "did not apply cleanly");
-                        if (!ok) [runWarnings addObject:@"Icon Theme Engine"];
+                        if (!ok) [runWarnings addObject:@"图标主题引擎"];
                         if (ok) {
                             settings_start_themer_live_loop();
                         }
@@ -9902,8 +9902,8 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                         bool ok = sbmat_apply_in_session([d dictionaryForKey:kSBMatConfigKey], &why);
                         settings_mark_tweak_applied(kSettingsSBToolsWithTweaks, ok);
                         log_user("%s SpringBoard Tools %s.\n", ok ? "[OK]" : "[WARN]",
-                                 ok ? "applied" : (why ?: @"did not apply cleanly").UTF8String);
-                        if (!ok) [runWarnings addObject:@"SpringBoard Tools"];
+                                 ok ? "applied" : (why ?: @"未能干净地应用").UTF8String);
+                        if (!ok) [runWarnings addObject:@"SpringBoard 工具"];
                     }
 
                     if (runGravityLite) {
@@ -9926,7 +9926,7 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                         } else {
                             log_user("[WARN] Gravity Lite did not start cleanly.\n");
                             runHadBlockingFailure = YES;
-                            runCompletionMessage = @"Gravity Lite did not start cleanly.";
+                            runCompletionMessage = @"Gravity Lite 未能干净地启动。";
                         }
                     } else if (!gravityLiteEnabled) {
                         __sync_lock_test_and_set(&g_gravitylite_background_armed, 0);
@@ -10120,7 +10120,7 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                                  (long)[d integerForKey:kSettingsSBCDockIcons],
                                  (long)[d integerForKey:kSettingsSBCCols],
                                  (long)[d integerForKey:kSettingsSBCRows]);
-                        if (!ok) [runWarnings addObject:@"Home screen layout"];
+                        if (!ok) [runWarnings addObject:@"主屏幕布局"];
                     }
 
                     // Layout Extras derives spacing and icon frames from the
@@ -10132,12 +10132,12 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                         // (elapsed-time heartbeat), then reports page by page.
                         NSTimeInterval layoutStart = [NSDate timeIntervalSinceReferenceDate];
                         uint64_t layoutTrips = r_perf_round_trips();
-                        settings_apply_heartbeat_start(@"Waiting for SpringBoard to lay out the new grid");
+                        settings_apply_heartbeat_start(@"正在等待 SpringBoard 完成新网格布局");
                         darksword_layout_set_progress_handler(^(int pagesDone, int pagesTotal,
                                                                 int iconsDone, int iconsTotal) {
                             settings_apply_heartbeat_update(pagesDone == 0
-                                ? [NSString stringWithFormat:@"Resizing %d icons on %d pages", iconsTotal, pagesTotal]
-                                : [NSString stringWithFormat:@"Resizing icons: page %d of %d (%d of %d)",
+                                ? [NSString stringWithFormat:@"正在调整 %d 页共 %d 个图标的大小", iconsTotal, pagesTotal]
+                                : [NSString stringWithFormat:@"调整图标：第 %d / %d 页（%d / %d）",
                                                              pagesDone, pagesTotal, iconsDone, iconsTotal]);
                         });
                         bool ok = settings_apply_layout_extras_from_defaults_locked(d);
@@ -10165,7 +10165,7 @@ static void settings_run_actions_internal(BOOL pendingOnly)
                         log_user("%s Home Layout Extras restore %s.\n",
                                  ok ? "[OK]" : "[WARN]",
                                  ok ? "returned to stock layout" : "did not complete cleanly");
-                        if (!ok) [runWarnings addObject:@"Home Layout Extras restore"];
+                        if (!ok) [runWarnings addObject:@"Home Layout Extras 还原"];
                     }
 
                     // SBCustomizer and Layout Extras change the Dock's icons after
@@ -10318,10 +10318,10 @@ static void settings_run_actions_internal(BOOL pendingOnly)
             runSucceeded = YES;
             if (runWarnings.count) {
                 runPartial = YES;
-                runCompletionMessage = [NSString stringWithFormat:@"Finished with warnings. Did not apply: %@.",
+                runCompletionMessage = [NSString stringWithFormat:@"完成，但有警告。未应用：%@。",
                                         [runWarnings componentsJoinedByString:@", "]];
             } else {
-                runCompletionMessage = @"Done. All requested changes finished.";
+                runCompletionMessage = @"完成。所有请求的改动已结束。";
             }
         } @finally {
             settings_stage_close();
@@ -10847,7 +10847,7 @@ static NSString * const kProcMgrAutoRefreshSecondsKey = @"procmgrAutoRefreshSeco
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"Process Viewer";
+    self.title = @"进程查看器";
     self.allProcs = @[];
     self.procs = @[];
     self.filter = @"";
@@ -10871,7 +10871,7 @@ static NSString * const kProcMgrAutoRefreshSecondsKey = @"procmgrAutoRefreshSeco
     self.searchCtrl = [[UISearchController alloc] initWithSearchResultsController:nil];
     self.searchCtrl.searchResultsUpdater = self;
     self.searchCtrl.obscuresBackgroundDuringPresentation = NO;
-    self.searchCtrl.searchBar.placeholder = @"Filter by name or PID";
+    self.searchCtrl.searchBar.placeholder = @"按名称或 PID 筛选";
     self.navigationItem.searchController = self.searchCtrl;
     self.navigationItem.hidesSearchBarWhenScrolling = NO;
     self.definesPresentationContext = YES;
@@ -10885,7 +10885,7 @@ static NSString * const kProcMgrAutoRefreshSecondsKey = @"procmgrAutoRefreshSeco
     // had no prompt line and then grew one when the count appeared — the whole
     // view pushed down (iOS 17). Seeding a placeholder here fixes the bar height
     // up front; every later prompt change is text-only, same height, no jump.
-    self.navigationItem.prompt = @"Scanning processes…";
+    self.navigationItem.prompt = @"正在扫描进程…";
 
     [self buildSummaryHeader];
     [self reloadProcs];
@@ -10954,7 +10954,7 @@ static NSString * const kProcMgrAutoRefreshSecondsKey = @"procmgrAutoRefreshSeco
     self.prevCpuTotalTicks = 0;
     self.havePrevCpuTicks = NO;
     self.prevCpuFullTotals = NO;
-    self.pmHdrCpu.text = @"CPU: —";
+    self.pmHdrCpu.text = @"CPU：—";
 }
 
 - (void)pm_backgrounded
@@ -11000,7 +11000,7 @@ static NSString * const kProcMgrAutoRefreshSecondsKey = @"procmgrAutoRefreshSeco
     [spin startAnimating];
 
     UILabel *l = [[UILabel alloc] init];
-    l.text = @"Finishing kill — keep Cyanide open for a second.";
+    l.text = @"正在完成结束操作 —— 请让 Cyanide 保持打开一秒钟。";
     l.font = [UIFont systemFontOfSize:13 weight:UIFontWeightMedium];
     l.textColor = UIColor.labelColor;
     l.translatesAutoresizingMaskIntoConstraints = NO;
@@ -11104,9 +11104,9 @@ static NSString *pm_chip_name(NSString *machine) {
     NSInteger pCores = pm_sysctl_int("hw.perflevel0.physicalcpu");
     NSInteger eCores = pm_sysctl_int("hw.perflevel1.physicalcpu");
     if (nperf >= 2 && pCores > 0 && eCores > 0)
-        return [NSString stringWithFormat:@"%@ · %ld cores (%ldP+%ldE)",
+        return [NSString stringWithFormat:@"%@ · %ld 核（%ld 性能核 + %ld 能效核）",
                 chip, (long)cores, (long)pCores, (long)eCores];
-    return [NSString stringWithFormat:@"%@ · %ld cores", chip, (long)cores];
+    return [NSString stringWithFormat:@"%@ · %ld 核", chip, (long)cores];
 }
 
 - (void)buildSummaryHeader
@@ -11135,8 +11135,8 @@ static NSString *pm_chip_name(NSString *machine) {
     self.pmHdrMem  = mk(27, 12);
     self.pmHdrCpu  = mk(45, 12);
     self.pmHdrChip.text = [self chipSummaryString];
-    self.pmHdrMem.text = @"Memory: —";
-    self.pmHdrCpu.text = @"CPU: —";
+    self.pmHdrMem.text = @"内存：—";
+    self.pmHdrCpu.text = @"CPU：—";
 
     // Sort control lives in the header (not a nav titleView, which fought the
     // large title). Always visible above the list.
@@ -11201,7 +11201,7 @@ static NSString *pm_chip_name(NSString *machine) {
                           (host_info64_t)&vm, &cnt) == KERN_SUCCESS) {
         uint64_t freeB = (uint64_t)vm.free_count * (uint64_t)vm_page_size;
         uint64_t usedB = total > freeB ? total - freeB : 0;
-        self.pmHdrMem.text = [NSString stringWithFormat:@"Memory: %@ used / %@ total (%@ free)",
+        self.pmHdrMem.text = [NSString stringWithFormat:@"内存：已用 %@ / 共 %@（可用 %@）",
             [fmt stringFromByteCount:(long long)usedB],
             [fmt stringFromByteCount:(long long)total],
             [fmt stringFromByteCount:(long long)freeB]];
@@ -11219,9 +11219,9 @@ static NSString *pm_chip_name(NSString *machine) {
         if (self.havePrevCpuTicks && all > self.prevCpuTotalTicks) {
             double pct = 100.0 * (double)(busy - self.prevCpuBusyTicks)
                                / (double)(all - self.prevCpuTotalTicks);
-            self.pmHdrCpu.text = [NSString stringWithFormat:@"CPU: %.1f%% busy", pct];
+            self.pmHdrCpu.text = [NSString stringWithFormat:@"CPU：占用 %.1f%%", pct];
         } else {
-            self.pmHdrCpu.text = @"CPU: —";
+            self.pmHdrCpu.text = @"CPU：—";
         }
         self.prevCpuBusyTicks = busy;
         self.prevCpuTotalTicks = all;
@@ -11374,14 +11374,14 @@ static NSString *pm_chip_name(NSString *machine) {
     double current = [self autoRefreshInterval];
 
     UIAlertController *ac = [UIAlertController
-        alertControllerWithTitle:@"Auto Refresh"
-                         message:@"How often should the process list refresh itself?"
+        alertControllerWithTitle:@"自动刷新"
+                         message:@"进程列表多久自动刷新一次？"
                   preferredStyle:UIAlertControllerStyleActionSheet];
 
     for (NSNumber *opt in options) {
         double seconds = opt.doubleValue;
         NSString *title = (seconds <= 0) ? @"Off"
-                                         : [NSString stringWithFormat:@"Every %d second%@", (int)seconds,
+                                         : [NSString stringWithFormat:@"每 %d 秒%@", (int)seconds,
                                             ((int)seconds == 1) ? @"" : @"s"];
         if (seconds == current) title = [title stringByAppendingString:@" ✓"];
         [ac addAction:[UIAlertAction actionWithTitle:title
@@ -11421,7 +11421,7 @@ static NSString *pm_chip_name(NSString *machine) {
         (krw_persistence_launchd_holds_krw() || krw_persistence_has_saved_recovery())) {
         printf("[PROCMGR] refresh: skipped (KRW detached, anchored in "
                "launchd — restoring)\n");
-        self.navigationItem.prompt = @"Restoring kernel access…";
+        self.navigationItem.prompt = @"正在恢复内核权限…";
         [self.refreshControl endRefreshing];
         // Round 8: routine restore must NOT flash "Arming kernel access…" —
         // it goes through restoreKRWSilently (no arming state; the neutral
@@ -11437,7 +11437,7 @@ static NSString *pm_chip_name(NSString *machine) {
     // Round 51: keep the prompt line reserved (was nil) so the nav bar never
     // loses/regains a line on the gone→armed transition — that height change
     // is the "view pushed down when the active/suspended row appears" jump.
-    self.navigationItem.prompt = @"Kernel access needed";
+    self.navigationItem.prompt = @"需要内核权限";
     [self updateSummaryHeader];
 }
 
@@ -11778,7 +11778,7 @@ static NSString *pm_chip_name(NSString *machine) {
             if ([p[@"suspended"] boolValue]) suspended++;
         NSUInteger active = total - suspended;
         self.navigationItem.prompt =
-            [NSString stringWithFormat:@"%lu active · %lu suspended",
+            [NSString stringWithFormat:@"%lu 个活跃 · %lu 个挂起",
              (unsigned long)active, (unsigned long)suspended];
     } else {
         self.navigationItem.prompt =
@@ -11789,7 +11789,7 @@ static NSString *pm_chip_name(NSString *machine) {
     // screen is going stale -- say so instead of freezing silently.
     if (self.pmIncompletePasses >= 2)
         self.navigationItem.prompt = [self.navigationItem.prompt
-            stringByAppendingString:@" · not updating (kernel reads failing)"];
+            stringByAppendingString:@" · 未更新（内核读取失败）"];
     [self.tableView reloadData];
 }
 
@@ -11913,7 +11913,7 @@ static NSString *pm_chip_name(NSString *machine) {
             // again would just start a second full run. The hint stays.
             if (!settings_device_is_a18_above()) return;
             __weak typeof(self) weakSelf = self;
-            settings_tool_needs_exploit(self, self.tableView, @"The Process Viewer", ^{
+            settings_tool_needs_exploit(self, self.tableView, @"进程查看器", ^{
                 weakSelf.exploitNeeded = NO;
                 [weakSelf armKRW];
             });
@@ -11937,14 +11937,14 @@ static NSString *pm_chip_name(NSString *machine) {
                                                  reuseIdentifier:@"pmarm"];
         cell.accessoryView = nil;
         if (self.exploitNeeded && !self.arming) {
-            cell.textLabel.text = @"No Kernel Access";
+            cell.textLabel.text = @"没有内核权限";
             cell.detailTextLabel.text = kSettingsNoKernelAccessHint;
             cell.detailTextLabel.numberOfLines = 0;
             cell.textLabel.textColor = [UIColor secondaryLabelColor];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         } else if (self.arming) {
-            cell.textLabel.text = @"Arming kernel access…";
-            cell.detailTextLabel.text = @"This can take a few seconds.";
+            cell.textLabel.text = @"正在准备内核权限…";
+            cell.detailTextLabel.text = @"这可能需要几秒。";
             cell.textLabel.textColor = [UIColor labelColor];
             UIActivityIndicatorView *spin = [[UIActivityIndicatorView alloc]
                 initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
@@ -11952,8 +11952,8 @@ static NSString *pm_chip_name(NSString *machine) {
             cell.accessoryView = spin;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         } else {
-            cell.textLabel.text = @"Arm Kernel Access";
-            cell.detailTextLabel.text = @"Tap to restore kernel r/w (no tweaks re-applied).";
+            cell.textLabel.text = @"准备内核权限";
+            cell.detailTextLabel.text = @"点按可恢复内核读写权限（不会重新应用插件）。";
             cell.textLabel.textColor = [UIColor systemBlueColor];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
@@ -11986,19 +11986,19 @@ static NSString *pm_chip_name(NSString *machine) {
                                           : [UIColor labelColor];
     NSString *approle = p[@"approle"];   // "foreground" / "switcher" / nil
     if (terminating) {
-        cell.pidL.text = [NSString stringWithFormat:@"PID %d · terminating…", pid];
+        cell.pidL.text = [NSString stringWithFormat:@"PID %d · 正在终止…", pid];
         cell.pidL.textColor = [UIColor tertiaryLabelColor];
     } else if (exiting) {
-        cell.pidL.text = [NSString stringWithFormat:@"PID %d · exiting", pid];
+        cell.pidL.text = [NSString stringWithFormat:@"PID %d · 正在退出", pid];
         cell.pidL.textColor = [UIColor tertiaryLabelColor];
     } else if (suspended) {
-        cell.pidL.text = [NSString stringWithFormat:@"PID %d · suspended", pid];
+        cell.pidL.text = [NSString stringWithFormat:@"PID %d · 已挂起", pid];
         cell.pidL.textColor = [UIColor tertiaryLabelColor];
     } else if ([approle isEqualToString:@"foreground"]) {
-        cell.pidL.text = [NSString stringWithFormat:@"PID %d · foreground app", pid];
+        cell.pidL.text = [NSString stringWithFormat:@"PID %d · 前台应用", pid];
         cell.pidL.textColor = [UIColor systemBlueColor];
     } else if ([approle isEqualToString:@"switcher"]) {
-        cell.pidL.text = [NSString stringWithFormat:@"PID %d · app switcher", pid];
+        cell.pidL.text = [NSString stringWithFormat:@"PID %d · 应用切换器", pid];
         cell.pidL.textColor = [UIColor systemTealColor];
     } else {
         cell.pidL.text = [NSString stringWithFormat:@"PID %d", pid];
@@ -12075,10 +12075,10 @@ static NSString *pm_chip_name(NSString *machine) {
 
     BOOL isSystem = (pid < 100);   // low pids are core daemons — warn harder
     NSString *msg = isSystem
-        ? [NSString stringWithFormat:@"%@ (PID %d) is a system process. Force-quitting it may respring or reboot the device.", name, pid]
-        : [NSString stringWithFormat:@"Force-quit %@ (PID %d)?", name, pid];
+        ? [NSString stringWithFormat:@"%@（PID %d）是系统进程。强制结束它可能导致 SpringBoard 重启或设备重启。", name, pid]
+        : [NSString stringWithFormat:@"强制结束 %@（PID %d）？", name, pid];
 
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Force Quit"
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"强制结束"
                                                                message:msg
                                                         preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
@@ -12116,8 +12116,8 @@ static NSString *pm_chip_name(NSString *machine) {
                             return;
                         }
                         UIAlertController *err = [UIAlertController
-                            alertControllerWithTitle:@"Couldn't Quit"
-                                             message:@"The process identity couldn't be verified (it may have exited), so nothing was signalled."
+                            alertControllerWithTitle:@"无法结束"
+                                             message:@"无法验证进程身份（它可能已经退出），因此没有发送任何信号。"
                                       preferredStyle:UIAlertControllerStyleAlert];
                         [err addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
                         [self presentViewController:err animated:YES completion:nil];
@@ -12132,8 +12132,8 @@ static NSString *pm_chip_name(NSString *machine) {
                             return;
                         }
                         UIAlertController *err = [UIAlertController
-                            alertControllerWithTitle:@"Couldn't Quit"
-                                             message:[NSString stringWithFormat:@"SIGTERM failed (errno %d — the process may have already exited).", termErr]
+                            alertControllerWithTitle:@"无法结束"
+                                             message:[NSString stringWithFormat:@"SIGTERM 失败（errno %d —— 进程可能已经退出）。", termErr]
                                       preferredStyle:UIAlertControllerStyleAlert];
                         [err addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
                         [self presentViewController:err animated:YES completion:nil];
@@ -12182,8 +12182,8 @@ static NSString *pm_chip_name(NSString *machine) {
                             }
                             printf("[PROCMGR] fastkill: pid %d still alive after quit (SIGTERM+SIGCONT)\n", pid);
                             UIAlertController *nope = [UIAlertController
-                                alertControllerWithTitle:@"Didn't terminate"
-                                                 message:[NSString stringWithFormat:@"%@ (PID %d) is still running — it caught or ignored SIGTERM. Use Force Quit instead.", name, pid]
+                                alertControllerWithTitle:@"未能终止"
+                                                 message:[NSString stringWithFormat:@"%@（PID %d）仍在运行 —— 它捕获或忽略了 SIGTERM。请改用「强制结束」。", name, pid]
                                           preferredStyle:UIAlertControllerStyleAlert];
                             [nope addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
                             [self presentViewController:nope animated:YES completion:nil];
@@ -12195,7 +12195,7 @@ static NSString *pm_chip_name(NSString *machine) {
         }]];
     }
 
-    [ac addAction:[UIAlertAction actionWithTitle:@"Force Quit"
+    [ac addAction:[UIAlertAction actionWithTitle:@"强制结束"
                                            style:UIAlertActionStyleDestructive
                                          handler:^(UIAlertAction *a) {
         // Optimistic: dim the row NOW so the kill feels instant, then run the
@@ -12243,36 +12243,36 @@ static NSString *pm_chip_name(NSString *machine) {
                     NSString *msg;
                     switch (rc) {
                         case -3:
-                            msg = @"The process has already exited.";
+                            msg = @"该进程已经退出。";
                             break;
                         case -6:
-                            msg = @"The system denied the force-quit signal, and killing it from launchd didn't take either, so it's left running.";
+                            msg = @"系统拒绝了强制结束信号，从 launchd 结束它也没有成功，因此它仍在运行。";
                             break;
                         case -7:
                             // Warm-up failure (launchd hijack didn't take) —
                             // NOT a dead process. Say so and invite a retry;
                             // round 13's arm-attempt retry makes the next tap
                             // very likely to succeed.
-                            msg = @"The kernel session into launchd couldn't be established (the warm-up hijack didn't take), so nothing was signalled. Try again.";
+                            msg = @"无法建立进入 launchd 的内核会话（预热劫持没有成功），因此没有发送任何信号。请重试。";
                             break;
                         case -9:
                             // Round 24: the lifecycle gate was closed (app
                             // backgrounded/locked mid-kill). Deterministic —
                             // retrying while backgrounded cannot work.
-                            msg = @"Cyanide was backgrounded or the screen locked mid-force-quit, so nothing was signalled and the process is still running. Reopen Cyanide and try again.";
+                            msg = @"强制结束过程中 Cyanide 进入后台或屏幕锁定，因此没有发送信号，进程仍在运行。请重新打开 Cyanide 后再试。";
                             break;
                         case -10:
                             // Round 43: helper-wedge latch set (a kernel call
                             // stuck from an earlier backgrounding). Retrying
                             // CANNOT work while latched — say so honestly.
-                            msg = @"A kernel call is stuck from an earlier backgrounding, so Force Quit is disabled for this session — nothing was signalled and the process is still running. Restart Cyanide to re-enable Force Quit.";
+                            msg = @"有一次内核调用因先前后台化而卡住，因此本次会话中「强制结束」已禁用 —— 没有发送任何信号，进程仍在运行。请重启 Cyanide 以重新启用。";
                             break;
                         default:
-                            msg = [NSString stringWithFormat:@"Error %d (the process may have already exited).", rc];
+                            msg = [NSString stringWithFormat:@"错误 %d（进程可能已经退出）。", rc];
                             break;
                     }
                     UIAlertController *err = [UIAlertController
-                        alertControllerWithTitle:@"Couldn't Force Quit"
+                        alertControllerWithTitle:@"无法强制结束"
                                          message:msg
                                   preferredStyle:UIAlertControllerStyleAlert];
                     [err addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
@@ -12310,8 +12310,8 @@ static NSString *pm_chip_name(NSString *machine) {
                         }
                         printf("[PROCMGR] fastkill: pid %d still alive after kill rc=%d\n", pid, rc);
                         UIAlertController *nope = [UIAlertController
-                            alertControllerWithTitle:@"Didn't terminate"
-                                             message:[NSString stringWithFormat:@"%@ (PID %d) is still running.", name, pid]
+                            alertControllerWithTitle:@"未能终止"
+                                             message:[NSString stringWithFormat:@"%@（PID %d）仍在运行。", name, pid]
                                       preferredStyle:UIAlertControllerStyleAlert];
                         [nope addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
                         [self presentViewController:nope animated:YES completion:nil];
@@ -12760,17 +12760,17 @@ static BOOL pm_with_launchd_session(const char *what, NSString **errorOut,
                                     void (^block)(RemoteCallSession *session))
 {
     NSString *error = nil;
-    if (!kexploit_krw_ready()) error = @"Kernel access is not active. Run the chain first.";
-    else if (excport_gate_blocked()) error = @"Cyanide is not in the foreground.";
+    if (!kexploit_krw_ready()) error = @"内核权限未激活。请先运行利用链。";
+    else if (excport_gate_blocked()) error = @"Cyanide 不在前台。";
     else if (remote_call_helper_unaccounted_count() > 0)
-        error = @"A kernel call is stuck from an earlier backgrounding. Restart Cyanide.";
+        error = @"有内核调用因先前后台化而卡住。请重启 Cyanide。";
     if (error) { if (errorOut) *errorOut = error; return NO; }
 
     pm_idle_disarm_cancel(what);
     uint64_t settleUntil = g_activation_settle_until_ns;   // wait OUTSIDE the lock
     while (clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW) < settleUntil) {
         if (g_app_in_background || excport_gate_blocked()) {
-            if (errorOut) *errorOut = @"Cyanide left the foreground.";
+            if (errorOut) *errorOut = @"Cyanide 已离开前台。";
             return NO;
         }
         usleep(100000);
@@ -12779,7 +12779,7 @@ static BOOL pm_with_launchd_session(const char *what, NSString **errorOut,
     [lock lock];
     BOOL ran = NO;
     if (!remote_call_guard_acquire_external(what)) {
-        error = @"Cyanide is going to the background.";
+        error = @"Cyanide 即将进入后台。";
     } else {
         int rc = pm_launchd_session_ensure_locked(what);
         if (rc == 0 && gPMKillSession) {
@@ -12797,8 +12797,8 @@ static BOOL pm_with_launchd_session(const char *what, NSString **errorOut,
                 gPMKillSession = nil;
             }
         } else {
-            error = rc == -2 ? @"Cyanide was just activated. Try again in a moment."
-                             : @"Root access through launchd could not be opened.";
+            error = rc == -2 ? @"Cyanide 刚刚被激活。请稍后再试。"
+                             : @"无法通过 launchd 打开 root 访问。";
         }
         remote_call_guard_release_external(what);
     }
@@ -12850,7 +12850,7 @@ static uint64_t pm_root_call(RemoteCallSession *s, int timeoutMS, const char *fn
     return r;
 }
 
-static NSString *const kPMRootTransportError = @"A call into launchd did not complete. Try again.";
+static NSString *const kPMRootTransportError = @"有一次调用 launchd 未完成。请重试。";
 
 // lstat `path` inside launchd (plus stat + readlink for a symlink).
 // Returns 1 ok, 0 libc failure (errno in launchd), -1 transport/copy failure.
@@ -12903,7 +12903,7 @@ NSArray<NSDictionary *> *settings_root_list_directory(NSString *path, BOOL *inco
 {
     if (incompleteOut) *incompleteOut = NO;
     if (!pm_root_path_ok(path)) {
-        if (errorOut) *errorOut = @"Path is not absolute or too long.";
+        if (errorOut) *errorOut = @"路径不是绝对路径或过长。";
         return nil;
     }
     __block NSArray *out = nil;
@@ -12912,7 +12912,7 @@ NSArray<NSDictionary *> *settings_root_list_directory(NSString *path, BOOL *inco
     pm_with_launchd_session("file browser root list", &error, ^(RemoteCallSession *s) {
         BOOL ok;
         uint64_t buf = pm_root_call(s, 1000, "malloc", PM_ROOT_DATA_OFF, 0, 0, &ok);
-        if (!ok || !buf) { error = ok ? @"launchd could not allocate a buffer." : kPMRootTransportError; return; }
+        if (!ok || !buf) { error = ok ? @"launchd 无法分配缓冲区。" : kPMRootTransportError; return; }
         struct stat lst, st; BOOL haveSt = NO;
         int src = pm_root_stat(s, buf, path, &lst, &st, &haveSt, NULL);
         if (src < 0) {
@@ -12920,7 +12920,7 @@ NSArray<NSDictionary *> *settings_root_list_directory(NSString *path, BOOL *inco
         } else if (src == 0) {
             error = pm_root_errno_text(s, "stat");
         } else if (!(S_ISDIR(lst.st_mode) || (S_ISLNK(lst.st_mode) && haveSt && S_ISDIR(st.st_mode)))) {
-            error = @"Not a folder.";
+            error = @"不是文件夹。";
         } else if (![s remoteWriteString:buf value:path.fileSystemRepresentation]) {
             error = kPMRootTransportError;
         } else {
@@ -12985,14 +12985,14 @@ NSArray<NSDictionary *> *settings_root_list_directory(NSString *path, BOOL *inco
                     if (r > 0) [entries addObject:pm_root_entry_dict(n, &el, &es, eHave, link)];
                     else       [entries addObject:@{ @"name": n, @"statFailed": @YES }];
                 }
-                if (stopped)     error = @"Stopped: Cyanide left the foreground.";
+                if (stopped)     error = @"已停止：Cyanide 离开了前台。";
                 else if (failed) error = kPMRootTransportError;
                 else             out = entries;
             }
         }
         pm_root_call(s, 1000, "free", buf, 0, 0, &ok);
     });
-    if (!out && errorOut) *errorOut = error ?: @"The folder could not be read.";
+    if (!out && errorOut) *errorOut = error ?: @"无法读取该文件夹。";
     if (incompleteOut) *incompleteOut = incomplete;
     printf("[FILES] root list %s: %s (%lu entries%s)\n", path.fileSystemRepresentation,
            out ? "ok" : "failed", (unsigned long)out.count, incomplete ? ", INCOMPLETE" : "");
@@ -13003,7 +13003,7 @@ NSData *settings_root_read_file(NSString *path, NSUInteger maxBytes, BOOL *trunc
 {
     if (truncatedOut) *truncatedOut = NO;
     if (!pm_root_path_ok(path)) {
-        if (errorOut) *errorOut = @"Path is not absolute or too long.";
+        if (errorOut) *errorOut = @"路径不是绝对路径或过长。";
         return nil;
     }
     __block NSMutableData *out = nil;
@@ -13013,7 +13013,7 @@ NSData *settings_root_read_file(NSString *path, NSUInteger maxBytes, BOOL *trunc
         const size_t chunk = 64 * 1024;
         BOOL ok;
         uint64_t buf = pm_root_call(s, 1000, "malloc", PM_ROOT_DATA_OFF + chunk, 0, 0, &ok);
-        if (!ok || !buf) { error = ok ? @"launchd could not allocate a buffer." : kPMRootTransportError; return; }
+        if (!ok || !buf) { error = ok ? @"launchd 无法分配缓冲区。" : kPMRootTransportError; return; }
         uint64_t data = buf + PM_ROOT_DATA_OFF;
         struct stat lst, st; BOOL haveSt = NO;
         int src = pm_root_stat(s, buf, path, &lst, &st, &haveSt, NULL);
@@ -13022,7 +13022,7 @@ NSData *settings_root_read_file(NSString *path, NSUInteger maxBytes, BOOL *trunc
         } else if (src == 0) {
             error = pm_root_errno_text(s, "stat");
         } else if (!(S_ISREG(lst.st_mode) || (S_ISLNK(lst.st_mode) && haveSt && S_ISREG(st.st_mode)))) {
-            error = @"Only regular files can be read as root.";   // never open FIFO/device/socket in launchd
+            error = @"只能以 root 读取普通文件。";   // never open FIFO/device/socket in launchd
         } else if (![s remoteWriteString:buf value:path.fileSystemRepresentation]) {
             error = kPMRootTransportError;
         } else {
@@ -13039,25 +13039,25 @@ NSData *settings_root_read_file(NSString *path, NSUInteger maxBytes, BOOL *trunc
                 BOOL regular = ok && frc == 0 &&
                     [s remoteRead:buf + PM_ROOT_STAT_OFF to:&fst size:sizeof(fst)] && S_ISREG(fst.st_mode);
                 if (!ok) error = kPMRootTransportError;
-                else if (!regular) error = @"Only regular files can be read as root.";
+                else if (!regular) error = @"只能以 root 读取普通文件。";
                 // An iCloud placeholder: read() would block launchd's thread
                 // while the file downloads, far past our client-side timeout.
                 // (fstat itself never blocks on it.)
                 if (regular && (fst.st_flags & SF_DATALESS)) {
-                    error = @"This file is not downloaded from iCloud.";
+                    error = @"该文件尚未从 iCloud 下载。";
                     regular = NO;
                 }
                 NSMutableData *acc = regular ? [NSMutableData data] : nil;
                 BOOL readOK = regular;
                 while (readOK && acc.length < maxBytes) {
                     if (pm_root_should_stop()) {
-                        error = @"Stopped: Cyanide left the foreground."; readOK = NO; break;
+                        error = @"已停止：Cyanide 离开了前台。"; readOK = NO; break;
                     }
                     size_t want = MIN(chunk, maxBytes - acc.length);
                     int64_t n = (int64_t)pm_root_call(s, 2000, "read", (uint64_t)fd, data, want, &ok);
                     if (!ok) { error = kPMRootTransportError; readOK = NO; break; }
                     if (n < 0) { error = pm_root_errno_text(s, "read"); readOK = NO; break; }
-                    if ((uint64_t)n > want) { error = @"launchd returned an invalid read size."; readOK = NO; break; }
+                    if ((uint64_t)n > want) { error = @"launchd 返回了无效的读取大小。"; readOK = NO; break; }
                     if (n == 0) break;
                     NSUInteger at = acc.length;
                     acc.length = at + (NSUInteger)n;
@@ -13077,7 +13077,7 @@ NSData *settings_root_read_file(NSString *path, NSUInteger maxBytes, BOOL *trunc
         }
         pm_root_call(s, 1000, "free", buf, 0, 0, &ok);
     });
-    if (!out && errorOut) *errorOut = error ?: @"The file could not be read.";
+    if (!out && errorOut) *errorOut = error ?: @"无法读取该文件。";
     if (truncatedOut) *truncatedOut = truncated;
     return out;
 }
@@ -13088,7 +13088,7 @@ NSData *settings_root_read_file(NSString *path, NSUInteger maxBytes, BOOL *trunc
 BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **errorOut)
 {
     if (!pm_root_path_ok(path) || !name || !name[0] || strlen(name) >= 256) {
-        if (errorOut) *errorOut = @"Invalid path or attribute name.";
+        if (errorOut) *errorOut = @"无效的路径或属性名。";
         return NO;
     }
     __block BOOL removed = NO;
@@ -13096,7 +13096,7 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
     pm_with_launchd_session("remove xattr", &error, ^(RemoteCallSession *s) {
         BOOL ok;
         uint64_t buf = pm_root_call(s, 1000, "malloc", PM_ROOT_DATA_OFF + 256, 0, 0, &ok);
-        if (!ok || !buf) { error = ok ? @"launchd could not allocate a buffer." : kPMRootTransportError; return; }
+        if (!ok || !buf) { error = ok ? @"launchd 无法分配缓冲区。" : kPMRootTransportError; return; }
         uint64_t nameBuf = buf + PM_ROOT_DATA_OFF;
         if (![s remoteWriteString:buf value:path.fileSystemRepresentation] ||
             ![s remoteWriteString:nameBuf value:name]) {
@@ -13118,7 +13118,7 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
         }
         pm_root_call(s, 1000, "free", buf, 0, 0, &ok);
     });
-    if (!removed && errorOut) *errorOut = error ?: @"The attribute could not be removed.";
+    if (!removed && errorOut) *errorOut = error ?: @"无法移除该属性。";
     return removed;
 }
 
@@ -13429,7 +13429,7 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"Theme Format";
+    self.title = @"主题格式";
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 72.0;
 }
@@ -13447,8 +13447,8 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     switch (section) {
-        case 0: return CYSectionHeaderView(@"Folder Theme");
-        case 1: return CYSectionHeaderView(@"Plist Theme");
+        case 0: return CYSectionHeaderView(@"文件夹主题");
+        case 1: return CYSectionHeaderView(@"Plist 主题");
         case 2: return CYSectionHeaderView(@"Files");
         default: return nil;
     }
@@ -13458,10 +13458,10 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
     if (section == 0) {
-        return @"Only icons with matching bundle IDs change. Missing apps keep their stock icon.";
+        return @"只有 bundle ID 匹配的图标会被替换。缺失的应用保留系统图标。";
     }
     if (section == 1) {
-        return @"Use a binary plist when you want one portable file instead of a folder of PNGs.";
+        return @"如果希望只用一个可移植文件，而不是一堆 PNG 文件夹，请使用二进制 plist。";
     }
     return nil;
 }
@@ -13481,29 +13481,29 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
 
     if (indexPath.section == 0) {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.textLabel.text = @"PNG Files";
+        cell.textLabel.text = @"PNG 文件";
         cell.detailTextLabel.text =
-            @"Make a folder containing PNG files named by app bundle ID:\n"
+            @"创建一个文件夹，其中 PNG 文件以应用 bundle ID 命名：\n"
              "com.apple.mobilesafari.png\n"
              "com.apple.MobileSMS.png\n"
              "com.apple.mobiletimer.png";
     } else if (indexPath.section == 1) {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.textLabel.text = @"Bundle ID → PNG Data";
+        cell.textLabel.text = @"Bundle ID → PNG 数据";
         cell.detailTextLabel.text =
-            @"Make a dictionary plist. Each key is a bundle ID. Each value is raw PNG data. "
+            @"制作一个字典形式的 plist。每个键是一个 bundle ID，每个值是原始 PNG 数据。"
              "Cyanide imports the plist and copies it into Documents/Themes.";
     } else {
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         if (indexPath.row == 0) {
-            cell.textLabel.text = @"Share Sample Theme Plist";
-            cell.detailTextLabel.text = @"Exports a small binary plist template with example bundle IDs.";
+            cell.textLabel.text = @"分享示例主题 Plist";
+            cell.detailTextLabel.text = @"导出一个小的二进制 plist 模板，内含示例 bundle ID。";
         } else if (indexPath.row == 1) {
-            cell.textLabel.text = @"Share iOS 6 Theme Plist";
-            cell.detailTextLabel.text = @"Exports the iOS 6 Theme plist. Icons by zagnut531/iOS-6-Icons.";
+            cell.textLabel.text = @"分享 iOS 6 主题 Plist";
+            cell.detailTextLabel.text = @"导出 iOS 6 主题的 plist。图标来自 zagnut531/iOS-6-Icons。";
         } else {
-            cell.textLabel.text = @"Share App Info.plist";
-            cell.detailTextLabel.text = @"Exports Cyanide's bundled Info.plist for reference.";
+            cell.textLabel.text = @"分享应用 Info.plist";
+            cell.detailTextLabel.text = @"导出 Cyanide 内置的 Info.plist 以供参考。";
         }
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
@@ -13567,7 +13567,7 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
         if (error) {
             *error = [NSError errorWithDomain:@"CyanideThemerGuide"
                                          code:1
-                                     userInfo:@{NSLocalizedDescriptionKey: @"Bundled iOS 6 plist was not found."}];
+                                     userInfo:@{NSLocalizedDescriptionKey: @"未找到内置的 iOS 6 plist。"}];
         }
         return nil;
     }
@@ -13589,7 +13589,7 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
         if (error) {
             *error = [NSError errorWithDomain:@"CyanideThemerGuide"
                                          code:2
-                                     userInfo:@{NSLocalizedDescriptionKey: @"Bundled Info.plist was not found."}];
+                                     userInfo:@{NSLocalizedDescriptionKey: @"未找到内置的 Info.plist。"}];
         }
         return nil;
     }
@@ -13621,8 +13621,8 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
 
 - (void)showExportError:(NSError *)error
 {
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Export Failed"
-                                                                message:error.localizedDescription ?: @"Could not write the plist."
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"导出失败"
+                                                                message:error.localizedDescription ?: @"无法写入该 plist。"
                                                          preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
     [self presentViewController:ac animated:YES completion:nil];
@@ -13669,10 +13669,10 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
     (void)note;
     dispatch_async(dispatch_get_main_queue(), ^{
         UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle:@"Injection wedged — restart the iPhone soon"
-                             message:@"A SpringBoard/launchd injection deadlocked and the init watchdog aborted it cleanly. Cyanide is safe — but the stuck system-process thread cannot be recovered, so the device will very likely reboot on its own within ~2 minutes.\n\nSave anything open and restart the iPhone proactively; a controlled reboot beats the watchdog's. Then relaunch Cyanide (no new injection channels can open in this session)."
+            alertControllerWithTitle:@"注入卡死 —— 请尽快重启 iPhone"
+                             message:@"一次 SpringBoard/launchd 注入发生死锁，init 看门狗已将它干净地中止。Cyanide 本身是安全的 —— 但卡住的系统进程线程无法恢复，设备很可能在约 2 分钟内自行重启。\n\n请保存好打开的内容并主动重启 iPhone；受控重启比等看门狗动手更好。之后重新启动 Cyanide（本次会话中无法再打开新的注入通道）。"
                       preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction actionWithTitle:@"Restart Cyanide"
+        [alert addAction:[UIAlertAction actionWithTitle:@"重启 Cyanide"
                                                   style:UIAlertActionStyleDestructive
                                                 handler:^(UIAlertAction *action) {
             (void)action;
@@ -13760,7 +13760,7 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
     BOOL applied = enabled && settings_tweak_is_applied(kSettingsQuickLoaderEnabled);
 
     if (filename) {
-        NSString *source = hasRepoTweak ? @"From source repo" : @"Local file";
+        NSString *source = hasRepoTweak ? @"来自源仓库" : @"本地文件";
         [rows addObject:@{ @"kind": @"ql-loaded",
                            @"title": filename,
                            @"subtitle": source,
@@ -13787,27 +13787,27 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
     if (self.qlStandalone) {
         if (filename) {
             [rows addObject:@{ @"kind": @"button", @"action": @"quickloader-run-now",
-                               @"title": @"Run Tweak", @"style": @"prominent" }];
+                               @"title": @"运行插件", @"style": @"prominent" }];
         }
     } else {
         if (filename && !enabled) {
             [rows addObject:@{ @"kind": @"button", @"action": @"quickloader-apply-dynamic",
-                               @"title": @"Activate Tweak", @"style": @"prominent" }];
+                               @"title": @"激活插件", @"style": @"prominent" }];
         } else if (filename && enabled && !applied) {
             [rows addObject:@{ @"kind": @"button", @"action": @"quickloader-apply-dynamic",
-                               @"title": @"Queued — Run Apply Tweaks" }];
+                               @"title": @"已排队 —— 请运行「应用插件」" }];
         } else if (filename && enabled) {
             [rows addObject:@{ @"kind": @"button", @"action": @"quickloader-apply-dynamic",
-                               @"title": @"Re-run Tweak" }];
+                               @"title": @"重新运行插件" }];
         }
     }
 
-    [rows addObject:@{ @"kind": @"button", @"action": @"quickloader-run-js", @"title": @"Select .js File" }];
-    [rows addObject:@{ @"kind": @"button", @"action": @"quickloader-open-sources", @"title": @"Browse Sources" }];
+    [rows addObject:@{ @"kind": @"button", @"action": @"quickloader-run-js", @"title": @"选择 .js 文件" }];
+    [rows addObject:@{ @"kind": @"button", @"action": @"quickloader-open-sources", @"title": @"浏览源" }];
 
     if (filename) {
         [rows addObject:@{ @"kind": @"button", @"action": @"quickloader-clear",
-                           @"title": @"Clear Loaded Tweak", @"destructive": @YES }];
+                           @"title": @"清除已加载插件", @"destructive": @YES }];
     }
 
     return rows;
@@ -13841,7 +13841,7 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = self.detailMode ? (self.bundleTitle ?: @"Settings") : @"Settings";
+    self.title = self.detailMode ? (self.bundleTitle ?: @"设置") : @"设置";
     self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
     self.tableView.rowHeight                      = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight             = 44.0;
@@ -13898,7 +13898,7 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
     spin.translatesAutoresizingMaskIntoConstraints = NO;
     [spin startAnimating];
     UILabel *label = [UILabel new];
-    label.text = @"Rebooting…";
+    label.text = @"正在重启…";
     label.textColor = UIColor.whiteColor;
     label.font = [UIFont systemFontOfSize:17.0 weight:UIFontWeightSemibold];
     label.translatesAutoresizingMaskIntoConstraints = NO;
@@ -13924,8 +13924,8 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
 - (void)showRebootFailedAlert
 {
     UIAlertController *ac = [UIAlertController
-        alertControllerWithTitle:@"Reboot Didn't Happen"
-                         message:@"Cyanide couldn't ask the system to reboot. It needs kernel access from an earlier Run; run Cyanide, then try again, or restart the device yourself. Details are in the log."
+        alertControllerWithTitle:@"重启未发生"
+                         message:@"Cyanide 无法请求系统重启。这需要此前某次运行留下的内核权限；请先运行 Cyanide 再重试，或自行重启设备。详情见日志。"
                   preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
     settings_present_controller(ac, self);
@@ -13985,16 +13985,16 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
             if (!strongSelf) return;
             if (!ok) {
                 UIAlertController *err = [UIAlertController
-                    alertControllerWithTitle:@"Lock Screen Duration"
-                                     message:@"Could not write the setting. Run the chain first, then try again."
+                    alertControllerWithTitle:@"锁屏时长"
+                                     message:@"无法写入该设置。请先运行利用链，然后重试。"
                               preferredStyle:UIAlertControllerStyleAlert];
                 [err addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
                 settings_present_controller(err, strongSelf);
                 return;
             }
             NSString *msg = remove
-                ? @"Lock screen duration cleared. Respring now to apply?"
-                : [NSString stringWithFormat:@"Lock screen will stay awake for %lld seconds. Respring now to apply?", seconds];
+                ? @"锁屏时长已清除。现在重启 SpringBoard 以生效？"
+                : [NSString stringWithFormat:@"锁定屏幕将保持亮屏 %lld 秒。现在重启 SpringBoard 以生效？", seconds];
             [strongSelf presentRespringPromptWithTitle:@"Applied" message:msg];
         });
     });
@@ -14009,14 +14009,14 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
             __strong typeof(weakSelf) strongSelf = weakSelf;
             if (!strongSelf) return;
             NSString *msg;
-            if (v == -3)      msg = @"Another action is running. Try again in a moment.";
-            else if (v == -2) msg = @"Kernel access isn't active. Run the chain first, then try again.";
-            else if (v < 0)   msg = @"Could not read the value — the SpringBoard channel wasn't available.";
-            else if (v == 0)  msg = @"No floor is set — the lock screen uses stock timing.";
+            if (v == -3)      msg = @"已有另一个操作正在进行。请稍后再试。";
+            else if (v == -2) msg = @"内核权限未激活。请先运行利用链，然后重试。";
+            else if (v < 0)   msg = @"无法读取该值 —— SpringBoard 通道不可用。";
+            else if (v == 0)  msg = @"未设置下限 —— 锁定屏幕使用系统默认时长。";
             else              msg = [NSString stringWithFormat:
-                @"Configured floor: %lld seconds.\n\nThis is the value written to SpringBoard (SBMinimumLockscreenIdleTime). It takes effect after a respring.", v];
+                @"已配置下限：%lld 秒。\n\n这是写入 SpringBoard 的值（SBMinimumLockscreenIdleTime），重启 SpringBoard 后生效。", v];
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:@"Lock Screen Duration"
+                alertControllerWithTitle:@"锁屏时长"
                                  message:msg
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
@@ -14034,14 +14034,14 @@ BOOL settings_root_remove_xattr(NSString *path, const char *name, NSString **err
             __strong typeof(weakSelf) strongSelf = weakSelf;
             if (!strongSelf) return;
             NSString *msg;
-            if (st == -3)      msg = @"Another action is running. Try again in a moment.";
-            else if (st == -2) msg = @"Kernel access isn't active. Run the chain first, then try again.";
-            else if (st < 0)   msg = @"Could not read OTA status — filesystem access was denied.";
-            else if (st == 0)  msg = @"OTA updates are ENABLED (stock). The update daemons are not blocked.";
-            else if (st == 1)  msg = @"OTA updates are DISABLED. All update daemons are blocked in launchd.";
-            else               msg = @"OTA updates are PARTIALLY disabled — some update daemons are blocked but not all. Tap “Disable OTA Updates” to finish.";
+            if (st == -3)      msg = @"已有另一个操作正在进行。请稍后再试。";
+            else if (st == -2) msg = @"内核权限未激活。请先运行利用链，然后重试。";
+            else if (st < 0)   msg = @"无法读取 OTA 状态 —— 文件系统访问被拒绝。";
+            else if (st == 0)  msg = @"OTA 更新为「已启用」（系统默认）。更新守护进程未被阻止。";
+            else if (st == 1)  msg = @"OTA 更新为「已停用」。所有更新守护进程已在 launchd 中被阻止。";
+            else               msg = @"OTA 更新「部分停用」—— 部分更新守护进程已被阻止，但并非全部。点按「停用 OTA 更新」以完成。";
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:@"OTA Updates"
+                alertControllerWithTitle:@"OTA 更新"
                                  message:msg
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
@@ -14107,7 +14107,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
     // same Settings bundle as Packages, and always unwinding to Packages
     // dropped those users out of the browse path they were in.
     NSUInteger installerIdx = settings_tab_index_for_title(tab, self.installerReturnTabTitle);
-    if (installerIdx == NSNotFound) installerIdx = settings_tab_index_for_title(tab, @"Packages");
+    if (installerIdx == NSNotFound) installerIdx = settings_tab_index_for_title(tab, @"软件包");
     if (installerIdx == NSNotFound) installerIdx = settings_tab_index_for_title(tab, @"Installer");
 
     // Switch tabs; unwind the Settings stack later, from viewDidDisappear.
@@ -14213,14 +14213,14 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
 
     NSString *level = [d stringForKey:kSettingsPowercuffLevel] ?: @"nominal";
     BOOL alreadyNominal = [level isEqualToString:@"nominal"];
-    NSString *message = @"Powercuff now defaults to Nominal.\n\nLight, Moderate, and Heavy intentionally underclock the CPU. That means lag or slower app launches can happen, especially on older devices. The lag means Powercuff is working, but those levels may be too slow for comfortable day-to-day use.\n\nUse Nominal for daily use, then raise it only when you want stronger throttling.";
+    NSString *message = @"Powercuff 现在默认使用「标称」。\n\n轻、中、重三档会有意降低 CPU 频率，因此可能出现卡顿或应用启动变慢，在老设备上尤其明显。卡顿说明 Powercuff 正在起作用，但这些档位对日常舒适使用来说可能过慢。\n\n日常请使用「标称」，只在你需要更强限频时再调高。";
 
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Powercuff Level"
                                                                    message:message
                                                             preferredStyle:UIAlertControllerStyleAlert];
     __weak typeof(self) weakSelf = self;
     if (!alreadyNominal) {
-        [alert addAction:[UIAlertAction actionWithTitle:@"Use Nominal"
+        [alert addAction:[UIAlertAction actionWithTitle:@"使用标称"
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction *_) {
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -14230,7 +14230,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
             [weakSelf.tableView reloadData];
         }]];
     }
-    [alert addAction:[UIAlertAction actionWithTitle:alreadyNominal ? @"OK" : @"Keep Current"
+    [alert addAction:[UIAlertAction actionWithTitle:alreadyNominal ? @"OK" : @"保持当前"
                                              style:UIAlertActionStyleCancel
                                            handler:^(UIAlertAction *_) {
         [d setBool:YES forKey:kSettingsPowercuffNominalNoticeShown];
@@ -14302,23 +14302,23 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
 {
     BOOL autoRetryOn = [NSUserDefaults.standardUserDefaults boolForKey:kSettingsRunAutoRetry];
     NSArray<NSDictionary *> *rows = @[
-        @{ @"kind": @"a18path", @"key": kSettingsA18ExploitPath, @"a18Only": @YES, @"title": @"A18 exploit path" },
-        @{ @"key": kSettingsA18Interleave, @"peV1Only": @YES, @"a18Only": @YES, @"title": @"A18 interleaved search",
+        @{ @"kind": @"a18path", @"key": kSettingsA18ExploitPath, @"a18Only": @YES, @"title": @"A18 利用路径" },
+        @{ @"key": kSettingsA18Interleave, @"peV1Only": @YES, @"a18Only": @YES, @"title": @"A18 交错搜索",
            @"subtitle": @"Experimental. On interleaves the socket spray with search-mapping allocation and scans each mapping tail-first, aiming to find the PCB in fewer reads. Off uses the proven bulk-spray + forward-scan path. A18/M4 only; effective on the next fresh chain run." },
-        @{ @"kind": @"a18shape", @"key": kSettingsA18MemoryShaping, @"peV1Only": @YES, @"a18Only": @YES, @"title": @"A18 memory shaping" },
-        @{ @"key": kSettingsA18BoundedSearch, @"peV1Only": @YES, @"a18Only": @YES, @"title": @"A18 bounded search",
+        @{ @"kind": @"a18shape", @"key": kSettingsA18MemoryShaping, @"peV1Only": @YES, @"a18Only": @YES, @"title": @"A18 内存塑形" },
+        @{ @"key": kSettingsA18BoundedSearch, @"peV1Only": @YES, @"a18Only": @YES, @"title": @"A18 有界搜索",
            @"subtitle": @"On stops after 4 search passes and reports a clean retry instead of grinding — which can otherwise end in an aperture panic on a device that never lands the PCB. On (default) stops; Off (legacy, matches 1.5.5) grinds until the exploit acquires. A18/M4 only; effective on the next fresh chain run." },
-        @{ @"key": kSettingsRunAutoRetry, @"title": @"Auto-retry failed chain runs",
+        @{ @"key": kSettingsRunAutoRetry, @"title": @"自动重试失败的利用链运行",
            @"subtitle": @"On re-runs the chain automatically when the exploit misses, up to the attempt cap below — the progress screen just keeps spinning until it lands or the cap is hit. Never retries a wedged injection. Every attempt is an independent panic dice roll, so the cap bounds your exposure per tap." },
-        @{ @"kind": @"stepper", @"key": kSettingsRunAutoRetryMaxAttempts, @"title": @"Auto-retry attempt cap",
+        @{ @"kind": @"stepper", @"key": kSettingsRunAutoRetryMaxAttempts, @"title": @"自动重试次数上限",
            @"min": @1, @"max": @20, @"default": @8, @"disabled": @(!autoRetryOn),
            @"subtitle": @"Maximum automatic re-runs after the first miss. Enable Auto-retry failed chain runs to change this." },
-        @{ @"key": kRemoteCallControlledPanicOnWedge, @"title": @"Controlled panic on injection wedge",
+        @{ @"key": kRemoteCallControlledPanicOnWedge, @"title": @"注入卡死时主动 panic",
            @"subtitle": @"Diagnostic. When an injection wedges, the stuck system-process thread dooms the device to a hardware-watchdog reset within ~2 minutes — which can leave no panic log at all. On instead flushes the log and panics the kernel immediately via KRW: the reboot is instant and always writes a panic-full stamped with the CYANIDE signature address 0x4359414e494445xx. Off keeps the standard abort + restart flow." },
-        @{ @"kind": @"settlemode", @"key": kSettingsRemoteSettleMode, @"title": @"Tweak apply speed" },
-        @{ @"key": kSettingsVerboseLoggingEnabled, @"title": @"Verbose logging",
+        @{ @"kind": @"settlemode", @"key": kSettingsRemoteSettleMode, @"title": @"插件应用速度" },
+        @{ @"key": kSettingsVerboseLoggingEnabled, @"title": @"详细日志",
            @"subtitle": @"Logs the full RemoteCall internals for every exploit run, tweak apply and Process Viewer action. Off keeps the log readable; turn it on before reproducing an issue, then share the log." },
-        @{ @"key": kSettingsLocationServicesLinksEnabled, @"title": @"Location Services links",
+        @{ @"key": kSettingsLocationServicesLinksEnabled, @"title": @"定位服务链接",
            @"subtitle": @"Lets cyanide://location-services links turn Location Services on or off. Any app can open these links without asking, so this is off by default. The Control Center toggle and the Shortcuts action work without it." },
         @{ @"key": kRepoSourcesEnabledKey,      @"title": @"Repo sources",
            @"subtitle": @"Off hides the Sources tab and repo packages, stops refreshing sources, and skips repo tweaks when applying (running ones are stopped). Local QuickLoader .js files still work." },
@@ -14375,8 +14375,8 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
 - (NSArray<NSDictionary *> *)otaRows
 {
     return @[
-        @{ @"kind": @"button", @"title": @"Disable OTA Updates" },
-        @{ @"kind": @"button", @"title": @"Enable OTA Updates" },
+        @{ @"kind": @"button", @"title": @"停用 OTA 更新" },
+        @{ @"kind": @"button", @"title": @"启用 OTA 更新" },
         @{ @"kind": @"button", @"title": @"Read Current Status",
            @"requiresKRW": @YES },
     ];
@@ -14436,7 +14436,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"action": @"nano-preset-newer" },
 
         @{ @"kind": @"button",
-           @"title": @"Apply Pairing Override",
+           @"title": @"应用配对覆盖",
            @"action": @"nano-apply" },
 
         @{ @"kind": @"button",
@@ -14642,7 +14642,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
     BOOL locationOn = locationservices_enabled_local() == 1;
     return @[
         @{ @"kind": @"info",
-           @"title": @"Location Services",
+           @"title": @"定位服务",
            @"subtitle": locationOn ? @"On" : @"Off" },
 
         @{ @"kind": @"button",
@@ -14707,8 +14707,8 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"subtitle": hasSelection ? selected : @"None selected. Pick a theme before running the icon theme engine." },
 
         @{ @"kind": @"button",
-           @"title": [selected isEqualToString:@"iOS 6 Theme"]
-                ? @"iOS 6 Theme ✓" : @"Use iOS 6 Theme",
+           @"title": [selected isEqualToString:@"iOS 6 主题"]
+                ? @"iOS 6 主题 ✓" : @"使用 iOS 6 主题",
            @"action": @"themer-select-ios6" },
 
         @{ @"kind": @"button",
@@ -14737,7 +14737,7 @@ static NSUInteger settings_tab_index_for_title(UITabBarController *tab, NSString
            @"title": @"Selected Theme",
            @"subtitle": hasSelection ? selected : @"None selected. Pick or import a theme before running SnowBoard Lite." },
         @{ @"kind": @"button",
-           @"title": [selected isEqualToString:@"iOS 6 Theme"] ? @"iOS 6 Theme ✓" : @"Use iOS 6 Theme",
+           @"title": [selected isEqualToString:@"iOS 6 主题"] ? @"iOS 6 主题 ✓" : @"使用 iOS 6 主题",
            @"action": @"sbl-select-ios6" },
         @{ @"kind": @"button",
            @"title": @"Import Theme Folder…",
@@ -14774,7 +14774,7 @@ static const NSInteger kPasscodePreviewRow = 1;
     // disk. Claiming "not applied" there would be wrong.
     NSString *stateText = @"not applied";
     if (styleState == PTPasscodeStyleStateApplied) {
-        stateText = @"in use";
+        stateText = @"正在使用";
     } else if (styleState == PTPasscodeStyleStateUnknown) {
         stateText = @"unknown (needs kernel access)";
     }
@@ -15053,23 +15053,23 @@ static const NSInteger kPasscodePreviewRow = 1;
         [out addObject:@{@"title": @"Style",
                          @"value": passcodeTheme ? settings_passcode_selected_theme_display_name() : @"None selected"}];
         if (passcodeTheme) {
-            [out addObject:@{@"title": @"Digits in style",
+            [out addObject:@{@"title": @"样式包含的数字",
                              @"value": [NSString stringWithFormat:@"%lu/10",
                                         (unsigned long)settings_passcode_theme_digit_presence(passcodeTheme).count]}];
         }
-        [out addObject:@{@"title": @"Saved originals",
+        [out addObject:@{@"title": @"已保存的原始文件",
                          @"value": [@(settings_passcode_theme_backup_count()) stringValue]}];
     } else if (section == SectionLiveWP) {
         [out addObject:@{@"title": @"Video", @"value": settings_livewp_video_detail()}];
     } else if (section == SectionLocationSim) {
         [out addObject:@{@"title": @"Target", @"value": settings_location_sim_target_summary(d)}];
     } else if (section == SectionGravityLite) {
-        [out addObject:@{@"title": @"Dock",         @"value": [d boolForKey:kSettingsGravityLiteDockEnabled] ? @"Included" : @"Home only"}];
+        [out addObject:@{@"title": @"Dock",         @"value": [d boolForKey:kSettingsGravityLiteDockEnabled] ? @"Included" : @"仅主屏幕"}];
         [out addObject:@{@"title": @"Strength",     @"value": [NSString stringWithFormat:@"%ld%%", (long)[d integerForKey:kSettingsGravityLiteMagnitudePct]]}];
         [out addObject:@{@"title": @"Bounce",       @"value": [NSString stringWithFormat:@"%ld%%", (long)[d integerForKey:kSettingsGravityLiteBouncePct]]}];
         [out addObject:@{@"title": @"Friction",     @"value": [NSString stringWithFormat:@"%ld%%", (long)[d integerForKey:kSettingsGravityLiteFrictionPct]]}];
         [out addObject:@{@"title": @"Resistance",   @"value": [NSString stringWithFormat:@"%ld%%", (long)[d integerForKey:kSettingsGravityLiteResistancePct]]}];
-        [out addObject:@{@"title": @"Spin resist.", @"value": [NSString stringWithFormat:@"%ld%%", (long)[d integerForKey:kSettingsGravityLiteAngularResistancePct]]}];
+        [out addObject:@{@"title": @"抗旋转", @"value": [NSString stringWithFormat:@"%ld%%", (long)[d integerForKey:kSettingsGravityLiteAngularResistancePct]]}];
     }
     return out;
 }
@@ -15115,7 +15115,7 @@ static const NSInteger kPasscodePreviewRow = 1;
 - (NSArray<NSDictionary *> *)allTweakBundleRows
 {
     return @[
-        @{ @"title": @"Launch Options",     @"icon": @"bolt.fill",                          @"color": [UIColor systemRedColor],    @"section": @(SectionLaunch) },
+        @{ @"title": @"启动选项",     @"icon": @"bolt.fill",                          @"color": [UIColor systemRedColor],    @"section": @(SectionLaunch) },
         @{ @"title": @"SBCustomizer",       @"icon": @"square.grid.3x3.fill",                @"color": [UIColor systemBlueColor],   @"section": @(SectionSBC) },
         @{ @"title": @"StatBar",            @"icon": @"thermometer.medium",                  @"color": [UIColor systemRedColor],    @"section": @(SectionStatBar) },
         @{ @"title": @"NSBar",              @"icon": @"network",                             @"color": [UIColor systemBlueColor],   @"section": @(SectionNSBar) },
@@ -15135,8 +15135,8 @@ static const NSInteger kPasscodePreviewRow = 1;
         @{ @"title": @"Powercuff",          @"icon": @"bolt.slash.fill",                     @"color": [UIColor systemOrangeColor], @"section": @(SectionPowercuff) },
         @{ @"title": @"Drag Coefficient",   @"icon": @"dial.medium.fill",                    @"color": [UIColor systemIndigoColor], @"section": @(SectionDragCoefficient) },
         @{ @"title": @"Home Layout Extras", @"icon": @"square.dashed.inset.filled",          @"color": [UIColor systemPurpleColor], @"section": @(SectionLayoutExtras) },
-        @{ @"title": @"Lock Screen Duration", @"icon": @"lock.rectangle.on.rectangle",       @"color": [UIColor systemIndigoColor], @"section": @(SectionLockScreenDuration) },
-        @{ @"title": @"Passcode Style",     @"icon": @"circle.grid.3x3.fill",                @"color": [UIColor systemPinkColor],   @"section": @(SectionPasscodeTheme) },
+        @{ @"title": @"锁屏时长", @"icon": @"lock.rectangle.on.rectangle",       @"color": [UIColor systemIndigoColor], @"section": @(SectionLockScreenDuration) },
+        @{ @"title": @"密码样式",     @"icon": @"circle.grid.3x3.fill",                @"color": [UIColor systemPinkColor],   @"section": @(SectionPasscodeTheme) },
     ];
 }
 
@@ -15158,17 +15158,17 @@ UIViewController *settings_make_daemons_viewer(void)
 - (NSArray<NSDictionary *> *)allSystemBundleRows
 {
     return @[
-        @{ @"title": @"OTA Updates",       @"icon": @"icloud.slash.fill",    @"color": [UIColor systemGrayColor],   @"section": @(SectionOTA) },
+        @{ @"title": @"OTA 更新",       @"icon": @"icloud.slash.fill",    @"color": [UIColor systemGrayColor],   @"section": @(SectionOTA) },
         @{ @"title": @"Supervision",       @"icon": @"building.2.fill",      @"color": [UIColor systemIndigoColor], @"section": @(SectionSupervision) },
-        @{ @"title": @"Watch Pairing",     @"icon": @"applewatch.radiowaves.left.and.right", @"color": [UIColor systemPurpleColor], @"section": @(SectionNanoRegistry) },
+        @{ @"title": @"手表配对",     @"icon": @"applewatch.radiowaves.left.and.right", @"color": [UIColor systemPurpleColor], @"section": @(SectionNanoRegistry) },
         // Process Viewer: shipped in 1.7.0 after the rounds 23–42 stability work
         // (launchd-hijack ABBA avoidance, tro-dance helper liveness, safe-detach
         // drains) — no longer WIP.
-        @{ @"title": @"Process Viewer",    @"icon": @"list.bullet.rectangle.fill", @"color": [UIColor systemGrayColor], @"section": @(-1), @"custom": @"procmgr" },
-        @{ @"title": @"File Browser",      @"icon": @"folder.fill", @"color": [UIColor systemBlueColor], @"section": @(-1), @"custom": @"filebrowser" },
-        @{ @"title": @"Daemon Manager",    @"icon": @"gearshape.2.fill", @"color": [UIColor systemTealColor], @"section": @(-1), @"custom": @"daemons" },
-        @{ @"title": @"System Info",       @"icon": @"info.circle.fill", @"color": [UIColor systemGreenColor], @"section": @(-1), @"custom": @"sysinfo" },
-        @{ @"title": @"Cache Cleaner",     @"icon": @"trash.fill", @"color": [UIColor systemCyanColor], @"section": @(-1), @"custom": @"cleaner" },
+        @{ @"title": @"进程查看器",    @"icon": @"list.bullet.rectangle.fill", @"color": [UIColor systemGrayColor], @"section": @(-1), @"custom": @"procmgr" },
+        @{ @"title": @"文件浏览器",      @"icon": @"folder.fill", @"color": [UIColor systemBlueColor], @"section": @(-1), @"custom": @"filebrowser" },
+        @{ @"title": @"守护进程管理",    @"icon": @"gearshape.2.fill", @"color": [UIColor systemTealColor], @"section": @(-1), @"custom": @"daemons" },
+        @{ @"title": @"系统信息",       @"icon": @"info.circle.fill", @"color": [UIColor systemGreenColor], @"section": @(-1), @"custom": @"sysinfo" },
+        @{ @"title": @"缓存清理",     @"icon": @"trash.fill", @"color": [UIColor systemCyanColor], @"section": @(-1), @"custom": @"cleaner" },
     ];
 }
 
@@ -15176,16 +15176,16 @@ UIViewController *settings_make_daemons_viewer(void)
 - (NSArray<NSDictionary *> *)laraRows
 {
     return @[
-        @{ @"title": @"Performance HUD",  @"icon": @"gauge.with.dots.needle.67percent", @"color": [UIColor systemPinkColor],   @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolPerformanceHUD) },
-        @{ @"title": @"Debug Overlay",    @"icon": @"ladybug.fill",          @"color": [UIColor systemOrangeColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolDebugOverlay) },
-        @{ @"title": @"Upside Down",      @"icon": @"arrow.up.and.down.circle.fill", @"color": [UIColor systemIndigoColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolUpsideDown) },
-        @{ @"title": @"Hidden Settings",  @"icon": @"eye.slash.fill",        @"color": [UIColor systemGrayColor],   @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolHiddenSettings) },
-        @{ @"title": @"JIT Enabler",      @"icon": @"bolt.horizontal.fill",  @"color": [UIColor systemYellowColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolJIT) },
-        @{ @"title": @"3-App Limit",      @"icon": @"square.stack.3d.up.fill", @"color": [UIColor systemTealColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolAppLimit) },
-        @{ @"title": @"Wallet Card Art",  @"icon": @"creditcard.fill",       @"color": [UIColor systemGreenColor],  @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolCards) },
-        @{ @"title": @"App Decrypt",      @"icon": @"lock.open.display",     @"color": [UIColor systemBlueColor],   @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolDecrypt) },
-        @{ @"title": @"SpringBoard Tools", @"icon": @"dock.rectangle",       @"color": [UIColor systemTealColor],   @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolSpringBoard) },
-        @{ @"title": @"Font Overwrite",   @"icon": @"textformat",            @"color": [UIColor systemPurpleColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolFonts) },
+        @{ @"title": @"性能 HUD",  @"icon": @"gauge.with.dots.needle.67percent", @"color": [UIColor systemPinkColor],   @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolPerformanceHUD) },
+        @{ @"title": @"调试浮层",    @"icon": @"ladybug.fill",          @"color": [UIColor systemOrangeColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolDebugOverlay) },
+        @{ @"title": @"倒置屏幕",      @"icon": @"arrow.up.and.down.circle.fill", @"color": [UIColor systemIndigoColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolUpsideDown) },
+        @{ @"title": @"隐藏设置",  @"icon": @"eye.slash.fill",        @"color": [UIColor systemGrayColor],   @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolHiddenSettings) },
+        @{ @"title": @"JIT 开启器",      @"icon": @"bolt.horizontal.fill",  @"color": [UIColor systemYellowColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolJIT) },
+        @{ @"title": @"3 应用限制",      @"icon": @"square.stack.3d.up.fill", @"color": [UIColor systemTealColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolAppLimit) },
+        @{ @"title": @"钱包卡片图案",  @"icon": @"creditcard.fill",       @"color": [UIColor systemGreenColor],  @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolCards) },
+        @{ @"title": @"应用解密",      @"icon": @"lock.open.display",     @"color": [UIColor systemBlueColor],   @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolDecrypt) },
+        @{ @"title": @"SpringBoard 工具", @"icon": @"dock.rectangle",       @"color": [UIColor systemTealColor],   @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolSpringBoard) },
+        @{ @"title": @"字体替换",   @"icon": @"textformat",            @"color": [UIColor systemPurpleColor], @"section": @(-1), @"custom": @"lara", @"lara": @(LaraToolFonts) },
     ];
 }
 
@@ -15270,10 +15270,10 @@ UIViewController *settings_make_daemons_viewer(void)
 {
     if (self.detailMode) return nil;
     switch ((RootSection)section) {
-        case RootSectionChangelog:      return self.changelogExpanded ? @"What's New" : nil;
-        case RootSectionActions:        return @"Quick Actions";
+        case RootSectionChangelog:      return self.changelogExpanded ? @"更新内容" : nil;
+        case RootSectionActions:        return @"快捷操作";
         case RootSectionTweakBundles:   return self.tweakBundleRows.count   > 0 ? @"Tweaks" : nil;
-        case RootSectionInDev:         return self.inDevBundleRows.count   > 0 ? @"In Development" : nil;
+        case RootSectionInDev:         return self.inDevBundleRows.count   > 0 ? @"开发中" : nil;
         case RootSectionSystemBundles:  return self.systemBundleRows.count  > 0 ? @"System" : nil;
         case RootSectionLara:           return settings_device_supported() ? @"Lara" : nil;
         case RootSectionAbout:          return @"About";
@@ -15292,7 +15292,7 @@ UIViewController *settings_make_daemons_viewer(void)
 {
     if (!self.detailMode) {
         if ((RootSection)section == RootSectionInDev && self.inDevBundleRows.count > 0) {
-            return @"These entries are not installable because they do not work yet. They remain visible so the unfinished settings/source paths are discoverable for anyone who wants to continue them.";
+            return @"这些条目尚不可用，因此无法安装。它们仍会显示，方便愿意接手的人找到未完成的设置与源路径。";
         }
         return nil;
     }
@@ -15467,7 +15467,7 @@ UIViewController *settings_make_daemons_viewer(void)
     cell.textLabel.text = row[@"title"];
     cell.textLabel.font = [UIFont systemFontOfSize:17.0];
     cell.textLabel.textColor = UIColor.tertiaryLabelColor;
-    cell.detailTextLabel.text = @"In Development";
+    cell.detailTextLabel.text = @"开发中";
     cell.detailTextLabel.font = [UIFont systemFontOfSize:13.0];
     cell.detailTextLabel.textColor = UIColor.tertiaryLabelColor;
     cell.accessoryType = UITableViewCellAccessoryNone;
@@ -15574,7 +15574,7 @@ UIViewController *settings_make_daemons_viewer(void)
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"changelog-footer"];
     }
     cell.imageView.image = nil;
-    cell.textLabel.text = @"See all releases on GitHub";
+    cell.textLabel.text = @"在 GitHub 上查看全部版本";
     cell.textLabel.font = [UIFont systemFontOfSize:15.0];
     cell.textLabel.textColor = settings_cell_tint_color(self.view);
     cell.detailTextLabel.text = nil;
@@ -15608,10 +15608,10 @@ UIViewController *settings_make_daemons_viewer(void)
     NSInteger count = 0;
     for (id c in first[@"changes"]) { if ([c isKindOfClass:[NSString class]]) count++; }
     cell.imageView.image = [SettingsViewController iconBadgeWithSymbol:@"sparkles" color:UIColor.systemYellowColor size:29.0];
-    cell.textLabel.text = [NSString stringWithFormat:@"What's New in v%@", version];
+    cell.textLabel.text = [NSString stringWithFormat:@"v%@ 更新内容", version];
     cell.textLabel.font = [UIFont systemFontOfSize:17.0];
     cell.textLabel.textColor = UIColor.labelColor;
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld change%@", (long)count, count == 1 ? @"" : @"s"];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld 项变更%@", (long)count, count == 1 ? @"" : @"s"];
     cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.selectionStyle = UITableViewCellSelectionStyleDefault;
@@ -15625,7 +15625,7 @@ UIViewController *settings_make_daemons_viewer(void)
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"changelog-collapse"];
     }
     cell.imageView.image = nil;
-    cell.textLabel.text = @"Show Less";
+    cell.textLabel.text = @"收起";
     cell.textLabel.font = [UIFont systemFontOfSize:15.0];
     cell.textLabel.textColor = settings_cell_tint_color(self.view);
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
@@ -15649,9 +15649,9 @@ UIViewController *settings_make_daemons_viewer(void)
     cell.imageView.image = [SettingsViewController iconBadgeWithSymbol:@"book.closed.fill" color:UIColor.systemPurpleColor size:29.0];
     cell.textLabel.font = [UIFont systemFontOfSize:17.0];
     cell.textLabel.textColor = UIColor.labelColor;
-    cell.textLabel.text = @"Tweak SDK";
+    cell.textLabel.text = @"插件 SDK";
     cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
-    cell.detailTextLabel.text = @"How to write Cyanide tweaks";
+    cell.detailTextLabel.text = @"如何编写 Cyanide 插件";
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     return cell;
@@ -15679,20 +15679,20 @@ UIViewController *settings_make_daemons_viewer(void)
             break;
         case 1:
             cell.imageView.image = [SettingsViewController iconBadgeWithSymbol:@"book.closed.fill" color:UIColor.systemPurpleColor size:29.0];
-            cell.textLabel.text = @"Tweak SDK";
+            cell.textLabel.text = @"插件 SDK";
             break;
         case 2:
             cell.imageView.image = [SettingsViewController iconBadgeWithSymbol:@"app.fill" color:UIColor.systemTealColor size:29.0];
-            cell.textLabel.text = @"App Icon";
+            cell.textLabel.text = @"应用图标";
             cell.detailTextLabel.text = [[self currentAppIconStyle] isEqualToString:@"classic"] ? @"Classic" : @"Modern";
             break;
         case 3:
             cell.imageView.image = [SettingsViewController iconBadgeWithSymbol:@"doc.text.magnifyingglass" color:UIColor.systemGrayColor size:29.0];
-            cell.textLabel.text = @"View Log";
+            cell.textLabel.text = @"查看日志";
             break;
         default:
             cell.imageView.image = [SettingsViewController iconBadgeWithSymbol:@"square.and.arrow.up" color:UIColor.systemGreenColor size:29.0];
-            cell.textLabel.text = @"Share Log";
+            cell.textLabel.text = @"分享日志";
             break;
     }
     return cell;
@@ -15756,8 +15756,8 @@ UIViewController *settings_make_daemons_viewer(void)
 - (void)presentThemerImporter
 {
     UIAlertController *hint = [UIAlertController
-        alertControllerWithTitle:@"Import Theme Folder"
-                         message:@"Navigate into your theme folder so you can see the PNG files inside, then tap Open in the top-right corner to import the folder."
+        alertControllerWithTitle:@"导入主题文件夹"
+                         message:@"进入你的主题文件夹，直到能看到里面的 PNG 文件，然后点按右上角的「打开」以导入该文件夹。"
                   preferredStyle:UIAlertControllerStyleAlert];
     [hint addAction:[UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
         (void)a;
@@ -15775,8 +15775,8 @@ UIViewController *settings_make_daemons_viewer(void)
 - (void)presentSnowBoardLiteFolderImporter
 {
     UIAlertController *hint = [UIAlertController
-        alertControllerWithTitle:@"Import Theme Folder"
-                         message:@"Navigate into your theme folder so you can see IconBundles inside, then tap Open.\n\nIf tapping Open does nothing, your signing tool may need \"Match provisioning identifier\" enabled, or you can use Import Theme Archive instead."
+        alertControllerWithTitle:@"导入主题文件夹"
+                         message:@"进入你的主题文件夹，直到能看到里面的 IconBundles，然后点按「打开」。\n\n如果点按「打开」没有反应，你的签名工具可能需要开启「Match provisioning identifier」，或者改用「导入主题压缩包」。"
                   preferredStyle:UIAlertControllerStyleAlert];
     [hint addAction:[UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
         (void)a;
@@ -15794,8 +15794,8 @@ UIViewController *settings_make_daemons_viewer(void)
 - (void)presentSnowBoardLiteArchiveImporter
 {
     UIAlertController *hint = [UIAlertController
-        alertControllerWithTitle:@"Import Theme Archive"
-                         message:@"Pick a ZIP or DEB file that contains an IconBundles directory. Cyanide extracts and imports a local copy."
+        alertControllerWithTitle:@"导入主题压缩包"
+                         message:@"选择一个包含 IconBundles 目录的 ZIP 或 DEB 文件。Cyanide 会解压并导入一份本地副本。"
                   preferredStyle:UIAlertControllerStyleAlert];
     [hint addAction:[UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
         (void)a;
@@ -15820,8 +15820,8 @@ UIViewController *settings_make_daemons_viewer(void)
     if (backups == 0) {
         log_user("[PASSCODE] Nothing to export: no original backups are saved yet.\n");
         UIAlertController *ac = [UIAlertController
-            alertControllerWithTitle:@"Nothing to Export"
-                             message:@"Cyanide saves a keypad original the first time a style writes over it. Nothing has been saved yet — apply a style first, then export before reinstalling Cyanide."
+            alertControllerWithTitle:@"没有可导出的内容"
+                             message:@"Cyanide 会在样式首次覆盖键盘图案时保存原始文件。目前还没有保存任何内容 —— 请先应用一个样式，再在重装 Cyanide 之前导出。"
                       preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -15837,8 +15837,8 @@ UIViewController *settings_make_daemons_viewer(void)
         log_user("[PASSCODE] Could not pack the backups: %s\n",
                  error.localizedDescription.UTF8String ?: "unknown");
         UIAlertController *ac = [UIAlertController
-            alertControllerWithTitle:@"Could Not Pack Originals"
-                             message:(error.localizedDescription ?: @"The originals could not be read.")
+            alertControllerWithTitle:@"无法打包原始文件"
+                             message:(error.localizedDescription ?: @"无法读取原始文件。")
                       preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -15868,9 +15868,9 @@ UIViewController *settings_make_daemons_viewer(void)
     // the picker opens: an archive that quietly omits originals is worse than no
     // archive at all, because it looks complete.
     UIAlertController *skipAlert = [UIAlertController
-        alertControllerWithTitle:@"Some Originals Were Skipped"
+        alertControllerWithTitle:@"部分原始文件被跳过"
                          message:[NSString stringWithFormat:
-                                  @"%lu saved original(s) could not be read and are not in this archive. Export the rest now, then retry on a device that still has them.",
+                                  @"%lu 个已保存的原始文件无法读取，未包含在此压缩包中。请先导出其余部分，再到仍保留这些文件的设备上重试。",
                                   (unsigned long)skipped]
                   preferredStyle:UIAlertControllerStyleAlert];
     [skipAlert addAction:[UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -15907,10 +15907,10 @@ UIViewController *settings_make_daemons_viewer(void)
                                       remaining:(NSInteger)remaining
 {
     NSString *warning = [NSString stringWithFormat:
-        @"This erases %lu saved original(s) covering %lu digit(s). Restore Original Digits will not be able to put the stock keypad art back afterwards — use Export Originals first if you want to keep a copy.",
+        @"这会删除 %lu 个已保存的原始文件（覆盖 %lu 个数字）。之后「还原原始数字」将无法把系统键盘图案写回 —— 如果想保留副本，请先使用「导出原始文件」。",
         (unsigned long)backups, (unsigned long)digits];
     if (remaining <= 0) return warning;
-    return [NSString stringWithFormat:@"Delete becomes available in %lds…\n\n%@", (long)remaining, warning];
+    return [NSString stringWithFormat:@"%ld 秒后可以删除…\n\n%@", (long)remaining, warning];
 }
 
 - (void)presentPasscodeBackupDeletion
@@ -15920,8 +15920,8 @@ UIViewController *settings_make_daemons_viewer(void)
     if (backups == 0) {
         log_user("[PASSCODE] Nothing to delete: no original backups are saved.\n");
         UIAlertController *ac = [UIAlertController
-            alertControllerWithTitle:@"Nothing to Delete"
-                             message:@"No saved originals are on this device."
+            alertControllerWithTitle:@"没有可删除的内容"
+                             message:@"此设备上没有已保存的原始文件。"
                       preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -15934,14 +15934,14 @@ UIViewController *settings_make_daemons_viewer(void)
     __block NSInteger remaining = 5;
 
     UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle:@"Delete All Originals?"
+        alertControllerWithTitle:@"删除全部原始文件？"
                          message:[self passcodeDeletionMessageForBackups:backups
                                                                   digits:digits
                                                                remaining:remaining]
                   preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction *deleteAction = [UIAlertAction
-        actionWithTitle:@"Delete All Originals"
+        actionWithTitle:@"删除全部原始文件"
                   style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *action) {
         (void)action;
@@ -15984,11 +15984,11 @@ UIViewController *settings_make_daemons_viewer(void)
     settings_notify_package_queue_changed_async();
 
     NSString *message = removed > 0
-        ? [NSString stringWithFormat:@"%lu original(s) deleted. Restore Original Digits has nothing to write back now.",
+        ? [NSString stringWithFormat:@"已删除 %lu 个原始文件。「还原原始数字」现在没有可写回的内容。",
                                      (unsigned long)removed]
-        : @"No original files were found to delete.";
+        : @"没有找到可删除的原始文件。";
     UIAlertController *ac = [UIAlertController
-        alertControllerWithTitle:(removed > 0 ? @"Originals Deleted" : @"Nothing Deleted")
+        alertControllerWithTitle:(removed > 0 ? @"原始文件已删除" : @"未删除任何内容")
                          message:message
                   preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
@@ -16017,8 +16017,8 @@ UIViewController *settings_make_daemons_viewer(void)
     NSProgress *progress = [NSProgress progressWithTotalUnitCount:MAX((NSInteger)archives.count, 1)];
     progress.cancellable = YES;
     UIAlertController *progressAlert = [UIAlertController
-        alertControllerWithTitle:@"Importing Originals"
-                         message:archives.count > 0 ? @"Reading the selected archive(s)…" : @"Reading the selected files…"
+        alertControllerWithTitle:@"正在导入原始文件"
+                         message:archives.count > 0 ? @"正在读取所选压缩包…" : @"正在读取所选文件…"
                   preferredStyle:UIAlertControllerStyleAlert];
     [progressAlert addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                         style:UIAlertActionStyleCancel
@@ -16047,9 +16047,9 @@ UIViewController *settings_make_daemons_viewer(void)
                 [items addObject:[NSURL fileURLWithPath:tmp isDirectory:YES]];
             } else {
                 NSString *why = progress.isCancelled ? @"cancelled" :
-                    (unzipError.localizedDescription ?: @"not a readable archive");
+                    (unzipError.localizedDescription ?: @"不是可读取的压缩包");
                 log_user("[PASSCODE] Could not open selected archive: %s\n", why.UTF8String);
-                [unzipFailures addObject:[NSString stringWithFormat:@"Archive %lu — %@",
+                [unzipFailures addObject:[NSString stringWithFormat:@"压缩包 %lu — %@",
                                           (unsigned long)unzipFailures.count + 1, why]];
             }
             progress.completedUnitCount += 1;
@@ -16073,47 +16073,47 @@ UIViewController *settings_make_daemons_viewer(void)
             if (!strongSelf) return;
             NSString *message;
             if (progress.isCancelled && added == 0 && skipped == 0 && failed == 0) {
-                message = @"Import cancelled. Nothing was imported.";
+                message = @"导入已取消。未导入任何内容。";
             } else if (progress.isCancelled) {
                 message = [NSString stringWithFormat:
-                    @"Import cancelled after it had started: %lu original(s) were already imported and were kept.",
+                    @"导入在开始后被取消：已导入的 %lu 个原始文件已保留。",
                     (unsigned long)added];
             } else if (added == 0 && skipped == 0 && failed == 0 && unzipFailures.count > 0) {
-                message = [NSString stringWithFormat:@"Could not open the selected archive(s):\n\n%@",
+                message = [NSString stringWithFormat:@"无法打开所选压缩包：\n\n%@",
                                                      [unzipFailures componentsJoinedByString:@"\n"]];
             } else if (added == 0 && skipped == 0 && failed == 0) {
-                message = @"No saved originals were found in the selection. On the device that still has the originals, tap Export Originals, then import the .zip it saves here.";
+                message = @"所选内容中没有找到已保存的原始文件。请在仍保留原始文件的设备上点按「导出原始文件」，然后把生成的 .zip 导入到这里。";
             } else if (added == 0 && failed == 0) {
                 message = [NSString stringWithFormat:
-                    @"Nothing to import: all %lu original(s) are already present on this device.",
+                    @"没有可导入的内容：全部 %lu 个原始文件都已存在于本设备。",
                     (unsigned long)skipped];
             } else {
                 NSMutableArray<NSString *> *parts = [NSMutableArray array];
-                [parts addObject:[NSString stringWithFormat:@"Imported %lu original(s).", (unsigned long)added]];
+                [parts addObject:[NSString stringWithFormat:@"已导入 %lu 个原始文件。", (unsigned long)added]];
                 if (skipped > 0) {
-                    [parts addObject:[NSString stringWithFormat:@"%lu were already present and were kept.",
+                    [parts addObject:[NSString stringWithFormat:@"%lu 个已存在，予以保留。",
                                                                 (unsigned long)skipped]];
                 }
                 if (failed > 0) {
-                    [parts addObject:[NSString stringWithFormat:@"%lu could not be copied or verified.",
+                    [parts addObject:[NSString stringWithFormat:@"%lu 个无法拷贝或校验。",
                                                                 (unsigned long)failed]];
                 }
                 if (unusable > 0) {
                     [parts addObject:[NSString stringWithFormat:
-                        @"%lu cannot be matched to keypad files, so Restore Original Digits can't write them back.",
+                        @"%lu 个无法与键盘文件匹配，因此「还原原始数字」无法写回。",
                         (unsigned long)unusable]];
                 }
                 if (unzipFailures.count > 0) {
-                    [parts addObject:[NSString stringWithFormat:@"%lu archive(s) could not be opened.",
+                    [parts addObject:[NSString stringWithFormat:@"%lu 个压缩包无法打开。",
                                                                 (unsigned long)unzipFailures.count]];
                 }
-                [parts addObject:@"Tap Restore Original Digits to write the imported originals back."];
+                [parts addObject:@"点按「还原原始数字」即可把导入的原始文件写回。"];
                 message = [parts componentsJoinedByString:@"\n\n"];
             }
 
             [strongSelf reloadSectionOrAll:SectionPasscodeTheme];
             settings_notify_package_queue_changed_async();
-            UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Import Originals"
+            UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"导入原始文件"
                                                                       message:message
                                                                preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
@@ -16148,8 +16148,8 @@ UIViewController *settings_make_daemons_viewer(void)
 - (void)presentPasscodeThemeImporter
 {
     UIAlertController *hint = [UIAlertController
-        alertControllerWithTitle:@"Import Passcode Style"
-                         message:@"Pick a .passthm style or a ZIP of keypad digit art — a .passthm is the same archive under another extension. An export of the saved originals works too. The art is copied into Cyanide's library; the file you pick stays untouched."
+        alertControllerWithTitle:@"导入密码样式"
+                         message:@"选择一个 .passthm 样式，或包含键盘数字图案的 ZIP —— .passthm 只是同一压缩包换了扩展名。导出的原始文件也可以导入。图案会被拷贝到 Cyanide 的素材库，你选择的文件本身不会被改动。"
                   preferredStyle:UIAlertControllerStyleAlert];
     [hint addAction:[UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
         (void)a;
@@ -16195,8 +16195,8 @@ UIViewController *settings_make_daemons_viewer(void)
     if (apply && settings_passcode_selected_theme() == nil) {
         log_user("[PASSCODE] Failed: no style is selected. Import or build one first.\n");
         UIAlertController *ac = [UIAlertController
-            alertControllerWithTitle:@"No Style Selected"
-                             message:@"Import a .passthm / ZIP style below, or tap a key in the preview to pick that digit's photo, then apply again."
+            alertControllerWithTitle:@"未选择样式"
+                             message:@"请在下方导入 .passthm / ZIP 样式，或点按预览中的按键选择该数字的图片，然后再次应用。"
                       preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -16206,29 +16206,29 @@ UIViewController *settings_make_daemons_viewer(void)
     if (!apply && settings_passcode_theme_backup_count() == 0) {
         log_user("[PASSCODE] Nothing to restore: no original digit backups were found.\n");
         UIAlertController *ac = [UIAlertController
-            alertControllerWithTitle:@"Nothing To Restore"
-                             message:@"No originals are saved on this device. Styles applied by another app are not covered by Cyanide's originals."
+            alertControllerWithTitle:@"没有可还原的内容"
+                             message:@"此设备上没有保存任何原始文件。由其他应用应用的样式不在 Cyanide 的原始文件覆盖范围内。"
                       preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
         return;
     }
 
-    NSString *title = apply ? @"Apply Passcode Style?"
-                            : @"Restore Original Digits?";
+    NSString *title = apply ? @"应用密码样式？"
+                            : @"还原原始数字？";
     NSString *message = apply
-        ? @"Applies the selected digits to the Lock Screen keypad and verifies every write.\n\nLock and unlock (or respring) afterwards to see the change."
-        : @"Writes the saved originals back over the keypad art and verifies each restore.";
+        ? @"把选定的数字应用到锁定屏幕键盘，并校验每次写入。\n\n之后锁定再解锁（或重启 SpringBoard）即可看到变化。"
+        : @"把已保存的原始文件写回键盘图案，并校验每次还原。";
 
     if (apply && settings_passcode_theme_backup_count() == 0 &&
         settings_passcode_originals_were_discarded()) {
         message = [message stringByAppendingString:
-            @"\n\nWarning: the saved originals were deleted, so the keypad art on this device cannot be proven to be the stock art. Apply saves whatever is there now as the \"original\", so Restore brings that back instead of the factory art."];
+            @"\n\n警告：已保存的原始文件被删除了，因此无法确认本设备上的键盘图案是系统原始图案。应用会把当前图案当作「原始」保存，于是「还原」写回的是它，而不是出厂图案。"];
     }
 
     if (!settings_krw_available_without_exploit()) {
         message = [message stringByAppendingString:
-            @"\n\nKernel access is not active yet: Cyanide runs the chain first, so this takes noticeably longer."];
+            @"\n\n内核权限尚未激活：Cyanide 会先运行利用链，因此这一步会明显更久。"];
     }
 
     UIAlertController *confirm = [UIAlertController alertControllerWithTitle:title
@@ -16255,7 +16255,7 @@ UIViewController *settings_make_daemons_viewer(void)
         // an ended-but-not-invalidated task tells iOS the app is still holding
         // background time, and iOS answers that by killing the process.
         __block UIBackgroundTaskIdentifier bgTask = [[UIApplication sharedApplication]
-            beginBackgroundTaskWithName:@"Passcode Style"
+            beginBackgroundTaskWithName:@"密码样式"
                       expirationHandler:^{
             log_user("[PASSCODE] Background time expired; the keypad write may not have finished.\n");
             if (bgTask != UIBackgroundTaskInvalid) {
@@ -16271,7 +16271,7 @@ UIViewController *settings_make_daemons_viewer(void)
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
             BOOL ok = settings_apply_passcode_theme_now(apply);
             NSString *summary = settings_passcode_last_result_summary()
-                ?: (apply ? @"Passcode style finished." : @"Original digits restored.");
+                ?: (apply ? @"密码样式已完成。" : @"原始数字已还原。");
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 typeof(self) strongSelf = weakSelf;
@@ -16299,7 +16299,7 @@ UIViewController *settings_make_daemons_viewer(void)
 
 - (void)presentLiveWPVideoPicker
 {
-    UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"Choose Video"
+    UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"选择视频"
                                                                    message:nil
                                                             preferredStyle:UIAlertControllerStyleActionSheet];
     [sheet addAction:[UIAlertAction actionWithTitle:@"Photos"
@@ -16377,7 +16377,7 @@ UIViewController *settings_make_daemons_viewer(void)
         if (error) {
             *error = [NSError errorWithDomain:@"LiveWP"
                                          code:1
-                                     userInfo:@{NSLocalizedDescriptionKey: @"Choose an MP4, MOV, or M4V video."}];
+                                     userInfo:@{NSLocalizedDescriptionKey: @"请选择 MP4、MOV 或 M4V 视频。"}];
         }
         return NO;
     }
@@ -16461,12 +16461,12 @@ UIViewController *settings_make_daemons_viewer(void)
     BOOL liveReady = settings_tweak_is_applied(kSettingsLiveWPEnabled) && g_springboard_rc_ready;
     NSString *name = displayName.length ? displayName : (url.lastPathComponent ?: @"Video");
     NSString *successMessage = liveReady
-        ? [NSString stringWithFormat:@"%@ was imported and will swap into the running LiveWP session.", name]
-        : [NSString stringWithFormat:@"%@ is ready. Toggle LiveWP on and tap Run to apply.", name];
+        ? [NSString stringWithFormat:@"%@ 已导入，并将替换到正在运行的 LiveWP 会话中。", name]
+        : [NSString stringWithFormat:@"%@ 已就绪。请开启 LiveWP 并点按「运行」以应用。", name];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!ok) {
-            NSString *msg = err.localizedDescription ?: @"The selected video could not be imported.";
+            NSString *msg = err.localizedDescription ?: @"无法导入所选视频。";
             UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Import Failed"
                                                                          message:msg
                                                                   preferredStyle:UIAlertControllerStyleAlert];
@@ -16475,7 +16475,7 @@ UIViewController *settings_make_daemons_viewer(void)
             return;
         }
         [self finishLiveWPVideoImportAndSwapIfRunning];
-        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Video Selected"
+        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"已选择视频"
                                                                      message:successMessage
                                                               preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
@@ -16505,7 +16505,7 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
     NSString *identifier = [self liveWPPreferredTypeIdentifierForProvider:provider];
     if (identifier.length == 0) {
         UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Import Failed"
-                                                                     message:@"Choose an MP4, MOV, or M4V video."
+                                                                     message:@"请选择 MP4、MOV 或 M4V 视频。"
                                                               preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -16517,7 +16517,7 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
                                     completionHandler:^(NSURL *url, NSError *error) {
         if (!url || error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *msg = error.localizedDescription ?: @"The selected video could not be opened.";
+                NSString *msg = error.localizedDescription ?: @"无法打开所选视频。";
                 UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Import Failed"
                                                                              message:msg
                                                                       preferredStyle:UIAlertControllerStyleAlert];
@@ -16535,7 +16535,7 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
     NSItemProvider *provider = result.itemProvider;
     if (![provider canLoadObjectOfClass:UIImage.class]) {
         UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Import Failed"
-                                                                     message:@"That item is not a photo. Choose an image for the keypad digit."
+                                                                     message:@"该项不是图片。请为键盘数字选择一张图片。"
                                                               preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -16557,8 +16557,8 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
                 UIAlertController *ac = [UIAlertController
                     alertControllerWithTitle:@"Import Failed"
                                      message:(error.localizedDescription ?:
-                                              (image ? @"The selected photo is too wide or too large for keypad art. Crop it closer to the digit and try again."
-                                                     : @"The selected photo could not be read."))
+                                              (image ? @"所选图片过宽或过大，不适合作为键盘图案。请裁剪得更贴近数字后重试。"
+                                                     : @"无法读取所选图片。"))
                               preferredStyle:UIAlertControllerStyleAlert];
                 [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
                 [strongSelf presentViewController:ac animated:YES completion:nil];
@@ -16570,8 +16570,8 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
             BOOL ok = theme && settings_passcode_theme_set_digit_image(theme, digit, png, &err);
             if (!ok) {
                 UIAlertController *ac = [UIAlertController
-                    alertControllerWithTitle:@"Digit Not Saved"
-                                     message:(err.localizedDescription ?: @"The digit image could not be saved.")
+                    alertControllerWithTitle:@"数字未保存"
+                                     message:(err.localizedDescription ?: @"无法保存数字图片。")
                               preferredStyle:UIAlertControllerStyleAlert];
                 [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
                 [strongSelf presentViewController:ac animated:YES completion:nil];
@@ -16585,8 +16585,8 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
             settings_notify_package_queue_changed_async();
 
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:[NSString stringWithFormat:@"Digit %@ Saved", digit]
-                                 message:@"Apply the style to write it over the keypad art."
+                alertControllerWithTitle:[NSString stringWithFormat:@"数字 %@ 已保存", digit]
+                                 message:@"应用样式即可把它写入键盘图案。"
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
             [strongSelf presentViewController:ac animated:YES completion:nil];
@@ -16617,11 +16617,11 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
         }
     }
     if (pngs.count == 0) {
-        settings_themer_import_fail(error, @"The folder contains no PNG icons.");
+        settings_themer_import_fail(error, @"该文件夹中没有 PNG 图标。");
         return NO;
     }
     if (pngs.count > SBLMaxImportFileCount) {
-        settings_themer_import_fail(error, @"The folder contains too many files to import.");
+        settings_themer_import_fail(error, @"该文件夹内文件过多，无法导入。");
         return NO;
     }
 
@@ -16638,13 +16638,13 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
         }
         totalBytes += size;
         if (totalBytes > SBLMaxImportTotalBytes) {
-            settings_themer_import_fail(error, @"The theme is too large to import.");
+            settings_themer_import_fail(error, @"主题过大，无法导入。");
             return NO;
         }
         [accepted addObject:png];
     }
     if (accepted.count == 0) {
-        settings_themer_import_fail(error, @"None of the PNG icons could be used (too large or unreadable).");
+        settings_themer_import_fail(error, @"没有任何 PNG 图标可用（过大或无法读取）。");
         return NO;
     }
 
@@ -16677,7 +16677,7 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
     NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
     [d setObject:kThemerThemeCustom forKey:kSettingsThemerThemeID];
     [d setObject:target forKey:kSettingsThemerCustomThemePath];
-    [d setObject:url.lastPathComponent.length ? url.lastPathComponent : @"Imported Theme"
+    [d setObject:url.lastPathComponent.length ? url.lastPathComponent : @"导入的主题"
           forKey:kSettingsThemerCustomThemeName];
     [d synchronize];
     log_user("[THEMER] Imported custom folder theme: %lu PNG file(s).\n",
@@ -16693,7 +16693,7 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
 {
     NSDictionary *dict = settings_themer_load_plist_theme(url.path);
     if (dict.count == 0) {
-        settings_themer_import_fail(error, @"The plist contains no usable icon entries.");
+        settings_themer_import_fail(error, @"该 plist 中没有可用的图标条目。");
         return NO;
     }
 
@@ -16725,7 +16725,7 @@ didFinishPicking:(NSArray<PHPickerResult *> *)results
     NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
     [d setObject:kThemerThemeCustom forKey:kSettingsThemerThemeID];
     [d setObject:target forKey:kSettingsThemerCustomThemePath];
-    [d setObject:url.lastPathComponent.length ? url.lastPathComponent : @"Imported Theme"
+    [d setObject:url.lastPathComponent.length ? url.lastPathComponent : @"导入的主题"
           forKey:kSettingsThemerCustomThemeName];
     [d synchronize];
     log_user("[THEMER] Imported custom plist theme: %lu icon entries.\n",
@@ -16770,7 +16770,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
         log_user("[IMPORT] Cannot access selected file. Try a different location or file provider.\n");
         UIAlertController *ac = [UIAlertController
             alertControllerWithTitle:@"Import Failed"
-                              message:@"The selected item could not be accessed. Try picking from a different location or file provider."
+                              message:@"无法访问所选项目。请尝试从其他位置或文件提供方选择。"
                        preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -16849,17 +16849,17 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         NSError *err = nil;
         BOOL ok = NO;
-        NSString *successTitle = @"Theme Imported";
+        NSString *successTitle = @"主题已导入";
         NSString *successMessage = nil;
 
         if ([mode isEqualToString:@"livewp"]) {
             ok = [self importLiveWPVideoAtURL:url error:&err];
-            successTitle = @"Video Selected";
+            successTitle = @"已选择视频";
             BOOL liveReady = settings_tweak_is_applied(kSettingsLiveWPEnabled) && g_springboard_rc_ready;
             successMessage = liveReady
-                ? [NSString stringWithFormat:@"%@ was imported and will swap into the running LiveWP session.",
+                ? [NSString stringWithFormat:@"%@ 已导入，并将替换到正在运行的 LiveWP 会话中。",
                                              url.lastPathComponent ?: @"Video"]
-                : [NSString stringWithFormat:@"%@ is ready. Toggle LiveWP on and tap Run to apply.",
+                : [NSString stringWithFormat:@"%@ 已就绪。请开启 LiveWP 并点按「运行」以应用。",
                                              url.lastPathComponent ?: @"Video"];
         } else if ([mode isEqualToString:@"snowboardlite"]) {
             if (isDir) {
@@ -16869,7 +16869,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
                     [NSString stringWithFormat:@"SnowBoardLite-%@", NSUUID.UUID.UUIDString]];
                 ok = SBLExtractArchiveToDirectory(url, tmpRoot, &err);
                 if (ok) {
-                    NSString *displayName = url.URLByDeletingPathExtension.lastPathComponent ?: @"Imported Theme";
+                    NSString *displayName = url.URLByDeletingPathExtension.lastPathComponent ?: @"导入的主题";
                     ok = settings_sbl_import_folder_theme_named([NSURL fileURLWithPath:tmpRoot],
                                                                displayName,
                                                                @"archive",
@@ -16877,9 +16877,9 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
                 }
                 [[NSFileManager defaultManager] removeItemAtPath:tmpRoot error:nil];
             }
-            successTitle = @"SnowBoard Theme Imported";
+            successTitle = @"SnowBoard 主题已导入";
             NSString *name = settings_snowboardlite_selected_theme_display_name();
-            successMessage = [NSString stringWithFormat:@"\"%@\" is now selected. Toggle SnowBoard Lite on and tap Run to apply.", name];
+            successMessage = [NSString stringWithFormat:@"已选中 \"%@\"。请开启 SnowBoard Lite 并点按「运行」以应用。", name];
         } else if ([mode isEqualToString:@"passcode"]) {
             if (isDir) {
                 ok = settings_passcode_import_folder_named(url, url.lastPathComponent, &err);
@@ -16888,28 +16888,28 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
                     [NSString stringWithFormat:@"PasscodeTheme-%@", NSUUID.UUID.UUIDString]];
                 ok = SBLExtractArchiveToDirectory(url, tmpRoot, &err);
                 if (ok) {
-                    NSString *displayName = url.URLByDeletingPathExtension.lastPathComponent ?: @"Imported Style";
+                    NSString *displayName = url.URLByDeletingPathExtension.lastPathComponent ?: @"已导入样式";
                     ok = settings_passcode_import_folder_named([NSURL fileURLWithPath:tmpRoot],
                                                                displayName,
                                                                &err);
                 }
                 [[NSFileManager defaultManager] removeItemAtPath:tmpRoot error:nil];
             }
-            successTitle = @"Passcode Style Imported";
+            successTitle = @"密码样式已导入";
             successMessage = [NSString stringWithFormat:
-                @"\"%@\" is now selected. Use Apply Style Now below to write it to the keypad.",
+                @"已选中 \"%@\"。请用下方的「立即应用样式」把它写入键盘。",
                 settings_passcode_selected_theme_display_name()];
         } else {
             ok = isDir ? [self importThemerFolderAtURL:url error:&err]
                        : [self importThemerPlistAtURL:url error:&err];
             NSString *name = settings_themer_selected_theme_display_name();
-            successMessage = [NSString stringWithFormat:@"\"%@\" is now selected. Toggle SnowBoard Lite on and tap Run to apply.", name];
+            successMessage = [NSString stringWithFormat:@"已选中 \"%@\"。请开启 SnowBoard Lite 并点按「运行」以应用。", name];
         }
         if (scoped) [url stopAccessingSecurityScopedResource];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!ok) {
-                NSString *msg = err.localizedDescription ?: @"The selected item could not be imported.";
+                NSString *msg = err.localizedDescription ?: @"无法导入所选项目。";
                 UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Import Failed"
                                                                              message:msg
                                                                       preferredStyle:UIAlertControllerStyleAlert];
@@ -17018,7 +17018,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
 
 - (void)presentNSBarPositionPicker
 {
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"NSBar Position"
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"NSBar 位置"
                                                                  message:nil
                                                           preferredStyle:UIAlertControllerStyleActionSheet];
     NSArray<NSNumber *> *positions = @[
@@ -17071,7 +17071,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
         }
         case NiceBarLiteContentWeather: {
             NSString *text = settings_nicebar_weather_text_for_slot(d, slot);
-            return text.length ? text : @"Weather --";
+            return text.length ? text : @"天气 --";
         }
         case NiceBarLiteContentOff:
             return @"Hidden";
@@ -17259,7 +17259,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
 {
     if (slot < 0 || slot >= NiceBarLiteSlotCount) return;
     UIAlertController *sheet = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"%@ Weather", settings_nicebar_slot_name(slot)]
-                                                                   message:@"Choose the weather display language."
+                                                                   message:@"选择天气的显示语言。"
                                                             preferredStyle:UIAlertControllerStyleActionSheet];
     [sheet addAction:[UIAlertAction actionWithTitle:@"English" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
         [self nicebarSetWeatherLanguage:@"en" forSlot:slot];
@@ -17311,13 +17311,13 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
         settings_schedule_live_apply_for_key(settings_nicebar_key(kSettingsNiceBarLiteSlotKindPrefix, slot));
         [self reloadSectionOrAll:SectionNiceBarLite];
     }]];
-    [ac addAction:[UIAlertAction actionWithTitle:@"Custom Text" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
+    [ac addAction:[UIAlertAction actionWithTitle:@"自定义文字" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
         [self presentNiceBarTextEditorForSlot:slot];
     }]];
-    [ac addAction:[UIAlertAction actionWithTitle:@"System Item" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
+    [ac addAction:[UIAlertAction actionWithTitle:@"系统项目" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
         [self presentNiceBarSystemPickerForSlot:slot];
     }]];
-    [ac addAction:[UIAlertAction actionWithTitle:@"Date / Time" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
+    [ac addAction:[UIAlertAction actionWithTitle:@"日期 / 时间" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
         [self presentNiceBarDateTimePickerForSlot:slot];
     }]];
     [ac addAction:[UIAlertAction actionWithTitle:@"Weather" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
@@ -17419,10 +17419,10 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
 
     if (row == 0) {
         cell.textLabel.text = @"Modern";
-        cell.detailTextLabel.text = @"Default — refreshed v2 mark.";
+        cell.detailTextLabel.text = @"默认 —— 更新的 v2 标识。";
     } else {
         cell.textLabel.text = @"Classic";
-        cell.detailTextLabel.text = @"Original release artwork.";
+        cell.detailTextLabel.text = @"最初的发布图标。";
     }
 
     BOOL selected = [[self currentAppIconStyle] isEqualToString:style];
@@ -17437,8 +17437,8 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
 
     if (![UIApplication sharedApplication].supportsAlternateIcons) {
         UIAlertController *ac = [UIAlertController
-            alertControllerWithTitle:@"Can't Change Icon"
-                             message:@"This iOS build doesn't expose alternate icon switching."
+            alertControllerWithTitle:@"无法更改图标"
+                             message:@"此 iOS 版本未提供备用图标切换功能。"
                       preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -17465,8 +17465,8 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
 {
     if (![UIApplication sharedApplication].supportsAlternateIcons) {
         UIAlertController *ac = [UIAlertController
-            alertControllerWithTitle:@"Can't Change Icon"
-                             message:@"This iOS build doesn't expose alternate icon switching."
+            alertControllerWithTitle:@"无法更改图标"
+                             message:@"此 iOS 版本未提供备用图标切换功能。"
                       preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -17474,11 +17474,11 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     }
     NSString *current = [self currentAppIconStyle];
     UIAlertController *ac = [UIAlertController
-        alertControllerWithTitle:@"App Icon"
+        alertControllerWithTitle:@"应用图标"
                          message:nil
                   preferredStyle:UIAlertControllerStyleActionSheet];
-    NSString *modernTitle = [current isEqualToString:@"modern"] ? @"Modern ✓" : @"Modern";
-    NSString *classicTitle = [current isEqualToString:@"classic"] ? @"Classic ✓" : @"Classic";
+    NSString *modernTitle = [current isEqualToString:@"modern"] ? @"现代 ✓" : @"Modern";
+    NSString *classicTitle = [current isEqualToString:@"classic"] ? @"经典 ✓" : @"Classic";
     [ac addAction:[UIAlertAction actionWithTitle:modernTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
         [self selectAppIconAtRow:0 inTableView:self.tableView];
     }]];
@@ -17504,15 +17504,15 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     NSString *logPath = log_most_recent_session_path();
     NSString *text;
     if (!logPath) {
-        text = @"No log yet. Run a chain at least once.";
+        text = @"还没有日志。请至少运行一次利用链。";
     } else {
         NSError *err = nil;
         text = [NSString stringWithContentsOfFile:logPath encoding:NSUTF8StringEncoding error:&err];
-        if (!text) text = [NSString stringWithFormat:@"Failed to read log: %@", err.localizedDescription];
+        if (!text) text = [NSString stringWithFormat:@"读取日志失败：%@", err.localizedDescription];
     }
 
     UIViewController *vc = [[UIViewController alloc] init];
-    vc.title = @"Log";
+    vc.title = @"日志";
     vc.view.backgroundColor = UIColor.systemGroupedBackgroundColor;
 
     UITextView *tv = [[UITextView alloc] init];
@@ -17537,8 +17537,8 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
 {
     NSString *logPath = log_most_recent_session_path();
     if (!logPath.length) {
-        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"No Log Yet"
-                                                                     message:@"Run a chain once, then come back to share the latest diagnostic log."
+        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"还没有日志"
+                                                                     message:@"先运行一次利用链，再回来分享最新的诊断日志。"
                                                               preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:YES completion:nil];
@@ -17550,7 +17550,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     NSString *iosVersion = [UIDevice currentDevice].systemVersion ?: @"unknown";
     struct utsname info; uname(&info);
     NSString *machine = [NSString stringWithUTF8String:info.machine] ?: @"unknown";
-    NSString *summary = [NSString stringWithFormat:@"Cyanide diagnostic log\nCyanide %@ · iOS %@ · %@",
+    NSString *summary = [NSString stringWithFormat:@"Cyanide 诊断日志\nCyanide %@ · iOS %@ · %@",
                          appVersion, iosVersion, machine];
 
     UIActivityViewController *vc = [[UIActivityViewController alloc] initWithActivityItems:@[summary, logURL]
@@ -17594,7 +17594,7 @@ void cyanide_present_contact(UIViewController *host)
     NSString *signature = [NSString stringWithFormat:@"—— Cyanide %@ · iOS %@ · %@ ——",
                            appVersion, iosVersion, machine];
 
-    NSString *subject = [NSString stringWithFormat:@"Cyanide %@ — Contact", appVersion];
+    NSString *subject = [NSString stringWithFormat:@"Cyanide %@ — 联系方式", appVersion];
 
     // CRLF rather than LF so iOS Mail, Gmail, Outlook, and the mailto: URL
     // path all preserve line breaks. Plain LF is fine in MFMailCompose but
@@ -17632,8 +17632,8 @@ void cyanide_present_contact(UIViewController *host)
     }
 
     UIAlertController *ac = [UIAlertController
-        alertControllerWithTitle:@"Mail Not Available"
-                         message:@"Set up Mail in iOS Settings to send feedback, or DM @_kolbicz on Twitter. View Log in Settings to copy the latest diagnostic log."
+        alertControllerWithTitle:@"邮件不可用"
+                         message:@"请在 iOS「设置」中配置邮件后发送反馈，或在 Twitter 上私信 @_kolbicz。也可以在「设置」中查看日志并拷贝最新的诊断日志。"
                   preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
     [host presentViewController:ac animated:YES completion:nil];
@@ -17733,8 +17733,8 @@ void cyanide_present_contact(UIViewController *host)
             BOOL running = g_settings_cleanup_running;
             symbol = @"xmark.circle.fill";
             color  = UIColor.systemRedColor;
-            cell.textLabel.text = running ? @"Cleaning Up…" : @"Clean Up";
-            cell.detailTextLabel.text = cleanupEnabled ? nil : @"No active session";
+            cell.textLabel.text = running ? @"正在清理…" : @"清理";
+            cell.detailTextLabel.text = cleanupEnabled ? nil : @"没有活动会话";
             if (running) {
                 UIActivityIndicatorView *spin = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
                 spin.color = color;
@@ -17745,7 +17745,7 @@ void cyanide_present_contact(UIViewController *host)
             BOOL running = g_settings_respring_cleanup_running;
             symbol = @"arrow.clockwise.circle.fill";
             color  = UIColor.systemOrangeColor;
-            cell.textLabel.text = running ? @"Preparing…" : @"Respring";
+            cell.textLabel.text = running ? @"准备中…" : @"Respring";
             if (running) {
                 UIActivityIndicatorView *spin = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
                 spin.color = color;
@@ -17756,7 +17756,7 @@ void cyanide_present_contact(UIViewController *host)
             BOOL running = g_settings_reboot_running;
             symbol = @"power.circle.fill";
             color  = UIColor.systemPurpleColor;
-            cell.textLabel.text = running ? @"Preparing…" : @"Reboot";
+            cell.textLabel.text = running ? @"准备中…" : @"Reboot";
             if (running) {
                 UIActivityIndicatorView *spin = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
                 spin.color = color;
@@ -17767,13 +17767,13 @@ void cyanide_present_contact(UIViewController *host)
             rowEnabled = anyInstalledOrQueued;
             symbol = @"trash.fill";
             color  = UIColor.systemRedColor;
-            cell.textLabel.text = @"Reset All Packages";
-            cell.detailTextLabel.text = anyInstalledOrQueued ? nil : @"Nothing active";
+            cell.textLabel.text = @"重置全部软件包";
+            cell.detailTextLabel.text = anyInstalledOrQueued ? nil : @"没有生效项";
         } else {
             rowEnabled = YES;
             symbol = @"arrow.down.circle.fill";
             color  = UIColor.systemBlueColor;
-            cell.textLabel.text = @"Check for Updates";
+            cell.textLabel.text = @"检查更新";
         }
 
         UIColor *effectiveColor = rowEnabled ? color : UIColor.tertiaryLabelColor;
@@ -17936,7 +17936,7 @@ void cyanide_present_contact(UIViewController *host)
         cell.textLabel.text = [NSString stringWithFormat:@"%@: %@", row[@"title"], valueText];
         cell.textLabel.textAlignment = NSTextAlignmentNatural;
         cell.textLabel.textColor = supported ? UIColor.labelColor : UIColor.tertiaryLabelColor;
-        cell.detailTextLabel.text = row[@"subtitle"] ?: @"Tap to enter an exact value.";
+        cell.detailTextLabel.text = row[@"subtitle"] ?: @"点按可输入精确数值。";
         cell.detailTextLabel.textColor = supported ? UIColor.secondaryLabelColor : UIColor.tertiaryLabelColor;
         cell.detailTextLabel.font = [UIFont systemFontOfSize:12];
         return cell;
@@ -18059,7 +18059,7 @@ void cyanide_present_contact(UIViewController *host)
         title.translatesAutoresizingMaskIntoConstraints = NO;
 
         UISegmentedControl *seg =
-            [[UISegmentedControl alloc] initWithItems:@[@"pe_v1 (compat.)", @"pe_v2", @"pe_v3 (default)"]];
+            [[UISegmentedControl alloc] initWithItems:@[@"pe_v1（兼容）", @"pe_v2", @"pe_v3（默认）"]];
         seg.translatesAutoresizingMaskIntoConstraints = NO;
         // Display order is pe_v1 first, but the stored value is unchanged
         // (1 = pe_v1, 0 = pe_v2, 2 = pe_v3) so existing preferences keep their meaning.
@@ -18079,7 +18079,7 @@ void cyanide_present_contact(UIViewController *host)
                "instead of re-hunting — the hunt is where every aperture panic has occurred. "
                "pe_v1 is kept as an explicit compatibility/debug option; it now has a bounded "
                "search and foreign-read cap. pe_v2 is the legacy fallback."
-            : @"A18/M4 devices only. This device uses pe_v1 already.";
+            : @"仅限 A18/M4 设备。此设备已在使用 pe_v1。";
         note.translatesAutoresizingMaskIntoConstraints = NO;
 
         [cell.contentView addSubview:title];
@@ -18236,7 +18236,7 @@ void cyanide_present_contact(UIViewController *host)
         config.text = row[@"title"];
         config.textProperties.font = [UIFont systemFontOfSize:17.0 weight:UIFontWeightSemibold];
         config.secondaryText = active
-            ? [NSString stringWithFormat:@"%@ · Active", row[@"subtitle"]]
+            ? [NSString stringWithFormat:@"%@ · 已生效", row[@"subtitle"]]
             : row[@"subtitle"];
         config.secondaryTextProperties.color = active ? UIColor.systemGreenColor : UIColor.secondaryLabelColor;
         config.textToSecondaryTextVerticalPadding = 2.0;
@@ -18255,11 +18255,11 @@ void cyanide_present_contact(UIViewController *host)
         config.imageProperties.reservedLayoutSize = CGSizeMake(36.0, 36.0);
         config.imageProperties.maximumSize = CGSizeMake(36.0, 36.0);
         config.imageToTextPadding = 14.0;
-        config.text = @"No tweak loaded";
+        config.text = @"未加载插件";
         config.textProperties.font = [UIFont systemFontOfSize:17.0 weight:UIFontWeightMedium];
         config.textProperties.color = UIColor.tertiaryLabelColor;
-        config.secondaryText = repotweaks_sources_enabled() ? @"Select a .js file or install from Sources"
-                                                            : @"Select a .js file to run";
+        config.secondaryText = repotweaks_sources_enabled() ? @"选择一个 .js 文件，或从「源」安装"
+                                                            : @"选择要运行的 .js 文件";
         config.secondaryTextProperties.color = UIColor.tertiaryLabelColor;
         config.textToSecondaryTextVerticalPadding = 2.0;
         NSDirectionalEdgeInsets m = config.directionalLayoutMargins;
@@ -18362,7 +18362,7 @@ void cyanide_present_contact(UIViewController *host)
             //real-time text formatting
             void (^updateLabelText)(float) = ^(float value) {
                 if (fabs(value - defVal) < 0.01) {
-                    valLabel.text = [NSString stringWithFormat:@"%.2f (Def)", value];
+                    valLabel.text = [NSString stringWithFormat:@"%.2f（默认）", value];
                 } else {
                     valLabel.text = [NSString stringWithFormat:@"%.2f", value];
                 }
@@ -18502,9 +18502,9 @@ void cyanide_present_contact(UIViewController *host)
     printf("[SETTINGS] toggle %s=%d\n", key.UTF8String, sender.isOn);
     if (darkPatchStillLive) {
         log_user("[DST] %s stays active until SpringBoard restarts.\n", key.UTF8String);
-        [self presentRespringPromptWithTitle:@"Respring to Turn It Off?"
+        [self presentRespringPromptWithTitle:@"重启 SpringBoard 以关闭它？"
                                      message:[NSString stringWithFormat:@"%@ is still active in SpringBoard. "
-                                              @"It stays on until a respring.", row[@"title"] ?: @"This tweak"]];
+                                              @"它会一直生效，直到重启 SpringBoard。", row[@"title"] ?: @"此插件"]];
     }
     settings_note_package_configuration_changed(key);
     if ([key isEqualToString:kSettingsKeepAlive]) {
@@ -18664,8 +18664,8 @@ void cyanide_present_contact(UIViewController *host)
         [scanner scanCharactersFromSet:NSCharacterSet.whitespaceAndNewlineCharacterSet intoString:NULL];
         if (!ok || ![scanner isAtEnd] || !isfinite(parsed)) {
             UIAlertController *err = [UIAlertController
-                alertControllerWithTitle:@"Invalid Number"
-                                 message:@"Enter a plain number, then try again."
+                alertControllerWithTitle:@"无效的数字"
+                                 message:@"请输入纯数字后重试。"
                           preferredStyle:UIAlertControllerStyleAlert];
             [err addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(250 * NSEC_PER_MSEC)),
@@ -18759,10 +18759,10 @@ void cyanide_present_contact(UIViewController *host)
             typeof(self) me = weakSelf;
             if (!me) return;
             if (ok || !message) {
-                if (state == SupervisionStateCyanide) message = @"Supervised by " @SUPERVISION_ORGANIZATION_NAME @" (set by Cyanide).";
-                else if (state == SupervisionStateOther) message = @"Supervised by an organization, not by Cyanide. Cyanide leaves it alone.";
-                else if (state == SupervisionStateOff) message = @"Not supervised (stock).";
-                else message = @"Could not read the supervision state — filesystem access was denied.";
+                if (state == SupervisionStateCyanide) message = @"监管方：" @SUPERVISION_ORGANIZATION_NAME @"（由 Cyanide 设置）。";
+                else if (state == SupervisionStateOther) message = @"由某个组织监管，不是 Cyanide。Cyanide 不会改动它。";
+                else if (state == SupervisionStateOff) message = @"未受监管（系统默认）。";
+                else message = @"无法读取监管状态 —— 文件系统访问被拒绝。";
             }
             UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Supervision"
                                                                         message:message
@@ -18845,8 +18845,8 @@ void cyanide_present_contact(UIViewController *host)
                 else offer();
                 return;
             }
-            settings_post_actions_complete_async(ok, ok ? (activate ? @"Gravity Lite active." : @"Gravity Lite deactivated.")
-                                                        : (message ?: @"Gravity Lite did not start. Check the log."));
+            settings_post_actions_complete_async(ok, ok ? (activate ? @"Gravity Lite 已生效。" : @"Gravity Lite 已停用。")
+                                                        : (message ?: @"Gravity Lite 未能启动。请查看日志。"));
             [me reloadSectionOrAll:SectionGravityLite];
         });
     }];
@@ -18869,18 +18869,18 @@ void cyanide_present_contact(UIViewController *host)
             __block BOOL actionOK = NO;
             BOOL actionLockAcquired = NO;
             NSString *completionMessage = restore
-                ? @"Gravity Lite restore failed. Check the log."
-                : @"Gravity Lite explosion failed. Check the log.";
+                ? @"Gravity Lite 还原失败。请查看日志。"
+                : @"Gravity Lite 爆炸效果失败。请查看日志。";
             @try {
                 actionLockAcquired = settings_try_claim_actions_lock("Gravity Lite action",
                                                                      "[GRAVITY] Another action is already running.");
                 if (!actionLockAcquired) {
-                    completionMessage = @"Gravity Lite blocked: Apply Tweaks is still running.";
+                    completionMessage = @"Gravity Lite 被阻止：「应用插件」仍在运行。";
                     return;
                 }
                 if (!settings_ensure_kexploit()) {
                     log_user("[GRAVITY] Failed: kernel primitives not acquired. Please try running chain again.\n");
-                    completionMessage = @"Gravity Lite failed: kernel primitives were not acquired. Please try running chain again.";
+                    completionMessage = @"Gravity Lite 失败：未获取到内核原语。请重新运行利用链。";
                     return;
                 }
 
@@ -18912,15 +18912,15 @@ void cyanide_present_contact(UIViewController *host)
                     settings_stop_gravity_motion();
                     settings_mark_tweak_applied(kSettingsGravityLiteEnabled, NO);
                     completionMessage = actionOK
-                        ? @"Gravity Lite restored the icon layout."
-                        : @"Gravity Lite restore found no active state.";
+                        ? @"Gravity Lite 已还原图标布局。"
+                        : @"Gravity Lite 还原时没有找到活动状态。";
                     log_user("%s Gravity Lite restore %s.\n",
                              actionOK ? "[OK]" : "[WARN]",
                              actionOK ? "completed" : "found no active state");
                 } else {
                     completionMessage = actionOK
-                        ? @"Gravity Lite explosion pulse sent."
-                        : @"Gravity Lite explosion found no active state.";
+                        ? @"Gravity Lite 爆炸脉冲已发送。"
+                        : @"Gravity Lite 爆炸时没有找到活动状态。";
                     log_user("%s Gravity Lite explosion %s.\n",
                              actionOK ? "[OK]" : "[WARN]",
                              actionOK ? "sent" : "found no active state");
@@ -18958,18 +18958,18 @@ void cyanide_present_contact(UIViewController *host)
             BOOL actionOK = NO;
             BOOL actionLockAcquired = NO;
             NSString *completionMessage = apply
-                ? @"Location Simulator applied."
-                : @"Restore request sent. Real location may take a few minutes.";
+                ? @"定位模拟已应用。"
+                : @"还原请求已发送。恢复真实位置可能需要几分钟。";
             @try {
                 actionLockAcquired = settings_try_claim_actions_lock("Location Simulator action",
                                                                      "[LOCSIM] Another action is already running.");
                 if (!actionLockAcquired) {
-                    completionMessage = @"Location Simulator blocked: Apply Tweaks is still running.";
+                    completionMessage = @"定位模拟被阻止：「应用插件」仍在运行。";
                     return;
                 }
                 if (!settings_ensure_kexploit()) {
                     log_user("[LOCSIM] Failed: kernel primitives not acquired. Please try running chain again.\n");
-                    completionMessage = @"Location Simulator failed: kernel primitives were not acquired. Please try running chain again.";
+                    completionMessage = @"定位模拟失败：未获取到内核原语。请重新运行利用链。";
                     return;
                 }
 
@@ -18990,8 +18990,8 @@ void cyanide_present_contact(UIViewController *host)
                 }
                 actionOK = ok;
                 completionMessage = apply
-                    ? (ok ? @"Location Simulator applied." : @"Location Simulator failed. Check the log.")
-                    : (ok ? @"Restore request sent. Real location may take a few minutes." : @"Restore failed. Check the log.");
+                    ? (ok ? @"定位模拟已应用。" : @"定位模拟失败。请查看日志。")
+                    : (ok ? @"还原请求已发送。恢复真实位置可能需要几分钟。" : @"还原失败。请查看日志。");
                 log_user("%s Location Simulator %s.\n",
                          ok ? "[OK]" : "[WARN]",
                          apply ? (ok ? "applied" : "did not apply cleanly")
@@ -19040,18 +19040,18 @@ void cyanide_present_contact(UIViewController *host)
             BOOL actionOK = NO;
             BOOL actionLockAcquired = NO;
             NSString *completionMessage = enable
-                ? @"Strict App Mode failed. Check the log."
-                : @"Strict App Mode disable failed. Check the log.";
+                ? @"严格应用模式失败。请查看日志。"
+                : @"停用严格应用模式失败。请查看日志。";
             @try {
                 actionLockAcquired = settings_try_claim_actions_lock("Location Simulator strict mode",
                                                                      "[LOCSIM] Another action is already running.");
                 if (!actionLockAcquired) {
-                    completionMessage = @"Strict App Mode blocked: Apply Tweaks is still running.";
+                    completionMessage = @"严格应用模式被阻止：「应用插件」仍在运行。";
                     return;
                 }
                 if (!settings_ensure_kexploit()) {
                     log_user("[LOCSIM] Strict App Mode failed: kernel primitives not acquired. Please try running chain again.\n");
-                    completionMessage = @"Strict App Mode failed: kernel primitives were not acquired. Please try running chain again.";
+                    completionMessage = @"严格应用模式失败：未获取到内核原语。请重新运行利用链。";
                     return;
                 }
 
@@ -19069,12 +19069,12 @@ void cyanide_present_contact(UIViewController *host)
                 actionOK = stealthOK;
                 if (enable) {
                     completionMessage = stealthOK
-                        ? @"Strict mode host sweep finished. Force quit and reopen strict apps before testing."
-                        : @"Strict App Mode failed. Check the log.";
+                        ? @"严格模式宿主扫描已完成。测试前请先强制退出并重新打开目标应用。"
+                        : @"严格应用模式失败。请查看日志。";
                 } else {
                     completionMessage = stealthOK
-                        ? @"Strict mode simulation stop request sent."
-                        : @"Strict App Mode disable failed. Check the log.";
+                        ? @"严格模式模拟停止请求已发送。"
+                        : @"停用严格应用模式失败。请查看日志。";
                 }
 
                 log_user("%s Strict App Mode %s (hosts=%s).\n",
@@ -19126,8 +19126,8 @@ void cyanide_present_contact(UIViewController *host)
 
 - (void)presentLocationSimInvalidCoordinateAlert
 {
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Invalid Coordinates"
-                                                                message:@"Use decimal degrees. Latitude must be between -90 and 90. Longitude must be between -180 and 180. Chinese labels like 北纬/南纬/东经/西经 and full-width punctuation are supported."
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"无效的坐标"
+                                                                message:@"请使用十进制度。纬度需在 -90 到 90 之间，经度需在 -180 到 180 之间。支持「北纬/南纬/东经/西经」等中文写法以及全角标点。"
                                                          preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
     settings_present_controller(ac, self);
@@ -19136,11 +19136,11 @@ void cyanide_present_contact(UIViewController *host)
 - (void)presentLocationSimExactCoordinatePrompt
 {
     NSUserDefaults *d = NSUserDefaults.standardUserDefaults;
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Exact Coordinates"
-                                                                message:@"Enter decimal degrees, or paste a pair like 40.7128, -74.0060 or 北纬39.9042，东经116.4074."
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"精确坐标"
+                                                                message:@"输入十进制度，或粘贴这样的一对数值：40.7128, -74.0060 或 北纬39.9042，东经116.4074。"
                                                          preferredStyle:UIAlertControllerStyleAlert];
     [ac addTextFieldWithConfigurationHandler:^(UITextField *field) {
-        field.placeholder = @"Latitude or lat, lon";
+        field.placeholder = @"纬度，或 纬度、经度";
         field.text = [NSString stringWithFormat:@"%.8f", [d doubleForKey:kSettingsLocationSimLatitude]];
         field.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
         field.clearButtonMode = UITextFieldViewModeWhileEditing;
@@ -19176,12 +19176,12 @@ void cyanide_present_contact(UIViewController *host)
     };
 
     [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-    [ac addAction:[UIAlertAction actionWithTitle:@"Set Target"
+    [ac addAction:[UIAlertAction actionWithTitle:@"设定目标"
                                            style:UIAlertActionStyleDefault
                                          handler:^(__unused UIAlertAction *action) {
         commit(NO);
     }]];
-    [ac addAction:[UIAlertAction actionWithTitle:@"Set & Simulate"
+    [ac addAction:[UIAlertAction actionWithTitle:@"设定并模拟"
                                            style:UIAlertActionStyleDefault
                                          handler:^(__unused UIAlertAction *action) {
         commit(YES);
@@ -19192,8 +19192,8 @@ void cyanide_present_contact(UIViewController *host)
 - (void)presentLocationSimCityPicker
 {
     NSArray<NSDictionary *> *cities = @[
-        @{ @"name": @"New York City", @"lat": @40.7128, @"lon": @(-74.0060) },
-        @{ @"name": @"Los Angeles", @"lat": @34.0522, @"lon": @(-118.2437) },
+        @{ @"name": @"纽约", @"lat": @40.7128, @"lon": @(-74.0060) },
+        @{ @"name": @"洛杉矶", @"lat": @34.0522, @"lon": @(-118.2437) },
         @{ @"name": @"Chicago", @"lat": @41.8781, @"lon": @(-87.6298) },
         @{ @"name": @"Miami", @"lat": @25.7617, @"lon": @(-80.1918) },
         @{ @"name": @"London", @"lat": @51.5074, @"lon": @(-0.1278) },
@@ -19204,7 +19204,7 @@ void cyanide_present_contact(UIViewController *host)
         @{ @"name": @"Singapore", @"lat": @1.3521, @"lon": @103.8198 },
     ];
 
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Major Cities"
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"主要城市"
                                                                 message:nil
                                                          preferredStyle:UIAlertControllerStyleActionSheet];
     __weak typeof(self) weakSelf = self;
@@ -19439,13 +19439,13 @@ void cyanide_present_contact(UIViewController *host)
     if (indexPath.section == SectionActions) {
         if (indexPath.row == 0) {
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:@"Clean Up?"
-                                 message:@"Stops live SpringBoard sessions and closes local KRW state. The next Run will try recovery first."
+                alertControllerWithTitle:@"清理？"
+                                 message:@"停止运行中的 SpringBoard 会话并关闭本地 KRW 状态。下次运行会先尝试恢复。"
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
                                                  handler:nil]];
-            [ac addAction:[UIAlertAction actionWithTitle:@"Clean Up"
+            [ac addAction:[UIAlertAction actionWithTitle:@"清理"
                                                    style:UIAlertActionStyleDestructive
                                                  handler:^(UIAlertAction *_) {
                 settings_queue_terminal_kexploit_cleanup("manual action");
@@ -19453,8 +19453,8 @@ void cyanide_present_contact(UIViewController *host)
             settings_present_controller(ac, self);
         } else if (indexPath.row == 1) {
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:@"Respring?"
-                                 message:@"Are you sure you want to respring? SpringBoard will restart."
+                alertControllerWithTitle:@"重启 SpringBoard？"
+                                 message:@"确定要重启 SpringBoard 吗？SpringBoard 将重新启动。"
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
@@ -19489,8 +19489,8 @@ void cyanide_present_contact(UIViewController *host)
             settings_present_controller(ac, self);
         } else if (indexPath.row == 2) {
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:@"Reboot?"
-                                 message:@"The device restarts. Live tweaks stop first; Run Cyanide again after the restart."
+                alertControllerWithTitle:@"重启设备？"
+                                 message:@"设备将重新启动。运行中的插件会先停止；重启后请再次运行 Cyanide。"
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
@@ -19526,8 +19526,8 @@ void cyanide_present_contact(UIViewController *host)
             settings_present_controller(ac, self);
         } else if (indexPath.row == 3) {
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:@"Reset All Packages?"
-                                 message:@"Deactivates every package and clears pending changes. Already-applied patches stay until respring or reboot. Per-tweak settings are not affected."
+                alertControllerWithTitle:@"重置全部软件包？"
+                                 message:@"停用所有软件包并清除待处理的变更。已应用的补丁会保留到重启 SpringBoard 或重启设备。各插件的设置不受影响。"
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
@@ -19643,8 +19643,8 @@ void cyanide_present_contact(UIViewController *host)
                           withRowAnimation:UITableViewRowAnimationNone];
         } else if ([action isEqualToString:@"nano-apply"]) {
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:@"Apply Pairing Override?"
-                                 message:@"Saves these watchOS pairing settings on this iPhone. Respring or reboot afterwards before trying to pair."
+                alertControllerWithTitle:@"应用配对覆盖？"
+                                 message:@"把这些 watchOS 配对设置保存到这台 iPhone。之后请先重启 SpringBoard 或重启设备，再尝试配对。"
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
             [ac addAction:[UIAlertAction actionWithTitle:@"Apply" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
@@ -19657,8 +19657,8 @@ void cyanide_present_contact(UIViewController *host)
             settings_run_nano_steer_action();
         } else if ([action isEqualToString:@"nano-seed"]) {
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:@"Seed Compatibility Index?"
-                                 message:@"Adds this phone's product type to the local NanoRegistry compatibility-index MobileAsset and saves a .cyanide.bak backup beside the original file."
+                alertControllerWithTitle:@"写入兼容性索引？"
+                                 message:@"把此机型的产品类型写入本地 NanoRegistry 兼容性索引 MobileAsset，并在原文件旁保存 .cyanide.bak 备份。"
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
             [ac addAction:[UIAlertAction actionWithTitle:@"Seed" style:UIAlertActionStyleDefault handler:^(UIAlertAction *_) {
@@ -19667,8 +19667,8 @@ void cyanide_present_contact(UIViewController *host)
             settings_present_controller(ac, self);
         } else if ([action isEqualToString:@"nano-clear"]) {
             UIAlertController *ac = [UIAlertController
-                alertControllerWithTitle:@"Remove Pairing Override?"
-                                 message:@"Removes the saved Watch Pairing Override without touching the rest of your watch data. Respring or reboot afterwards."
+                alertControllerWithTitle:@"移除配对覆盖？"
+                                 message:@"移除已保存的手表配对覆盖，不会触碰其余手表数据。之后请重启 SpringBoard 或重启设备。"
                           preferredStyle:UIAlertControllerStyleAlert];
             [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
             [ac addAction:[UIAlertAction actionWithTitle:@"Remove" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *_) {
@@ -19758,21 +19758,21 @@ void cyanide_present_contact(UIViewController *host)
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             // Result for the progress sheet: a bare completion reads as success.
             __block BOOL flxOK = NO;
-            __block NSString *flxMessage = @"FastLockX Lite request failed. Check the log for details.";
+            __block NSString *flxMessage = @"FastLockX Lite 请求失败。详情请查看日志。";
             BOOL actionLockAcquired = settings_try_claim_actions_lock("FastLockX Lite",
                                                                      "[FLX] Another action is already running.");
             if (!actionLockAcquired) {
                 if (bgTask != UIBackgroundTaskInvalid) {
                     [[UIApplication sharedApplication] endBackgroundTask:bgTask];
                 }
-                settings_post_actions_complete_async(NO, @"Another action is already running. Try again when it has finished.");
+                settings_post_actions_complete_async(NO, @"已有另一个操作正在进行。请等它完成后再试。");
                 return;
             }
 
             @try {
                 if (!settings_ensure_kexploit()) {
                     log_user("[FLX] Failed: kernel primitives not acquired. Run the chain, then try again.\n");
-                    flxMessage = @"Kernel primitives not acquired. Run the chain, then try again.";
+                    flxMessage = @"未获取到内核原语。请运行利用链后重试。";
                     return;
                 }
 
@@ -19780,7 +19780,7 @@ void cyanide_present_contact(UIViewController *host)
                 @synchronized (settings_rc_lock()) {
                     if (!settings_ensure_springboard_remote_call_locked()) {
                         log_user("[FLX] SpringBoard not reachable; cannot send FastLockX Lite request.\n");
-                        flxMessage = @"SpringBoard not reachable; cannot send FastLockX Lite request.";
+                        flxMessage = @"无法连接 SpringBoard；无法发送 FastLockX Lite 请求。";
                         return;
                     }
 
@@ -19790,8 +19790,8 @@ void cyanide_present_contact(UIViewController *host)
                                  ok ? "[OK]" : "[WARN]",
                                  ok ? "found usable primitives" : "did not find enough primitives");
                         flxOK = ok;
-                        flxMessage = ok ? @"FastLockX Lite probe found usable primitives."
-                                        : @"FastLockX Lite probe did not find enough primitives.";
+                        flxMessage = ok ? @"FastLockX Lite 探测到可用原语。"
+                                        : @"FastLockX Lite 探测到的原语不足。";
                         return;
                     }
 
@@ -19809,8 +19809,8 @@ void cyanide_present_contact(UIViewController *host)
                                  ok ? "[OK]" : "[WARN]",
                                  ok ? "disabled" : "could not be disabled; respring will stop it");
                         flxOK = ok;
-                        flxMessage = ok ? @"FastLockX Lite Always On disabled."
-                                        : @"FastLockX Lite Always On could not be disabled; respring will stop it.";
+                        flxMessage = ok ? @"FastLockX Lite「始终开启」已停用。"
+                                        : @"无法停用 FastLockX Lite「始终开启」；重启 SpringBoard 会停止它。";
                     } else if (enableAlways) {
                         [d setBool:YES forKey:kSettingsFastLockXLiteEnabled];
                         [d synchronize];
@@ -19838,8 +19838,8 @@ void cyanide_present_contact(UIViewController *host)
                                  ok ? "[OK]" : "[WARN]",
                                  ok ? "enabled" : "failed to enable");
                         flxOK = ok;
-                        flxMessage = ok ? @"FastLockX Lite Always On enabled."
-                                        : @"FastLockX Lite Always On failed to enable.";
+                        flxMessage = ok ? @"FastLockX Lite「始终开启」已启用。"
+                                        : @"FastLockX Lite「始终开启」启用失败。";
                     } else if (window) {
                         NSTimeInterval deadline = [NSDate timeIntervalSinceReferenceDate] + 15.0;
                         int tick = 0;
@@ -19865,8 +19865,8 @@ void cyanide_present_contact(UIViewController *host)
                         }
                         log_user("[FLX] 15s auto-unlock window stopped.\n");
                         flxOK = !stoppedForCleanup;
-                        flxMessage = stoppedForCleanup ? @"Auto-unlock window stopped: cleanup started."
-                                                       : @"15s auto-unlock window finished.";
+                        flxMessage = stoppedForCleanup ? @"自动解锁窗口已停止：清理已开始。"
+                                                       : @"15 秒自动解锁窗口已结束。";
                     } else {
                         FastLockXLiteConfig config = settings_fastlockx_lite_config_from_defaults(d, pulse, unlock);
                         bool ok = fastlockx_lite_run_in_session(config);
@@ -19874,8 +19874,8 @@ void cyanide_present_contact(UIViewController *host)
                                  ok ? "[OK]" : "[WARN]",
                                  ok ? "completed" : "did not complete");
                         flxOK = ok;
-                        flxMessage = ok ? @"FastLockX Lite request completed."
-                                        : @"FastLockX Lite request did not complete.";
+                        flxMessage = ok ? @"FastLockX Lite 请求已完成。"
+                                        : @"FastLockX Lite 请求未完成。";
                     }
                 }
             } @finally {
@@ -20037,7 +20037,7 @@ void cyanide_present_contact(UIViewController *host)
             [self presentViewController:dp animated:YES completion:nil];
             return;
         } else if ([action isEqualToString:@"quickloader-open-sources"]) {
-            [self selectBottomTabNamed:@"Sources"];
+            [self selectBottomTabNamed:@"源"];
             return;
         } else if ([action isEqualToString:@"quickloader-clear"]) {
             NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
@@ -20087,7 +20087,7 @@ void cyanide_present_contact(UIViewController *host)
         NSString *action = row[@"action"];
 
         if ([action isEqualToString:@"repotweaks-open-manager"]) {
-            [self selectBottomTabNamed:@"Sources"];
+            [self selectBottomTabNamed:@"源"];
         }
         return;
     }
@@ -20122,7 +20122,7 @@ void cyanide_present_contact(UIViewController *host)
 
 - (NSArray<NSDictionary *> *)repoTweaksRows {
     return @[
-        @{ @"kind": @"button", @"action": @"repotweaks-open-manager", @"title": @"📦 Open Sources Tab" }
+        @{ @"kind": @"button", @"action": @"repotweaks-open-manager", @"title": @"📦 打开「源」标签页" }
     ];
 }
 

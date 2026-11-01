@@ -83,7 +83,7 @@ static NSString *pl_summary(id v)
         case PLTypeDictionary:
         case PLTypeArray: {
             NSUInteger n = [(NSArray *)v count];
-            return [NSString stringWithFormat:@"%lu item%@", (unsigned long)n, n == 1 ? @"" : @"s"];
+            return [NSString stringWithFormat:@"%lu 个项目%@", (unsigned long)n, n == 1 ? @"" : @"s"];
         }
         case PLTypeString: {
             NSString *s = [(NSString *)v stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
@@ -95,7 +95,7 @@ static NSString *pl_summary(id v)
         case PLTypeDate:    return [pl_date_formatter() stringFromDate:v];
         case PLTypeData: {
             NSData *d = v;
-            return [NSString stringWithFormat:@"%lu bytes  %@", (unsigned long)d.length, pl_hex(d, 12)];
+            return [NSString stringWithFormat:@"%lu 字节  %@", (unsigned long)d.length, pl_hex(d, 12)];
         }
     }
     return @"";
@@ -170,7 +170,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
                                                         options:NSPropertyListMutableContainers
                                                          format:&fmt
                                                           error:&err];
-    if (!root) { if (message) *message = err.localizedDescription ?: @"Not a property list."; return NO; }
+    if (!root) { if (message) *message = err.localizedDescription ?: @"不是属性列表文件。"; return NO; }
     self.root = root;
     self.format = fmt;
     self.original = data;
@@ -184,20 +184,20 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
 // Any thread.
 - (BOOL)loadWithError:(NSString **)message
 {
-    if (self.readOnly && !self.original) { if (message) *message = @"Nothing to reload."; return NO; }
+    if (self.readOnly && !self.original) { if (message) *message = @"没有可重新加载的内容。"; return NO; }
     if (self.readOnly) return [self parseData:self.original error:message];
     int fd = filebrowser_open_regular(self.path);
-    if (fd < 0) { if (message) *message = @"The file could not be read."; return NO; }
+    if (fd < 0) { if (message) *message = @"无法读取该文件。"; return NO; }
     FBFileIdentity ident = filebrowser_identity_fd(fd);
     BOOL tooBig = NO;
     int rerr = 0;
     NSData *data = filebrowser_read_fd(fd, kPLMaxBytes, &tooBig, &rerr);
     close(fd);
     if (!data) {
-        if (message) *message = [NSString stringWithFormat:@"Reading the file failed: %s.", strerror(rerr)];
+        if (message) *message = [NSString stringWithFormat:@"读取文件失败：%s。", strerror(rerr)];
         return NO;
     }
-    if (tooBig) { if (message) *message = @"The plist is larger than 10 MB."; return NO; }
+    if (tooBig) { if (message) *message = @"此 plist 大于 10 MB。"; return NO; }
     if (![self parseData:data error:message]) return NO;
     self.identity = ident;
     return YES;
@@ -209,7 +209,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
     NSError *err = nil;
     NSPropertyListFormat fmt = self.format == NSPropertyListOpenStepFormat ? NSPropertyListXMLFormat_v1_0 : self.format;
     NSData *data = [NSPropertyListSerialization dataWithPropertyList:self.root format:fmt options:0 error:&err];
-    if (!data && message) *message = err.localizedDescription ?: @"The plist could not be serialized.";
+    if (!data && message) *message = err.localizedDescription ?: @"无法序列化此 plist。";
     return data;
 }
 
@@ -266,7 +266,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
         self.textView.smartDashesType = UITextSmartDashesTypeNo;
         if (t == PLTypeInteger || t == PLTypeReal) self.textView.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
         self.textView.text = t == PLTypeData
-                           ? (bigData ? [NSString stringWithFormat:@"%@\n\n… first %lu of %lu bytes shown; too large to edit here.",
+                           ? (bigData ? [NSString stringWithFormat:@"%@\n\n… 仅显示前 %lu / %lu 字节；文件过大，无法在此编辑。",
                                          pl_hex(self.value, kPLMaxDataEditBytes),
                                          (unsigned long)kPLMaxDataEditBytes, (unsigned long)[(NSData *)self.value length]]
                                       : pl_hex(self.value, NSUIntegerMax))
@@ -300,26 +300,26 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
         case PLTypeString: result = text; break;
         case PLTypeData:
             result = pl_data_from_hex(text);
-            if (!result) error = @"Enter the bytes as hex pairs, for example \"0a ff 10\".";
+            if (!result) error = @"请以十六进制字节对输入，例如 \"0a ff 10\"。";
             break;
         case PLTypeInteger: {
             NSScanner *sc = [NSScanner scannerWithString:trimmed];
             long long v;
             if ([sc scanLongLong:&v] && sc.isAtEnd) result = @(v);
-            else error = @"Enter a whole number.";
+            else error = @"请输入整数。";
             break;
         }
         case PLTypeReal: {
             NSScanner *sc = [NSScanner scannerWithString:trimmed];
             double v;
             if ([sc scanDouble:&v] && sc.isAtEnd) result = @(v);
-            else error = @"Enter a number, for example 1.5.";
+            else error = @"请输入数字，例如 1.5。";
             break;
         }
         default: break;
     }
     if (error) {
-        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Invalid Value"
+        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"无效的数值"
                                                                     message:error
                                                              preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
@@ -394,13 +394,13 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
     if (self.isRoot) {
         NSString *fmt = self.doc.format == NSPropertyListBinaryFormat_v1_0 ? @"binary"
                       : self.doc.format == NSPropertyListXMLFormat_v1_0 ? @"XML" : @"OpenStep";
-        self.navigationItem.prompt = [NSString stringWithFormat:@"%@ (%@ plist%@)", self.doc.path, fmt,
-                                      self.doc.readOnly ? @", read as root" : @""];
+        self.navigationItem.prompt = [NSString stringWithFormat:@"%@（%@ plist%@）", self.doc.path, fmt,
+                                      self.doc.readOnly ? @"，以 root 身份读取" : @""];
     }
     UISearchController *sc = [[UISearchController alloc] initWithSearchResultsController:nil];
     sc.searchResultsUpdater = self;
     sc.obscuresBackgroundDuringPresentation = NO;
-    sc.searchBar.placeholder = @"Filter keys and values";
+    sc.searchBar.placeholder = @"筛选键和值";
     self.navigationItem.searchController = sc;
     self.navigationItem.hidesSearchBarWhenScrolling = YES;
     self.definesPresentationContext = YES;
@@ -459,7 +459,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
 
 - (NSString *)labelForRow:(id)row
 {
-    return self.isDict ? [row description] : [NSString stringWithFormat:@"Item %@", row];
+    return self.isDict ? [row description] : [NSString stringWithFormat:@"项目 %@", row];
 }
 
 // Every model mutation goes through here (or checks it first): a value
@@ -467,8 +467,8 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
 - (BOOL)ensureWritable
 {
     if (self.writable && !self.saving) return YES;
-    [self showMessage:@"Changes are locked. Unlock them in the File Browser to edit."
-                title:@"Not Changed"];
+    [self showMessage:@"更改已锁定。请在文件浏览器中解锁后再编辑。"
+                title:@"未改动"];
     [self reloadRows];   // e.g. flip a switch back
     return NO;
 }
@@ -509,10 +509,10 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
             }]];
         }
         NSMutableArray<UIMenuElement *> *menu = [NSMutableArray arrayWithObject:
-            [UIMenu menuWithTitle:self.isDict ? @"Add Key" : @"Add Item" image:nil identifier:nil
+            [UIMenu menuWithTitle:self.isDict ? @"添加键" : @"添加项目" image:nil identifier:nil
                           options:UIMenuOptionsDisplayInline children:adds]];
         if (!self.isDict && [(NSArray *)self.container count] > 1) {
-            [menu addObject:[UIAction actionWithTitle:self.tableView.editing ? @"Done Reordering" : @"Reorder Items"
+            [menu addObject:[UIAction actionWithTitle:self.tableView.editing ? @"完成排序" : @"重新排序"
                                                 image:[UIImage systemImageNamed:@"arrow.up.arrow.down"]
                                            identifier:nil handler:^(UIAction *a) {
                 [weakSelf.tableView setEditing:!weakSelf.tableView.editing animated:YES];
@@ -539,7 +539,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
             // without that lock could otherwise observe a torn version.
             NSData *snapshot = [me.doc.original copy];
             if (!snapshot) {
-                [me showMessage:@"The loaded plist has no shareable snapshot." title:@"Couldn't Share"];
+                [me showMessage:@"已加载的 plist 没有可分享的快照。" title:@"无法分享"];
                 return;
             }
             weakShare.enabled = NO;
@@ -569,12 +569,12 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
 {
     if (self.saving) return;
     if (self.doc.readOnly || !filebrowser_write_enabled()) {
-        [self showMessage:@"Changes are locked." title:@"Not Saved"];
+        [self showMessage:@"更改已锁定。" title:@"未保存"];
         return;
     }
     NSString *message = nil;
     NSData *data = [self.doc serializedDataWithError:&message];
-    if (!data) { [self showMessage:message title:@"Not Saved"]; return; }
+    if (!data) { [self showMessage:message title:@"未保存"]; return; }
     PLDocument *doc = self.doc;
     NSString *path = doc.path;
     FBFileIdentity expected = doc.identity;
@@ -594,9 +594,9 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
                 return;
             }
             if (r == FBSaveConflict) {
-                UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"File Changed"
-                                                                            message:@"The file was changed or replaced since you opened it. "
-                                                                                    @"Overwrite it with your version, or Revert to load the current one?"
+                UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"文件已变动"
+                                                                            message:@"自你打开以来，该文件已被修改或替换。"
+                                                                                    @"要用你的版本覆盖它，还是还原以加载当前版本？"
                                                                      preferredStyle:UIAlertControllerStyleAlert];
                 [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
                 [ac addAction:[UIAlertAction actionWithTitle:@"Revert" style:UIAlertActionStyleDefault handler:^(UIAlertAction *a) {
@@ -611,11 +611,11 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
             if (r == FBSaveUncertain) {
                 // Written but unverified: keep the document dirty with its old
                 // identity, so a later plain save reports a conflict.
-                [self showMessage:msg ?: @"The file was written, but the result couldn't be verified."
-                            title:@"Save Not Verified"];
+                [self showMessage:msg ?: @"文件已写入，但无法校验结果。"
+                            title:@"保存未校验"];
                 return;
             }
-            [self showMessage:msg ?: @"The file could not be written." title:@"Not Saved"];
+            [self showMessage:msg ?: @"无法写入该文件。" title:@"未保存"];
         });
     });
 }
@@ -641,8 +641,8 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
 
 - (void)confirmRevert
 {
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Discard Changes?"
-                                                                message:@"The file is reloaded as it is on disk."
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"放弃更改？"
+                                                                message:@"文件将按磁盘上的内容重新加载。"
                                                          preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     [ac addAction:[UIAlertAction actionWithTitle:@"Discard" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *a) {
@@ -660,8 +660,8 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
                 [self setBusy:NO];
                 if (!ok) {
                     // Keep the edits rather than pretend they were discarded.
-                    [self showMessage:[NSString stringWithFormat:@"%@ Your changes are kept.", message ?: @""]
-                                title:@"Couldn't Revert"];
+                    [self showMessage:[NSString stringWithFormat:@"%@ 你的更改会保留。", message ?: @""]
+                                title:@"无法还原"];
                     return;
                 }
                 doc.root = fresh.root;
@@ -696,8 +696,8 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
         NSString *key = ac.textFields.firstObject.text ?: @"";
         if (!key.length) return;
         if (self.container[key] && ![key isEqualToString:initial]) {
-            UIAlertController *dup = [UIAlertController alertControllerWithTitle:@"Key Exists"
-                                                                         message:[NSString stringWithFormat:@"\"%@\" is already in this dictionary.", key]
+            UIAlertController *dup = [UIAlertController alertControllerWithTitle:@"键已存在"
+                                                                         message:[NSString stringWithFormat:@"\"%@\" 已存在于该字典中。", key]
                                                                   preferredStyle:UIAlertControllerStyleAlert];
             [dup addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
             [self presentViewController:dup animated:YES completion:nil];
@@ -713,7 +713,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
     if (![self ensureWritable]) return;
     id value = pl_default_value(t);
     if (self.isDict) {
-        [self promptForKey:@"New Key" initial:@"" then:^(NSString *key) {
+        [self promptForKey:@"新建键" initial:@"" then:^(NSString *key) {
             if (![self ensureWritable]) return;
             self.container[key] = value;
             [self markDirty];
@@ -735,7 +735,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
 - (void)renameRow:(id)row
 {
     if (!self.isDict || ![self ensureWritable]) return;
-    [self promptForKey:@"Rename Key" initial:[row description] then:^(NSString *key) {
+    [self promptForKey:@"重命名键" initial:[row description] then:^(NSString *key) {
         if ([key isEqualToString:[row description]] || ![self ensureWritable]) return;
         id v = self.container[row];
         [(NSMutableDictionary *)self.container removeObjectForKey:row];
@@ -757,7 +757,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
         if ((PLType)t == current) a.state = UIMenuElementStateOn;
         [actions addObject:a];
     }
-    return [UIMenu menuWithTitle:@"Change Type" image:[UIImage systemImageNamed:@"arrow.triangle.2.circlepath"]
+    return [UIMenu menuWithTitle:@"更改类型" image:[UIImage systemImageNamed:@"arrow.triangle.2.circlepath"]
                       identifier:nil options:0 children:actions];
 }
 
@@ -777,7 +777,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
     cell.accessoryView = nil;
 
     if (!self.rows.count) {
-        cell.textLabel.text = self.filter.length ? @"No matches." : @"Empty.";
+        cell.textLabel.text = self.filter.length ? @"没有匹配项。" : @"Empty.";
         cell.textLabel.textColor = UIColor.secondaryLabelColor;
         cell.detailTextLabel.text = nil;
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -862,13 +862,13 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
                                                     actionProvider:^UIMenu *(NSArray<UIMenuElement *> *s) {
         NSMutableArray<UIMenuElement *> *items = [NSMutableArray array];
         id value = [self valueForRow:row];
-        [items addObject:[UIAction actionWithTitle:@"Copy Value" image:[UIImage systemImageNamed:@"doc.on.doc"]
+        [items addObject:[UIAction actionWithTitle:@"拷贝值" image:[UIImage systemImageNamed:@"doc.on.doc"]
                                         identifier:nil handler:^(UIAction *a) {
             id v = [self valueForRow:row];
             UIPasteboard.generalPasteboard.string = [v isKindOfClass:NSString.class] ? v : pl_summary(v);
         }]];
         if (self.isDict) {
-            [items addObject:[UIAction actionWithTitle:@"Copy Key" image:[UIImage systemImageNamed:@"key"]
+            [items addObject:[UIAction actionWithTitle:@"拷贝键" image:[UIImage systemImageNamed:@"key"]
                                             identifier:nil handler:^(UIAction *a) {
                 UIPasteboard.generalPasteboard.string = [row description];
             }]];
@@ -876,7 +876,7 @@ static const NSUInteger kPLMaxDataEditBytes = 64 * 1024;
         if (self.writable) {
             NSMutableArray<UIMenuElement *> *edit = [NSMutableArray array];
             if (self.isDict) {
-                [edit addObject:[UIAction actionWithTitle:@"Rename Key" image:[UIImage systemImageNamed:@"pencil"]
+                [edit addObject:[UIAction actionWithTitle:@"重命名键" image:[UIImage systemImageNamed:@"pencil"]
                                                identifier:nil handler:^(UIAction *a) { [self renameRow:row]; }]];
             }
             [edit addObject:[self typeMenuForRow:row]];
